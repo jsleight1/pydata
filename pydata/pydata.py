@@ -1,9 +1,11 @@
+from pydata.ldata import ldata
+from pydata.pca import pca
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 
-class pydata:
+class pydata(ldata):
     """
     Simple dataset computation and visualisation.
 
@@ -17,26 +19,26 @@ class pydata:
 
     >>> # Generate some random data
     >>> np.random.seed(38)
-    >>> data = pd.DataFrame(
+    >>> data=pd.DataFrame(
     >>>     np.random.randint(0, 10, size=100).reshape(20, 5),
     >>>     index=["Feature" + str(i)for i in range(1, 21)], 
     >>>     columns=["Sample" + str(i)for i in range(1, 6)] 
     >>> )
     >>>
     >>> # Generate sample metadata
-    >>> desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+    >>> desc=pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
     >>>
     >>> # Generate feature metadata
-    >>> annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+    >>> annot=pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
     >>>
     >>> # Generate pydata object
-    >>> x = pydata(data, desc, annot)
+    >>> x=pydata(data, desc, annot)
     >>> x
     >>> x.data
     >>> x.description
     >>> x.annotation
     """
-    def __init__(self, data, description, annotation):
+    def __init__(self, data, description, annotation, pcs: pca=None):
         """
         Parameters
         ----------
@@ -51,10 +53,8 @@ class pydata:
             row names of data attribute.
         """
 
-        self._data=data 
-        self._description=description
-        self._annotation=annotation
-        self._validate()
+        super().__init__(data, description, annotation)
+        self._pcs=pcs
 
     def __str__(self):
         return (
@@ -66,166 +66,75 @@ class pydata:
             f"pydata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
         )
 
-    @property
-    def data(self):
-        return getattr(self, "_data")
-    
-    @data.setter
-    def data(self, value: pd.DataFrame):
-        """
-        Set data attribute for pydata object.
-        ------------------------------------
-        value: pandas.core.frame.DataFrame
-            A DataFrame of data with columns representing samples and rows
-            representing features.
-        """
-        assert isinstance(value, pd.DataFrame), "data is not DataFrame"
-        self._check_dimnames(data=value)
-        self._data=value
-
-    @property
-    def description(self):
-        return getattr(self, "_description")
-    
-    @description.setter
-    def description(self, value: pd.DataFrame):
-        """
-        Set description attribute for pydata object.
-        ------------------------------------
-        value: pandas.core.frame.DataFrame
-            A DataFrame of sample descriptions with ID column matching 
-            columns names of data attribute.
-        """
-        self._check_dimnames(description=value)
-        self._description=value
-
-    @property
-    def annotation(self):
-        return getattr(self, "_annotation")
-    
-    @annotation.setter
-    def annotation(self, value: pd.DataFrame):
-        """
-        Set description attribute for pydata object.
-        ------------------------------------
-        value: pandas.core.frame.DataFrame
-            A DataFrame of feature annotation with ID column matching 
-            row names of data attribute.
-        """
-        self._check_dimnames(annotation=value)
-        self._annotation=value
-
-    @property
-    def rownames(self):
-        return self.data.index.values.tolist()
-
-    @rownames.setter 
-    def rownames(self, value: list):
-        """
-        Set feature names for pydata object.
-        ------------------------------------
-        value: list
-            A list of feature names.
-        """
-        assert isinstance(value, list), "value must be list"
-        assert len(value) == self.data.shape[0], "value does not match data dims"
-        assert len(value) == len(set(value)), "value must contain unique IDs"
-        self.annotation["ID"]=value
-        self.data.index=value
-
-    @property
-    def colnames(self):
-        return self.data.columns.tolist()
-    
-    @colnames.setter 
-    def colnames(self, value: list):
-        """
-        Set sample names for pydata object.
-        ------------------------------------
-        value: list
-            A list of sample names.
-        """
-        assert isinstance(value, list), "value must be list"
-        assert len(value) == self.data.shape[1], "value does not match data dims"
-        assert len(value) == len(set(value)), "value must contain unique IDs"
-        self.description["ID"]=value
-        self.data.columns=value
-
-    @property 
-    def dimnames(self):
-        return [self.rownames, self.colnames]
-
-    @dimnames.setter 
-    def dimnames(self, value: list):
-        assert isinstance(value, list), "value must be list"
-        assert len(value) == 2, "value must be list with rownames and colnames"
-        self.rownames=value[0]
-        self.colnames=value[1]
-
-    def _validate(self):
-        assert isinstance(self.data, pd.DataFrame), "data is not DataFrame"
-        assert isinstance(self.description, pd.DataFrame), \
-            "description is not DataFrame"
-        assert isinstance(self.annotation, pd.DataFrame), \
-            "annotation is not DataFrame"
-        self._check_dimnames()
-
-    def _check_dimnames(
-            self, 
-            data: pd.DataFrame=None, 
-            description: pd.DataFrame=None, 
-            annotation: pd.DataFrame=None
-        ):
-        if data is None:
-            data=self.data 
-        if description is None:
-            description=self.description
-        if annotation is None:
-            annotation=self.annotation
-        rownames=data.index.values.tolist()
-        colnames=data.columns.tolist()
-        assert len(rownames) == len(set(rownames)), \
-            "rownames must contain unique IDs"
-        assert len(colnames) == len(set(colnames)), \
-            "colnames must contain unique IDs"
-        assert rownames == annotation["ID"].tolist(), \
-            "data rownames do not match annotation ID"
-        assert colnames == description["ID"].tolist(), \
-            "data colnames do not match description ID"
+    def _get_pcs(self):
+        return getattr(self, "_pcs")
+    def _set_pcs(self, value: pca):
+        if value is not None:
+            assert isinstance(value, pca)
+            value._validate()
+        self._pcs=value
+    pcs=property(_get_pcs, _set_pcs)
 
     def plot(self, type: str, **kwargs):
-        if type == "pca":
-            self._pca_plot()
-        else:
-            raise Exception(type + " plot type not implement")
+        match type:
+            case "pca":
+                self._pca_plot(**kwargs)
+            case _:
+                raise Exception(type + " plot type not implement")
 
+    def _pca_plot(
+            self, 
+            xaxis: str="PC1", 
+            yaxis: str="PC2", 
+            colour_by: str="ID", 
+            **kwargs
+        ):
+        if not isinstance(self.pcs, pca):
+            self.computePCA(**kwargs)
+        df=self.pcs.data.transpose()
+        plt.scatter(df[xaxis], df[yaxis])
+        plt.show()
 
-    def _pca_plot(self, colour_by: str="ID", **kwargs):
-        df = self.pca(**kwargs)
-        plt.scatter(df["PC1"], df["PC2"])
-
-    def pca(self, npcs: int=5, scale: str="Zscore", method: str="SVD"):
+    def computePCA(self, npcs: int=5, scaling: str="Zscore", method: str="SVD"):
         
-        dat = self.data.transpose()
+        dat=self.data.transpose()
 
-        if scale == "Zscore":
-            dat = StandardScaler().fit_transform(dat)
-        else: 
-            raise Exception(scale + " scaling method not implement")
+        match scaling: 
+            case "none":
+                dat=dat
+            case "Zscore":
+                dat=StandardScaler().fit_transform(dat)
+            case _:
+                raise Exception(scaling + " scaling method not implemented")
 
-        if method == "SVD":
-            out = self._svd_pca(x=dat, npcs=npcs)
-        else:
-            raise Exception(method + " pca method not implement")
-
-        return out
+        match method:
+            case "SVD":
+                pcs=self._svd_pca(x=dat, npcs=npcs)
+            case _:
+                raise Exception(method + " pca method not implemented")
+       
+        pcs.scaling=scaling
+        pcs.method=method
+        self.pcs=pcs
 
     def _svd_pca(self, x, npcs):
-        pca = PCA(n_components=npcs)
-        principalComponents = pca.fit_transform(x)
-        principalDf = pd.DataFrame(
-            data = principalComponents, 
-            columns = ["PC" + str(i) for i in range(1, npcs+1)]
+        p=PCA(n_components=npcs)
+        principalComponents=p.fit_transform(x)
+        principalDf=pd.DataFrame(
+            data=principalComponents, 
+            columns=["PC" + str(i) for i in range(1, npcs+1)]
         )
         principalDf.index=self.description["ID"].tolist()
-        return principalDf
+        varianceExplained=pd.DataFrame(
+            [
+                principalDf.columns.tolist(), 
+                (p.explained_variance_ratio_ * 100).tolist()
+            ]
+        ).transpose()
+        varianceExplained.columns=["ID", "Percentage variance explained"]
+        out=pca(
+            data=principalDf.transpose(), 
+            description=self.description, 
+            annotation=varianceExplained
+        )
+        return out

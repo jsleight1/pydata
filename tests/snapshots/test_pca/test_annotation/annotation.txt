@@ -1,0 +1,6 @@
+,ID,Percentage variance explained,col
+0,PC1,52.5,a
+1,PC2,32.5,b
+2,PC3,8.1,c
+3,PC4,5.2,d
+4,PC5,1.7,e
