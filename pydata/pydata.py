@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA, SparsePCA
 from sklearn.preprocessing import StandardScaler
+from copy import deepcopy
 
 class pydata(ldata):
     """
@@ -96,13 +97,40 @@ class pydata(ldata):
     pcs = property(_get_pcs, _set_pcs)
 
     def plot(self, type: str, **kwargs):
-        x._validate()
+        self._validate()
         match type:
             case "pca":
                 self._pca_plot(**kwargs)
+            case "violin":
+                self._violin_plot(**kwargs)
             case _:
                 raise Exception(type + " plot type not implement")
 
+    def _plot_data(self):
+        df = deepcopy(self.data)
+        df["Feature"] = df.index 
+        df = pd.melt(
+            df, 
+            id_vars = "Feature", 
+            value_vars = self.colnames, 
+            var_name = "Sample"
+        )
+        df = pd.merge(
+            df, 
+            self.description, 
+            left_on = "Sample", 
+            right_on = "ID"
+        )
+        df = df.drop(columns = ["ID"])
+        df = pd.merge(
+            df, 
+            self.annotation, 
+            left_on = "Feature", 
+            right_on = "ID"
+        )
+        df = df.drop(columns = ["ID"])
+        return df
+        
     def _pca_plot(
             self, 
             xaxis: str = "PC1", 
@@ -113,9 +141,9 @@ class pydata(ldata):
         if not isinstance(self.pcs, pca):
             self.compute_pca(**kwargs)
         self.pcs._validate()
-        df = self.pcs.data.transpose()
+        df = deepcopy(self.pcs.data.transpose())
         df["ID"] = df.index 
-        df = self.pcs.description.join(df.set_index("ID"), on = "ID")
+        df = pd.merge(df, self.pcs.description, on = "ID")
         sns.relplot(data = df, x = xaxis, y = yaxis, hue = colour_by)
 
     def compute_pca(
@@ -176,3 +204,12 @@ class pydata(ldata):
             annotation = var_expl
         )
         return out
+
+    def _violin_plot(self, colour_by: str = "Sample", **kwargs):
+        sns.violinplot(
+            data = self._plot_data(), 
+            x = "Sample", 
+            y = "value", 
+            hue = colour_by
+        )
+

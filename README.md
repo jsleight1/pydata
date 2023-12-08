@@ -10,6 +10,7 @@ which can be used for development and running the following examples.
 `docker run -it docker.io/jsleight1/pydata:3.10-latest`
 
 ``` python
+import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
 x = pydata.example_pydata()
@@ -69,6 +70,13 @@ print(x.pcs.annotation)
 ``` python
 # PCA 
 x.plot(type = "pca", colour_by = "Treatment")
+plt.show()
+
+# Violin
+x.plot(type = "violin", colour_by = "Treatment")
+plt.show()
 ```
 
 ![](README_files/figure-commonmark/cell-4-output-1.png)
+
+![](README_files/figure-commonmark/cell-4-output-2.png)

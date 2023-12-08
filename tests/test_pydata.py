@@ -1,7 +1,6 @@
 import pytest
 from pydata.pydata import pydata
 from pydata.pca import pca
-from copy import deepcopy
 import numpy as np 
 import pandas as pd
 
