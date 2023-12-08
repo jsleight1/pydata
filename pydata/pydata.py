@@ -103,6 +103,8 @@ class pydata(ldata):
                 self._pca_plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
+            case "heatmap": 
+                self._heatmap(**kwargs)
             case _:
                 raise Exception(type + " plot type not implement")
 
@@ -212,4 +214,42 @@ class pydata(ldata):
             y = "value", 
             hue = colour_by
         )
+    
+    def _heatmap(
+            self, 
+            annotate_samples_by = None,
+            annotate_features_by = None,
+            **kwargs
+        ):
+        if annotate_samples_by is not None:
+            annotate_samples_by = self.colour_by_df(
+                self.description, 
+                annotate_samples_by
+            )
+            annotate_samples_by.index = self.description["ID"]
+
+        if annotate_features_by is not None:
+            annotate_features_by = self.colour_by_df(
+                self.annotation, 
+                annotate_features_by
+            )
+            annotate_features_by.index = self.annotation["ID"]
+
+        sns.clustermap(
+            self.data, 
+            col_colors = annotate_samples_by, 
+            row_colors = annotate_features_by,
+            **kwargs
+        )
+
+    @staticmethod
+    def colour_by_df(x, colour_by):
+        colours = []
+        for i in colour_by:
+            col = sns.color_palette("Spectral", n_colors = len(x[i].unique()))
+            lut = dict(zip(x[i].unique(), col))
+            colours += [x[i].map(lut)]
+        colours = pd.concat(colours, axis = 1)
+        return colours
+
 

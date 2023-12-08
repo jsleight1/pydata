@@ -68,15 +68,22 @@ print(x.pcs.annotation)
 ## Plotting
 
 ``` python
-# PCA 
 x.plot(type = "pca", colour_by = "Treatment")
 plt.show()
 
-# Violin
 x.plot(type = "violin", colour_by = "Treatment")
+plt.show()
+
+x.plot(
+    type = "heatmap", 
+    annotate_samples_by = ["ID", "Treatment"], 
+    cmap = "coolwarm"
+)
 plt.show()
 ```
 
 ![](README_files/figure-commonmark/cell-4-output-1.png)
 
 ![](README_files/figure-commonmark/cell-4-output-2.png)
+
+![](README_files/figure-commonmark/cell-4-output-3.png)
