@@ -13,8 +13,8 @@ class pca(ldata):
             data, 
             description, 
             annotation, 
-            scaling=None,
-            method=None
+            scaling = None,
+            method = None
         ):
         """
         Parameters
@@ -31,8 +31,8 @@ class pca(ldata):
         """
 
         super().__init__(data, description, annotation)
-        self._scaling=scaling
-        self._method=method
+        self._scaling = scaling
+        self._method = method
         self._validate()
 
 
@@ -49,14 +49,14 @@ class pca(ldata):
     def _get_method(self):
         return getattr(self, "_method")
     def _set_method(self, value: str):
-        self._method=value
-    method=property(_get_method, _set_method)
+        self._method = value
+    method = property(_get_method, _set_method)
 
     def _get_scaling(self):
         return getattr(self, "_scaling")
     def _set_scaling(self, value: str):
-        self._scaling=value
-    scaling=property(_get_scaling, _set_scaling)
+        self._scaling = value
+    scaling = property(_get_scaling, _set_scaling)
 
     def _get_annotation(self):
         return super(pca, self)._get_annotation()
@@ -73,7 +73,7 @@ class pca(ldata):
         assert "Percentage variance explained" in value.columns, \
             "annotation must contain 'Percentage variance explained' column"
         super(pca, self)._set_annotation(value)
-    annotation=property(_get_annotation, _set_annotation)
+    annotation = property(_get_annotation, _set_annotation)
 
     def _get_rownames(self):
         return super(pca, self)._get_rownames()
@@ -87,7 +87,7 @@ class pca(ldata):
         assert all([bool(re.search("^PC\\d+", i)) for i in value]), \
             "rownames must be in format PC1, PC2, etc"
         super(pca, self)._set_rownames(value)
-    rownames=property(_get_rownames, _set_rownames)
+    rownames = property(_get_rownames, _set_rownames)
 
     def _validate(self):
         assert all([bool(re.search("^PC\\d+", i)) for i in self.data.index]), \

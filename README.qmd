@@ -1,0 +1,49 @@
+---
+title: "Exploratory data analysis using pydata"
+format: 
+    gfm:
+        preview-mode: raw
+---
+
+## `pydata`
+
+`pydata` is a python package developed for the analysis and visualisation of 
+L-shaped datasets. It can either be installed locally using `poetry` or an 
+docker container environment has also be created which can be used for 
+development and running the following examples.
+
+`docker run -it docker.io/jsleight1/pydata:3.10-latest`
+
+```{python}
+from pydata.pydata import pydata
+
+x = pydata.example_pydata()
+
+print(x)
+x.data
+x.description
+x.annotation
+
+```
+
+## Linear dimensionality reduction using principal component analysis (PCA).
+
+```{python}
+
+x.compute_pca()
+
+print(x.pcs)
+
+x.pcs.data
+x.pcs.description
+x.pcs.annotation
+```
+
+
+## Plotting
+
+```{python}
+
+# PCA 
+x.plot(type = "pca")
+```

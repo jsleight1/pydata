@@ -1,8 +1,10 @@
 from pydata.ldata import ldata
 from pydata.pca import pca
 import pandas as pd
+import numpy as np 
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
+import seaborn as sns
+from sklearn.decomposition import PCA, SparsePCA
 from sklearn.preprocessing import StandardScaler
 
 class pydata(ldata):
@@ -19,42 +21,42 @@ class pydata(ldata):
 
     >>> # Generate some random data
     >>> np.random.seed(38)
-    >>> data=pd.DataFrame(
-    >>>     np.random.randint(0, 10, size=100).reshape(20, 5),
-    >>>     index=["Feature" + str(i)for i in range(1, 21)], 
-    >>>     columns=["Sample" + str(i)for i in range(1, 6)] 
+    >>> data = pd.DataFrame(
+    >>>     np.random.randint(0, 10, size = 100).reshape(20, 5),
+    >>>     index = ["Feature" + str(i)for i in range(1, 21)], 
+    >>>     columns = ["Sample" + str(i)for i in range(1, 6)] 
     >>> )
     >>>
     >>> # Generate sample metadata
-    >>> desc=pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+    >>> desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
     >>>
     >>> # Generate feature metadata
-    >>> annot=pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+    >>> annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
     >>>
     >>> # Generate pydata object
-    >>> x=pydata(data, desc, annot)
+    >>> x = pydata(data, desc, annot)
     >>> x
     >>> x.data
     >>> x.description
     >>> x.annotation
     """
-    def __init__(self, data, description, annotation, pcs: pca=None):
+    def __init__(self, data, description, annotation, pcs: pca = None):
         """
         Parameters
         ----------
-        data : pd.DataFrame
+        data: pd.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
         description: pd.DataFrame
             A DataFrame of sample descriptions with ID column matching 
             columns names of data attribute.
-        annotation : pd.DataFrame
+        annotation: pd.DataFrame
             A DataFrame of feature annotation with ID column matching 
             row names of data attribute.
         """
 
         super().__init__(data, description, annotation)
-        self._pcs=pcs
+        self._pcs = pcs
 
     def __str__(self):
         return (
@@ -66,14 +68,26 @@ class pydata(ldata):
             f"pydata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
         )
 
+    @staticmethod
+    def example_pydata():
+        np.random.seed(38)
+        data = pd.DataFrame(
+            np.random.randint(0, 10, size = 100).reshape(20, 5),
+            index = ["Feature" + str(i)for i in range(1, 21)], 
+            columns = ["Sample" + str(i)for i in range(1, 6)] 
+        )
+        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+        annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+        return pydata(data, desc, annot)
+
     def _get_pcs(self):
         return getattr(self, "_pcs")
     def _set_pcs(self, value: pca):
         if value is not None:
             assert isinstance(value, pca)
             value._validate()
-        self._pcs=value
-    pcs=property(_get_pcs, _set_pcs)
+        self._pcs = value
+    pcs = property(_get_pcs, _set_pcs)
 
     def plot(self, type: str, **kwargs):
         match type:
@@ -84,57 +98,74 @@ class pydata(ldata):
 
     def _pca_plot(
             self, 
-            xaxis: str="PC1", 
-            yaxis: str="PC2", 
-            colour_by: str="ID", 
+            xaxis: str = "PC1", 
+            yaxis: str = "PC2", 
+            colour_by: str = "ID", 
             **kwargs
         ):
         if not isinstance(self.pcs, pca):
-            self.computePCA(**kwargs)
-        df=self.pcs.data.transpose()
-        plt.scatter(df[xaxis], df[yaxis])
-        plt.show()
+            self.compute_pca(**kwargs)
+        self.pcs._validate()
+        df = self.pcs.data.transpose()
+        df["ID"] = df.index 
+        df = self.pcs.description.join(df.set_index("ID"), on = "ID")
+        sns.relplot(data = df, x = xaxis, y = yaxis, hue = colour_by)
 
-    def computePCA(self, npcs: int=5, scaling: str="Zscore", method: str="SVD"):
+    def compute_pca(
+            self, 
+            npcs: int = 5, 
+            scaling: str = "Zscore", 
+            method: str = "SVD", 
+            **kwargs
+        ):
+        """
+        Parameters
+        ----------
+        npcs: Number of principal component to compute. Default is 5.
+        scaling: Scaling method before PCA calculation. Default is "Zscore".
+        method: PCA method for PCA calculation: Default is "SVD" for singular
+            value decomposition.
+        **kwargs: Passed to PCA method.
+        """
         
-        dat=self.data.transpose()
+        dat = self.data.transpose()
 
         match scaling: 
             case "none":
-                dat=dat
+                dat = dat
             case "Zscore":
-                dat=StandardScaler().fit_transform(dat)
+                dat = StandardScaler().fit_transform(dat)
             case _:
                 raise Exception(scaling + " scaling method not implemented")
 
         match method:
             case "SVD":
-                pcs=self._svd_pca(x=dat, npcs=npcs)
+                pcs = self._svd_pca(x = dat, npcs = npcs, **kwargs)
             case _:
                 raise Exception(method + " pca method not implemented")
        
-        pcs.scaling=scaling
-        pcs.method=method
-        self.pcs=pcs
+        pcs.scaling = scaling
+        pcs.method = method
+        self.pcs = pcs
 
-    def _svd_pca(self, x, npcs):
-        p=PCA(n_components=npcs)
-        principalComponents=p.fit_transform(x)
-        principalDf=pd.DataFrame(
-            data=principalComponents, 
-            columns=["PC" + str(i) for i in range(1, npcs+1)]
+    def _svd_pca(self, x, npcs, **kwargs):
+        p = PCA(n_components = npcs, **kwargs)
+        p_c = p.fit_transform(x)
+        p_df = pd.DataFrame(
+            data = p_c, 
+            columns = ["PC" + str(i) for i in range(1, npcs+1)]
         )
-        principalDf.index=self.description["ID"].tolist()
-        varianceExplained=pd.DataFrame(
+        p_df.index = self.description["ID"].tolist()
+        var_expl = pd.DataFrame(
             [
-                principalDf.columns.tolist(), 
+                p_df.columns.tolist(), 
                 (p.explained_variance_ratio_ * 100).tolist()
             ]
         ).transpose()
-        varianceExplained.columns=["ID", "Percentage variance explained"]
-        out=pca(
-            data=principalDf.transpose(), 
-            description=self.description, 
-            annotation=varianceExplained
+        var_expl.columns = ["ID", "Percentage variance explained"]
+        out = pca(
+            data = p_df.transpose(), 
+            description = self.description, 
+            annotation = var_expl
         )
         return out

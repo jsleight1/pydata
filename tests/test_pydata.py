@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 
 np.random.seed(38)
-data=pd.DataFrame(
-    np.random.randint(0, 10, size=100).reshape(20, 5),
-    index=["Feature" + str(i)for i in range(1, 21)], 
-    columns=["Sample" + str(i)for i in range(1, 6)] 
+data = pd.DataFrame(
+    np.random.randint(0, 10, size = 100).reshape(20, 5),
+    index = ["Feature" + str(i)for i in range(1, 21)], 
+    columns = ["Sample" + str(i)for i in range(1, 6)] 
 )
-desc=pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
-annot=pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
 
 def test_pydata_generation(snapshot):
     with pytest.raises(AssertionError) as err:
@@ -27,7 +27,7 @@ def test_pydata_generation(snapshot):
         pydata(data, desc, annot.head(2))
     assert "data rownames do not match annotation ID" in str(err.value)
     
-    x=pydata(data, desc, annot)
+    x = pydata(data, desc, annot)
 
     assert isinstance(x, pydata)
     assert x.data.equals(data)
@@ -36,18 +36,18 @@ def test_pydata_generation(snapshot):
     
     snapshot.assert_match(str(x), "pydata.txt")
 
-def test_computePCA(snapshot):
-    x=pydata(data, desc, annot)
+def test_compute_pca(snapshot):
+    x = pydata(data, desc, annot)
 
     with pytest.raises(Exception) as err:
-        x.computePCA(method = "custom")
+        x.compute_pca(method = "custom")
     assert "custom pca method not implemented" in str(err.value)
 
     with pytest.raises(Exception) as err:
-        x.computePCA(scaling = "custom")
+        x.compute_pca(scaling = "custom")
     assert "custom scaling method not implemented" in str(err.value)
 
-    x.computePCA()
+    x.compute_pca()
 
     assert isinstance(x.pcs, pca)
     snapshot.assert_match(str(x.pcs), "pydata_pca_print.txt")

@@ -5,13 +5,13 @@ import numpy as np
 import pandas as pd
 
 np.random.seed(38)
-pcs=pd.DataFrame(
+pcs = pd.DataFrame(
     np.random.randn(5, 5),
-    index=["PC" + str(i)for i in range(1, 6)], 
-    columns=["Sample" + str(i)for i in range(1, 6)] 
+    index = ["PC" + str(i)for i in range(1, 6)], 
+    columns = ["Sample" + str(i)for i in range(1, 6)] 
 )
-desc=pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
-annot=pd.DataFrame(
+desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+annot = pd.DataFrame(
     {
         "ID": ["PC" + str(i) for i in range(1, 6)],
         "Percentage variance explained": [52.5, 32.5, 8.1, 5.2, 1.7]
@@ -31,7 +31,7 @@ def test_pca_generation(snapshot):
         pca(pcs, desc, annot.head(2))
     assert "data rownames do not match annotation ID" in str(err.value)
     
-    x=pca(pcs, desc, annot)
+    x = pca(pcs, desc, annot)
 
     assert isinstance(x, pca)
     assert x.data.equals(pcs)
@@ -41,60 +41,60 @@ def test_pca_generation(snapshot):
     snapshot.assert_match(str(x), "pca.txt")
 
 def test_annotation(snapshot):
-    x=pca(pcs, desc, annot)
-    new_annot=deepcopy(annot)
-    new_annot["ID"]=["a", "b", "c", "d", "e"]
+    x = pca(pcs, desc, annot)
+    new_annot = deepcopy(annot)
+    new_annot["ID"] = ["a", "b", "c", "d", "e"]
     with pytest.raises(AssertionError) as err:
-        x.annotation=new_annot
+        x.annotation = new_annot
     assert "ID column must be in format PC1, PC2, etc" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.annotation=annot.drop(["Percentage variance explained"], axis=1)
+        x.annotation = annot.drop(["Percentage variance explained"], axis = 1)
     assert "annotation must contain 'Percentage variance explained' column" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.annotation=annot.head(2)
+        x.annotation = annot.head(2)
     assert "data rownames do not match annotation ID" in str(err.value)
 
-    new_annot=deepcopy(annot)
-    new_annot["col"]=["a", "b", "c", "d", "e"]
-    x.annotation=new_annot
+    new_annot = deepcopy(annot)
+    new_annot["col"] = ["a", "b", "c", "d", "e"]
+    x.annotation = new_annot
     assert x.annotation.equals(new_annot)
     snapshot.assert_match(x.annotation.to_csv(), "annotation.txt")
 
 def test_dimnames():
-    x=pca(pcs, desc, annot)
+    x = pca(pcs, desc, annot)
 
     assert x.dimnames == [x.rownames, x.colnames]
 
     with pytest.raises(AssertionError) as err:
-        x.colnames="A"
+        x.colnames = "A"
     assert "value must be list" in str(err.value)
     
     with pytest.raises(AssertionError) as err:
-        x.colnames=["A", "B"]
+        x.colnames = ["A", "B"]
     assert "value does not match data dims" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.colnames=["A", "B", "C", "C", "E"]
+        x.colnames = ["A", "B", "C", "C", "E"]
     assert "value must contain unique IDs" in str(err.value)
 
-    x.colnames=["A", "B", "C", "D", "E"]
+    x.colnames = ["A", "B", "C", "D", "E"]
     assert x.colnames == ["A", "B", "C", "D", "E"]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"]
 
     with pytest.raises(AssertionError) as err:
-        x.dimnames="A"
+        x.dimnames = "A"
     assert "value must be list" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.dimnames=["A", "B", "C", "D", "E"]
+        x.dimnames = ["A", "B", "C", "D", "E"]
     assert "value must be list with rownames and colnames" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.dimnames=[["A", "B", "C", "D", "E"], x.colnames]
+        x.dimnames = [["A", "B", "C", "D", "E"], x.colnames]
     assert "rownames must be in format PC1, PC2, etc" in str(err.value)
 
-    x.dimnames=[x.rownames, ["A", "B", "C", "D", "E"][::-1]]
+    x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"][::-1]
