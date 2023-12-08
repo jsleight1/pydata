@@ -20,9 +20,9 @@ from pydata.pydata import pydata
 x = pydata.example_pydata()
 
 print(x)
-x.data
-x.description
-x.annotation
+print(x.data.head(2))
+print(x.description.head(2))
+print(x.annotation.head(2))
 
 ```
 
@@ -34,9 +34,9 @@ x.compute_pca()
 
 print(x.pcs)
 
-x.pcs.data
-x.pcs.description
-x.pcs.annotation
+print(x.pcs.data)
+print(x.pcs.description.head(2))
+print(x.pcs.annotation)
 ```
 
 
