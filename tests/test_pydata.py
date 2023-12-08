@@ -7,11 +7,17 @@ import pandas as pd
 
 np.random.seed(38)
 data = pd.DataFrame(
-    np.random.randint(0, 10, size = 100).reshape(20, 5),
+    np.random.randint(0, 10, size = 120).reshape(20, 6),
     index = ["Feature" + str(i)for i in range(1, 21)], 
-    columns = ["Sample" + str(i)for i in range(1, 6)] 
+    columns = ["Sample" + str(i)for i in range(1, 7)] 
 )
-desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+grps = np.array(["Control", "Treatment"])
+desc = pd.DataFrame(
+    {
+        "ID": ["Sample" + str(i) for i in range(1, 7)], 
+        "Treatment": np.repeat(grps, [3, 3], axis = 0)
+    }
+)
 annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
 
 def test_pydata_generation(snapshot):

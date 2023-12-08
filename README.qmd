@@ -45,5 +45,5 @@ print(x.pcs.annotation)
 ```{python}
 
 # PCA 
-x.plot(type = "pca")
+x.plot(type = "pca", colour_by = "Treatment")
 ```

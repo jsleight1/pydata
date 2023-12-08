@@ -72,11 +72,17 @@ class pydata(ldata):
     def example_pydata():
         np.random.seed(38)
         data = pd.DataFrame(
-            np.random.randint(0, 10, size = 100).reshape(20, 5),
+            np.random.randint(0, 10, size = 120).reshape(20, 6),
             index = ["Feature" + str(i)for i in range(1, 21)], 
-            columns = ["Sample" + str(i)for i in range(1, 6)] 
+            columns = ["Sample" + str(i)for i in range(1, 7)] 
         )
-        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
+        grps = np.array(["Control", "Treatment"])
+        desc = pd.DataFrame(
+            {
+                "ID": ["Sample" + str(i) for i in range(1, 7)], 
+                "Treatment": np.repeat(grps, [3, 3], axis = 0)
+            }
+        )
         annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
         return pydata(data, desc, annot)
 
@@ -90,6 +96,7 @@ class pydata(ldata):
     pcs = property(_get_pcs, _set_pcs)
 
     def plot(self, type: str, **kwargs):
+        x._validate()
         match type:
             case "pca":
                 self._pca_plot(**kwargs)

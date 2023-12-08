@@ -21,13 +21,13 @@ print(x.annotation.head(2))
 ```
 
     pydata object:
-     - Dimensions: 5 (samples) x 20 (features)
-              Sample1  Sample2  Sample3  Sample4  Sample5
-    Feature1        1        5        3        4        2
-    Feature2        1        7        9        0        1
-            ID
-    0  Sample1
-    1  Sample2
+     - Dimensions: 6 (samples) x 20 (features)
+              Sample1  Sample2  Sample3  Sample4  Sample5  Sample6
+    Feature1        1        5        3        4        2        1
+    Feature2        7        9        0        1        4        3
+            ID Treatment
+    0  Sample1   Control
+    1  Sample2   Control
              ID
     0  Feature1
     1  Feature2
@@ -45,30 +45,30 @@ print(x.pcs.annotation)
 ```
 
     pca object:
-     - Dimensions: 5 (samples) x 5 (principal components)
+     - Dimensions: 6 (samples) x 5 (principal components)
      - Scaling: Zscore
      - Method: SVD
-              Sample1       Sample2       Sample3       Sample4       Sample5
-    PC1 -2.385297e+00  2.681569e+00  4.033243e+00 -2.037196e+00 -2.292319e+00
-    PC2 -1.961247e+00  3.147872e+00 -2.578395e+00  1.843378e+00 -4.516076e-01
-    PC3 -2.485807e+00 -2.133184e-01  1.770359e-01 -1.136529e+00  3.658618e+00
-    PC4 -1.803378e+00 -1.810352e+00  1.282396e+00  2.841523e+00 -5.101890e-01
-    PC5  5.277064e-16  5.277064e-16  5.277064e-16  5.277064e-16  5.277064e-16
-            ID
-    0  Sample1
-    1  Sample2
+          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6
+    PC1  0.015036 -1.685930 -1.969292  3.881869 -3.136891  2.895207
+    PC2 -3.037243 -1.546258  4.576623  1.268257 -0.858779 -0.402600
+    PC3 -1.994504  1.960133 -1.392191  2.622691  1.015385 -2.211514
+    PC4 -1.855321  2.221158 -0.143624 -1.218673 -0.884526  1.880987
+    PC5 -1.111968 -1.199684 -0.649938 -0.105593  1.948909  1.118274
+            ID Treatment
+    0  Sample1   Control
+    1  Sample2   Control
         ID Percentage variance explained
-    0  PC1                       38.5524
-    1  PC2                     24.005699
-    2  PC3                     20.933268
-    3  PC4                     16.508632
-    4  PC5                           0.0
+    0  PC1                     33.343255
+    1  PC2                      29.22442
+    2  PC3                     18.798897
+    3  PC4                      11.83504
+    4  PC5                      6.798388
 
 ## Plotting
 
 ``` python
 # PCA 
-x.plot(type = "pca")
+x.plot(type = "pca", colour_by = "Treatment")
 ```
 
 ![](README_files/figure-commonmark/cell-4-output-1.png)
