@@ -75,10 +75,18 @@ x.plot(type = "violin", colour_by = "Treatment")
 plt.show()
 
 x.plot(
-    type = "heatmap", 
-    annotate_samples_by = ["ID", "Treatment"], 
-    cmap = "coolwarm"
+    type = "feature_heatmap", 
+    annotate_samples_by = ["ID", "Treatment"]
 )
+plt.show()
+
+x.plot(
+    type = "correlation_heatmap", 
+    annotate_samples_by = ["ID", "Treatment"]
+)
+plt.show()
+
+x.plot(type = "density")
 plt.show()
 ```
 
@@ -87,3 +95,7 @@ plt.show()
 ![](README_files/figure-commonmark/cell-4-output-2.png)
 
 ![](README_files/figure-commonmark/cell-4-output-3.png)
+
+![](README_files/figure-commonmark/cell-4-output-4.png)
+
+![](README_files/figure-commonmark/cell-4-output-5.png)

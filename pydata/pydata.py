@@ -103,8 +103,12 @@ class pydata(ldata):
                 self._pca_plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
-            case "heatmap": 
-                self._heatmap(**kwargs)
+            case "feature_heatmap": 
+                self._feature_heatmap(**kwargs)
+            case "correlation_heatmap":
+                self._correlation_heatmap(**kwargs)
+            case "density":
+                self._density_plot(**kwargs)
             case _:
                 raise Exception(type + " plot type not implement")
 
@@ -214,11 +218,36 @@ class pydata(ldata):
             y = "value", 
             hue = colour_by
         )
-    
-    def _heatmap(
+
+    def _correlation_heatmap(
+            self, 
+            cor_method: str = "pearson", 
+            annotate_samples_by = None,
+            cmap = "coolwarm",
+            **kwargs
+        ):
+        dat = self.data.corr(method = cor_method)
+        if annotate_samples_by is not None:
+            annotate_samples_by = self.colour_by_df(
+                self.description, 
+                annotate_samples_by
+            )
+            annotate_samples_by.index = self.description["ID"]
+
+        self._heatmap(
+            dat, 
+            annotate_samples_by = annotate_samples_by, 
+            cmap = cmap,
+            cbar_kws = {"label": cor_method.capitalize() + " correlation"},
+            **kwargs
+        )
+
+
+    def _feature_heatmap(
             self, 
             annotate_samples_by = None,
             annotate_features_by = None,
+            cmap = "coolwarm",
             **kwargs
         ):
         if annotate_samples_by is not None:
@@ -235,10 +264,12 @@ class pydata(ldata):
             )
             annotate_features_by.index = self.annotation["ID"]
 
-        sns.clustermap(
+        self._heatmap(
             self.data, 
-            col_colors = annotate_samples_by, 
-            row_colors = annotate_features_by,
+            cbar_kws = {"label": "Feature value"},
+            annotate_samples_by = annotate_samples_by, 
+            annotate_features_by = annotate_features_by, 
+            cmap = cmap,
             **kwargs
         )
 
@@ -252,4 +283,32 @@ class pydata(ldata):
         colours = pd.concat(colours, axis = 1)
         return colours
 
+    def _heatmap(
+            self, 
+            x,
+            annotate_samples_by = None,
+            annotate_features_by = None,
+            **kwargs
+        ):
+        if annotate_samples_by is not None:
+            assert self.data.columns.tolist() == annotate_samples_by.index.tolist(), \
+                "annotate_samples_by index must be same as data columns"
+        if annotate_features_by is not None:
+            assert self.data.index.tolist() == annotate_features_by.index.tolist(), \
+                "annotate_features_by index must be same as data columns"
+        sns.clustermap(
+            x, 
+            col_colors = annotate_samples_by, 
+            row_colors = annotate_features_by,
+            **kwargs
+        )
 
+    def _density_plot(
+            self, 
+            samples = None, 
+            **kwargs
+        ):
+        if samples is None:
+            samples = self.colnames
+        sns.kdeplot(data = self.data[samples], **kwargs)
+        plt.xlabel("Feature value")
