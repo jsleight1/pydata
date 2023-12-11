@@ -73,8 +73,15 @@ class pydata(ldata):
     @staticmethod
     def example_pydata():
         np.random.seed(38)
+        data = np.random.randint(0, 20, size = 60).reshape(10, 6)
+        dat1 = np.random.randint(0, 20, size = 30).reshape(10, 3)
+        dat2 = np.random.randint(60, 70, size = 30).reshape(10, 3)
+        new_dat = []
+        for i in range(0, len(dat1)):
+            new_dat += [np.append(dat1[i], dat2[i])]
+        data = np.append(data, new_dat).reshape(20, 6)
         data = pd.DataFrame(
-            np.random.randint(0, 10, size = 120).reshape(20, 6),
+            data,
             index = ["Feature" + str(i)for i in range(1, 21)], 
             columns = ["Sample" + str(i)for i in range(1, 7)] 
         )
