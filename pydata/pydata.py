@@ -3,6 +3,7 @@ from pydata.pca import pca
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import gcf
 import seaborn as sns
 from sklearn.decomposition import PCA, SparsePCA
 from sklearn.preprocessing import StandardScaler
@@ -84,7 +85,13 @@ class pydata(ldata):
                 "Treatment": np.repeat(grps, [3, 3], axis = 0)
             }
         )
-        annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+        grps = np.array(["Group1", "Group2"])
+        annot = pd.DataFrame(
+            {
+                "ID": ["Feature" + str(i) for i in range(1, 21)], 
+                "Group": np.repeat(grps, [10, 10], axis = 0)
+            }
+        )
         return pydata(data, desc, annot)
 
     def _get_pcs(self):
@@ -232,7 +239,7 @@ class pydata(ldata):
                 self.description, 
                 annotate_samples_by
             )
-            annotate_samples_by.index = self.description["ID"]
+            annotate_samples_by["colour_df"].index = self.description["ID"]
 
         self._heatmap(
             dat, 
@@ -241,7 +248,6 @@ class pydata(ldata):
             cbar_kws = {"label": cor_method.capitalize() + " correlation"},
             **kwargs
         )
-
 
     def _feature_heatmap(
             self, 
@@ -255,14 +261,14 @@ class pydata(ldata):
                 self.description, 
                 annotate_samples_by
             )
-            annotate_samples_by.index = self.description["ID"]
+            annotate_samples_by["colour_df"].index = self.description["ID"]
 
         if annotate_features_by is not None:
             annotate_features_by = self.colour_by_df(
                 self.annotation, 
                 annotate_features_by
             )
-            annotate_features_by.index = self.annotation["ID"]
+            annotate_features_by["colour_df"].index = self.annotation["ID"]
 
         self._heatmap(
             self.data, 
@@ -276,12 +282,13 @@ class pydata(ldata):
     @staticmethod
     def colour_by_df(x, colour_by):
         colours = []
+        lut = []
         for i in colour_by:
             col = sns.color_palette("Spectral", n_colors = len(x[i].unique()))
-            lut = dict(zip(x[i].unique(), col))
-            colours += [x[i].map(lut)]
+            lut += [dict(zip(x[i].unique(), col))]
+            colours += [x[i].map(dict(zip(x[i].unique(), col)))]
         colours = pd.concat(colours, axis = 1)
-        return colours
+        return {"colour_df": colours, "colour_dict": lut}
 
     def _heatmap(
             self, 
@@ -291,23 +298,66 @@ class pydata(ldata):
             **kwargs
         ):
         if annotate_samples_by is not None:
-            assert self.data.columns.tolist() == annotate_samples_by.index.tolist(), \
+            assert self.data.columns.tolist() == annotate_samples_by["colour_df"].index.tolist(), \
                 "annotate_samples_by index must be same as data columns"
+        else:
+            annotate_samples_by = {"colour_df": None}
+
         if annotate_features_by is not None:
-            assert self.data.index.tolist() == annotate_features_by.index.tolist(), \
+            assert self.data.index.tolist() == annotate_features_by["colour_df"].index.tolist(), \
                 "annotate_features_by index must be same as data columns"
-        sns.clustermap(
+        else:
+            annotate_features_by = {"colour_df": None}
+        
+        plot = sns.clustermap(
             x, 
-            col_colors = annotate_samples_by, 
-            row_colors = annotate_features_by,
+            col_colors = annotate_samples_by["colour_df"], 
+            row_colors = annotate_features_by["colour_df"],
+            dendrogram_ratio = 0.2,
             **kwargs
         )
 
-    def _density_plot(
-            self, 
-            samples = None, 
-            **kwargs
-        ):
+        # Add legends
+        if annotate_samples_by["colour_df"] is not None:
+            for i in range(0, len(annotate_samples_by["colour_dict"])):
+                lut = annotate_samples_by["colour_dict"][i]
+                for key in lut:
+                    plot.ax_col_dendrogram.bar(
+                        0, 
+                        0, 
+                        color = lut[key], 
+                        label = key, 
+                        linewidth = 0
+                    )
+                plot.ax_col_dendrogram.legend(
+                    title = "Samples",
+                    loc = "center", 
+                    ncol = 3
+                )
+
+        if annotate_features_by["colour_df"] is not None:
+            for i in range(0, len(annotate_features_by["colour_dict"])):
+                lut = annotate_features_by["colour_dict"][i]
+                for key in lut:
+                    plot.ax_row_dendrogram.bar(
+                        0, 
+                        0, 
+                        color = lut[key], 
+                        label = key, 
+                        linewidth = 0
+                    )
+                plot.ax_row_dendrogram.legend(
+                    title = "Featurs",
+                    loc = "center left", 
+                    ncol = 1
+                )
+
+        plot.fig.subplots_adjust(right = 0.7)
+        plot.ax_cbar.set_position((0.8, .2, .03, .4))
+
+        return plot
+
+    def _density_plot(self, samples = None, **kwargs):
         if samples is None:
             samples = self.colnames
         sns.kdeplot(data = self.data[samples], **kwargs)

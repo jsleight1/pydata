@@ -29,9 +29,9 @@ print(x.annotation.head(2))
             ID Treatment
     0  Sample1   Control
     1  Sample2   Control
-             ID
-    0  Feature1
-    1  Feature2
+             ID   Group
+    0  Feature1  Group1
+    1  Feature2  Group1
 
 ## Linear dimensionality reduction using principal component analysis (PCA).
 
@@ -76,7 +76,8 @@ plt.show()
 
 x.plot(
     type = "feature_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"]
+    annotate_samples_by = ["ID", "Treatment"], 
+    annotate_features_by = ["Group"]
 )
 plt.show()
 

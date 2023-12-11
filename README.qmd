@@ -52,7 +52,8 @@ plt.show()
 
 x.plot(
     type = "feature_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"]
+    annotate_samples_by = ["ID", "Treatment"], 
+    annotate_features_by = ["Group"]
 )
 plt.show()
 
