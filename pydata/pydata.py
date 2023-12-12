@@ -211,6 +211,8 @@ class pydata(ldata):
                 self._correlation_heatmap(**kwargs)
             case "density":
                 self._density_plot(**kwargs)
+            case "scatter":
+                self._scatter_plot(**kwargs)
             case _:
                 raise Exception(type + " plot type not implement")
 
@@ -413,3 +415,10 @@ class pydata(ldata):
     def _density_plot(self, **kwargs):
         sns.kdeplot(data = self.data, **kwargs)
         plt.xlabel("Feature value")
+
+    def _scatter_plot(self, samplex = None, sampley = None, **kwargs):
+        if samplex is None:
+            samplex = self.colnames[0]
+        if sampley is None:
+            sampley = self.colnames[1]
+        sns.scatterplot(data = self.data, x = samplex, y = sampley, **kwargs)

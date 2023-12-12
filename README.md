@@ -18,7 +18,6 @@ from pydata.pydata import pydata
 x = pydata.example_pydata()
 
 print(x)
-# Data
 print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
@@ -166,6 +165,9 @@ plt.show()
 
 x.plot(type = "density", legend = False)
 plt.show()
+
+x.transpose().plot(type = "scatter")
+plt.show()
 ```
 
 ![](README_files/figure-commonmark/cell-5-output-1.png)
@@ -184,3 +186,5 @@ plt.show()
 ![](README_files/figure-commonmark/cell-5-output-6.png)
 
 ![](README_files/figure-commonmark/cell-5-output-7.png)
+
+![](README_files/figure-commonmark/cell-5-output-8.png)

@@ -93,4 +93,7 @@ plt.show()
 
 x.plot(type = "density", legend = False)
 plt.show()
+
+x.transpose().plot(type = "scatter")
+plt.show()
 ```
