@@ -98,3 +98,15 @@ def test_dimnames():
     x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"][::-1]
+
+def test_subset():
+    x = pca(pcs, desc, annot)
+    with pytest.raises(Exception) as err:
+        x.subset()
+    assert "Cannot subset pca object" in str(err.value)
+
+def test_transpose():
+    x = pca(pcs, desc, annot)
+    with pytest.raises(Exception) as err:
+        x.transpose()
+    assert "Cannot transpose pca object" in str(err.value)

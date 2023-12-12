@@ -88,13 +88,8 @@ class pydata(ldata):
 
     @staticmethod
     def example_pydata():
-        iris = sns.load_dataset("iris")
-        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 151)], "Species": iris["species"]})
-        data = iris.drop(["species"], axis = 1).transpose()
-        data.columns = desc["ID"].tolist()
-        annot = pd.DataFrame({"ID": data.index.tolist()})
-        annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand = False)
-        return pydata(data, desc, annot)
+        out = ldata.example_ldata()
+        return pydata(out.data, out.description, out.annotation)
 
     def _get_pcs(self):
         return getattr(self, "_pcs")
@@ -113,6 +108,18 @@ class pydata(ldata):
             value._validate()
         self._lda = value
     lda = property(_get_lda, _set_lda)
+
+    def subset(self, samples = None, features = None):
+        out = super().subset(samples = samples, features = features)
+        out.pcs = None 
+        out.lda = None 
+        return out
+
+    def transpose(self):
+        out = super().transpose()
+        out.pcs = None 
+        out.lda = None 
+        return out
 
     def perform_pca(
             self, 
@@ -267,13 +274,9 @@ class pydata(ldata):
         df = pd.merge(df, self.lda.description, on = "ID")
         sns.relplot(data = df, x = xaxis, y = yaxis, hue = colour_by)
     
-    def _violin_plot(self, samples = None, **kwargs):
-        if samples is None:
-            samples = self.colnames
-        dat = self._plot_data()
-        dat = dat[dat["Sample"].isin(samples)]
+    def _violin_plot(self, **kwargs):
         sns.violinplot(
-            data = dat, 
+            data = self._plot_data(), 
             x = "Sample", 
             y = "value"
         )
@@ -400,7 +403,7 @@ class pydata(ldata):
                         linewidth = 0
                     )
                 plot.ax_row_dendrogram.legend(
-                    title = "Featurs",
+                    title = "Features",
                     loc = "center left", 
                     ncol = 1
                 )

@@ -105,3 +105,52 @@ def test_dimnames():
     x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"][::-1]
+
+def test_example_ldata(snapshot):
+    x = ldata.example_ldata()
+    assert isinstance(x, ldata)
+    snapshot.assert_match(str(x), "example_ldata.txt")
+
+def test_subset(snapshot):
+    x = ldata(data, desc, annot)
+
+    with pytest.raises(AssertionError) as err:
+        x.subset(samples = ["sample"])
+    assert "samples are not in data" in str(err.value)
+
+    with pytest.raises(AssertionError) as err:
+        x.subset(features = ["feature"])
+    assert "features are not in data" in str(err.value)
+
+    samples = ["Sample1", "Sample3"]
+    features = ["Feature1", "Feature3", "Feature18"]
+    s = x.subset(samples = samples, features = features)
+
+    assert isinstance(s, ldata)
+    assert s.colnames == samples 
+    assert s.rownames == features 
+    assert s.description["ID"].tolist() == samples
+    assert s.description.index.tolist() == [0, 1]
+    assert s.annotation["ID"].tolist() == features
+    assert s.annotation.index.tolist() == [0, 1, 2]
+    assert s.data.columns.tolist() == samples 
+    assert s.data.index.tolist() == features
+    assert x.colnames == data.columns.tolist()
+    assert x.rownames == data.index.tolist()
+    snapshot.assert_match(str(s), "subset_ldata.txt")
+
+def test_transpose(snapshot):
+    x = ldata(data, desc, annot)
+
+    l = x.transpose()
+
+    assert isinstance(l, ldata)
+    assert l.colnames == x.rownames
+    assert l.rownames == x.colnames
+    assert l.description["ID"].tolist() == x.annotation["ID"].tolist()
+    assert l.annotation["ID"].tolist() == x.description["ID"].tolist()
+    assert l.data.columns.tolist() == x.data.index.tolist()
+    assert l.data.index.tolist() == x.data.columns.tolist()
+    assert x.colnames == data.columns.tolist()
+    assert x.rownames == data.index.tolist()
+    snapshot.assert_match(str(l), "transpose_ldata.txt")

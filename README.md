@@ -9,6 +9,8 @@ which can be used for development and running the following examples.
 
 `docker run -it docker.io/jsleight1/pydata:3.10-latest`
 
+## Pydata generation and handling
+
 ``` python
 import matplotlib.pyplot as plt
 from pydata.pydata import pydata
@@ -19,6 +21,13 @@ print(x)
 print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
+
+x.subset(
+    samples = ["Sample1", "Sample30", "Sample52"], 
+    features = ["sepal_length", "petal_length"]
+)
+
+x.transpose()
 ```
 
     pydata object:
@@ -46,6 +55,9 @@ print(x.annotation.head(2))
                  ID    type
     0  sepal_length  length
     1   sepal_width   width
+
+    pydata object:
+     - Dimensions: 4 (samples) x 150 (features)
 
 ## Linear dimensionality reduction
 
@@ -129,7 +141,7 @@ plt.show()
 x.plot(type = "lda")
 plt.show()
 
-x.plot(type = "violin", samples = x.colnames[0:10], hue = "Species")
+x.subset(samples = ["Sample1", "Sample2"]).plot(type = "violin")
 plt.show()
 
 x.plot(

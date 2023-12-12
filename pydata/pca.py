@@ -99,4 +99,10 @@ class pca(ldata):
             "annotation must contain 'Percentage variance explained' column"
         super()._validate()
 
+    def subset(self):
+        raise Exception("Cannot subset pca object")
+    
+    def transpose(self):
+        raise Exception("Cannot transpose pca object")
+
     

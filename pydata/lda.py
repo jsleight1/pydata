@@ -67,6 +67,8 @@ class lda(ldata):
             "rownames must be in format LD1, LD2, etc"
         super()._validate()
 
+    def subset(self):
+        raise Exception("Cannot subset lda object")
     
-
-    
+    def transpose(self):
+        raise Exception("Cannot transpose lda object")

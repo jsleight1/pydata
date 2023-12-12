@@ -86,3 +86,15 @@ def test_dimnames():
     x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"][::-1]
+
+def test_subset():
+    x = lda(lds, desc, annot)
+    with pytest.raises(Exception) as err:
+        x.subset()
+    assert "Cannot subset lda object" in str(err.value)
+
+def test_transpose():
+    x = lda(lds, desc, annot)
+    with pytest.raises(Exception) as err:
+        x.transpose()
+    assert "Cannot transpose lda object" in str(err.value)

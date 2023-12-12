@@ -1,4 +1,6 @@
 import pandas as pd
+from copy import deepcopy
+import seaborn as sns
 
 class ldata:
     """
@@ -48,9 +50,9 @@ class ldata:
             row names of data attribute.
         """
 
-        self._data = data 
-        self._description = description
-        self._annotation = annotation
+        self._data = deepcopy(data)
+        self._description = deepcopy(description)
+        self._annotation = deepcopy(annotation)
         self._validate()
 
     def __str__(self):
@@ -177,6 +179,47 @@ class ldata:
             "data rownames do not match annotation ID"
         assert colnames == description["ID"].tolist(), \
             "data colnames do not match description ID"
-
-
     
+    @staticmethod
+    def example_ldata():
+        iris = sns.load_dataset("iris")
+        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 151)], "Species": iris["species"]})
+        data = iris.drop(["species"], axis = 1).transpose()
+        data.columns = desc["ID"].tolist()
+        annot = pd.DataFrame({"ID": data.index.tolist()})
+        annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand = False)
+        return ldata(data, desc, annot)
+
+    def subset(self, samples = None, features = None):
+        if samples is None:
+            samples = self.colnames
+        if features is None:
+            features = self.rownames 
+
+        assert set(samples).issubset(self.colnames), "samples are not in data"
+        assert set(features).issubset(self.rownames), "features are not in data"
+
+        self = deepcopy(self)
+        new_dat = deepcopy(self.data)
+        new_dat = new_dat[samples][new_dat.index.isin(features)]
+        new_desc = deepcopy(self.description)
+        new_desc = new_desc[new_desc["ID"].isin(samples)].reset_index(drop = True)
+        new_annot = deepcopy(self.annotation)
+        new_annot = new_annot[new_annot["ID"].isin(features)].reset_index(drop = True)
+
+        self._data = new_dat
+        self._description = new_desc
+        self._annotation = new_annot
+        self._validate()
+        return self
+
+    def transpose(self):
+        self = deepcopy(self)
+        new_dat = deepcopy(self.data)
+        new_desc = deepcopy(self.description)
+        new_annot = deepcopy(self.annotation)
+        self._data = new_dat.transpose()
+        self._description = new_annot
+        self._annotation = new_desc 
+        self._validate() 
+        return self

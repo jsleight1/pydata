@@ -42,6 +42,11 @@ def test_pydata_generation(snapshot):
     
     snapshot.assert_match(str(x), "pydata.txt")
 
+def test_example_pydata(snapshot):
+    x = pydata.example_pydata()
+    assert isinstance(x, pydata)
+    snapshot.assert_match(str(x), "example_pydata.txt")
+
 def test_perform_pca(snapshot):
     x = pydata(data, desc, annot)
 
@@ -71,3 +76,53 @@ def test_perform_lda(snapshot):
     assert isinstance(x.lda, lda)
     snapshot.assert_match(str(x.lda), "pydata_lda_print.txt")
     snapshot.assert_match(x.lda.data.round(3).to_csv(), "pydata_lda_data.txt")
+
+def test_subset():
+    x = pydata(data, desc, annot)
+
+    with pytest.raises(AssertionError) as err:
+        x.subset(samples = ["sample"])
+    assert "samples are not in data" in str(err.value)
+
+    with pytest.raises(AssertionError) as err:
+        x.subset(features = ["feature"])
+    assert "features are not in data" in str(err.value)
+
+    x.perform_pca()
+    x.perform_lda(target = "Treatment", n_comp = 1)
+    samples = ["Sample1", "Sample3"]
+    features = ["Feature1", "Feature3", "Feature18"]
+    s = x.subset(samples = samples, features = features)
+
+    assert isinstance(s, pydata)
+    assert s.colnames == samples 
+    assert s.rownames == features 
+    assert s.description["ID"].tolist() == samples
+    assert s.description.index.tolist() == [0, 1]
+    assert s.annotation["ID"].tolist() == features
+    assert s.annotation.index.tolist() == [0, 1, 2]
+    assert s.data.columns.tolist() == samples 
+    assert s.data.index.tolist() == features
+    assert s.pcs is None 
+    assert s.lda is None
+    assert x.colnames == data.columns.tolist()
+    assert x.rownames == data.index.tolist()
+
+def test_transpose():
+    x = pydata(data, desc, annot)
+    x.perform_pca()
+    x.perform_lda(target = "Treatment", n_comp = 1)
+
+    l = x.transpose()
+
+    assert isinstance(l, pydata)
+    assert l.colnames == x.rownames
+    assert l.rownames == x.colnames
+    assert l.description["ID"].tolist() == x.annotation["ID"].tolist()
+    assert l.annotation["ID"].tolist() == x.description["ID"].tolist()
+    assert l.data.columns.tolist() == x.data.index.tolist()
+    assert l.data.index.tolist() == x.data.columns.tolist()
+    assert l.pcs is None 
+    assert l.lda is None
+    assert x.colnames == data.columns.tolist()
+    assert x.rownames == data.index.tolist()
