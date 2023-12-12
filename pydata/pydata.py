@@ -1,5 +1,6 @@
 from pydata.ldata import ldata
 from pydata.pca import pca
+from pydata.lda import lda
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -7,6 +8,7 @@ from matplotlib.pyplot import gcf
 import seaborn as sns
 from sklearn.decomposition import PCA, SparsePCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from copy import deepcopy
 
 class pydata(ldata):
@@ -42,7 +44,14 @@ class pydata(ldata):
     >>> x.description
     >>> x.annotation
     """
-    def __init__(self, data, description, annotation, pcs: pca = None):
+    def __init__(
+            self, 
+            data, 
+            description, 
+            annotation, 
+            pcs: pca = None, 
+            lda: lda = None
+        ):
         """
         Parameters
         ----------
@@ -55,10 +64,17 @@ class pydata(ldata):
         annotation: pd.DataFrame
             A DataFrame of feature annotation with ID column matching 
             row names of data attribute.
+        pcs: pydata.pca
+            A pca class object containing principal components calculated from
+            data.
+        lda: pydata.lda
+            A lda class object containing results from linear discriminant analysis
+            (LDA) calculated from data.
         """
 
         super().__init__(data, description, annotation)
         self._pcs = pcs
+        self._lda = lda
 
     def __str__(self):
         return (
@@ -72,33 +88,12 @@ class pydata(ldata):
 
     @staticmethod
     def example_pydata():
-        np.random.seed(38)
-        data = np.random.randint(0, 20, size = 60).reshape(10, 6)
-        dat1 = np.random.randint(0, 20, size = 30).reshape(10, 3)
-        dat2 = np.random.randint(60, 70, size = 30).reshape(10, 3)
-        new_dat = []
-        for i in range(0, len(dat1)):
-            new_dat += [np.append(dat1[i], dat2[i])]
-        data = np.append(data, new_dat).reshape(20, 6)
-        data = pd.DataFrame(
-            data,
-            index = ["Feature" + str(i)for i in range(1, 21)], 
-            columns = ["Sample" + str(i)for i in range(1, 7)] 
-        )
-        grps = np.array(["Control", "Treatment"])
-        desc = pd.DataFrame(
-            {
-                "ID": ["Sample" + str(i) for i in range(1, 7)], 
-                "Treatment": np.repeat(grps, [3, 3], axis = 0)
-            }
-        )
-        grps = np.array(["Group1", "Group2"])
-        annot = pd.DataFrame(
-            {
-                "ID": ["Feature" + str(i) for i in range(1, 21)], 
-                "Group": np.repeat(grps, [10, 10], axis = 0)
-            }
-        )
+        iris = sns.load_dataset("iris")
+        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 151)], "Species": iris["species"]})
+        data = iris.drop(["species"], axis = 1).transpose()
+        data.columns = desc["ID"].tolist()
+        annot = pd.DataFrame({"ID": data.index.tolist()})
+        annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand = False)
         return pydata(data, desc, annot)
 
     def _get_pcs(self):
@@ -110,11 +105,100 @@ class pydata(ldata):
         self._pcs = value
     pcs = property(_get_pcs, _set_pcs)
 
+    def _get_lda(self):
+        return getattr(self, "_lda")
+    def _set_lda(self, value: lda):
+        if value is not None:
+            assert isinstance(value, lda)
+            value._validate()
+        self._lda = value
+    lda = property(_get_lda, _set_lda)
+
+    def perform_pca(
+            self, 
+            npcs: int = 2, 
+            scaling: str = "Zscore", 
+            method: str = "SVD", 
+            **kwargs
+        ):
+        """
+        Parameters
+        ----------
+        npcs: Number of principal component to compute. Default is 5.
+        scaling: Scaling method before PCA calculation. Default is "Zscore".
+        method: PCA method for PCA calculation: Default is "SVD" for singular
+            value decomposition.
+        **kwargs: Passed to PCA method.
+        """
+        
+        dat = self.data.transpose()
+
+        match scaling: 
+            case "none":
+                dat = dat
+            case "Zscore":
+                dat = StandardScaler().fit_transform(dat)
+            case _:
+                raise Exception(scaling + " scaling method not implemented")
+
+        match method:
+            case "SVD":
+                pcs = self._svd_pca(x = dat, npcs = npcs, **kwargs)
+            case _:
+                raise Exception(method + " pca method not implemented")
+       
+        pcs.scaling = scaling
+        pcs.method = method
+        self.pcs = pcs
+
+    def _svd_pca(self, x, npcs, **kwargs):
+        p = PCA(n_components = npcs, **kwargs)
+        p_c = p.fit_transform(x)
+        p_df = pd.DataFrame(
+            data = p_c, 
+            columns = ["PC" + str(i) for i in range(1, npcs + 1)]
+        )
+        p_df.index = self.description["ID"].tolist()
+        var_expl = pd.DataFrame(
+            [
+                p_df.columns.tolist(), 
+                (p.explained_variance_ratio_ * 100).tolist()
+            ]
+        ).transpose()
+        var_expl.columns = ["ID", "Percentage variance explained"]
+        out = pca(
+            data = p_df.transpose(), 
+            description = self.description, 
+            annotation = var_expl
+        )
+        return out
+
+    def perform_lda(self, target: str, n_comp: int = 2, **kwargs):
+        assert target in self.description.columns, \
+            target + " is not in pydata description"
+        target_df = self.description[target]
+        dat = self.data.transpose()
+        l = LinearDiscriminantAnalysis(n_components = n_comp)
+        fit = l.fit(dat, target_df).transform(dat)
+        fit = pd.DataFrame(
+            fit, 
+            columns = ["LD" + str(i) for i in range(1, n_comp + 1)]
+        )
+        fit.index = self.description["ID"].tolist()
+        self.lda = lda(
+            data = fit.transpose(), 
+            description = self.description, 
+            annotation = pd.DataFrame(fit.columns.tolist(), columns = ["ID"]), 
+            target = target
+        )
+    
     def plot(self, type: str, **kwargs):
         self._validate()
         match type:
             case "pca":
                 self._pca_plot(**kwargs)
+            case "lda":
+                self._lda_plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
             case "feature_heatmap": 
@@ -159,79 +243,41 @@ class pydata(ldata):
             **kwargs
         ):
         if not isinstance(self.pcs, pca):
-            self.compute_pca(**kwargs)
+            self.perform_pca(**kwargs)
         self.pcs._validate()
         df = deepcopy(self.pcs.data.transpose())
         df["ID"] = df.index 
         df = pd.merge(df, self.pcs.description, on = "ID")
         sns.relplot(data = df, x = xaxis, y = yaxis, hue = colour_by)
-
-    def compute_pca(
+    
+    def _lda_plot(
             self, 
-            npcs: int = 5, 
-            scaling: str = "Zscore", 
-            method: str = "SVD", 
+            xaxis: str = "LD1", 
+            yaxis: str = "LD2", 
+            colour_by = None, 
             **kwargs
         ):
-        """
-        Parameters
-        ----------
-        npcs: Number of principal component to compute. Default is 5.
-        scaling: Scaling method before PCA calculation. Default is "Zscore".
-        method: PCA method for PCA calculation: Default is "SVD" for singular
-            value decomposition.
-        **kwargs: Passed to PCA method.
-        """
-        
-        dat = self.data.transpose()
-
-        match scaling: 
-            case "none":
-                dat = dat
-            case "Zscore":
-                dat = StandardScaler().fit_transform(dat)
-            case _:
-                raise Exception(scaling + " scaling method not implemented")
-
-        match method:
-            case "SVD":
-                pcs = self._svd_pca(x = dat, npcs = npcs, **kwargs)
-            case _:
-                raise Exception(method + " pca method not implemented")
-       
-        pcs.scaling = scaling
-        pcs.method = method
-        self.pcs = pcs
-
-    def _svd_pca(self, x, npcs, **kwargs):
-        p = PCA(n_components = npcs, **kwargs)
-        p_c = p.fit_transform(x)
-        p_df = pd.DataFrame(
-            data = p_c, 
-            columns = ["PC" + str(i) for i in range(1, npcs+1)]
-        )
-        p_df.index = self.description["ID"].tolist()
-        var_expl = pd.DataFrame(
-            [
-                p_df.columns.tolist(), 
-                (p.explained_variance_ratio_ * 100).tolist()
-            ]
-        ).transpose()
-        var_expl.columns = ["ID", "Percentage variance explained"]
-        out = pca(
-            data = p_df.transpose(), 
-            description = self.description, 
-            annotation = var_expl
-        )
-        return out
-
-    def _violin_plot(self, colour_by: str = "Sample", **kwargs):
+        if not isinstance(self.lda, lda):
+            self.perform_lda(**kwargs)
+        self.lda._validate()
+        if colour_by is None:
+            colour_by = self.lda.target
+        df = deepcopy(self.lda.data.transpose())
+        df["ID"] = df.index 
+        df = pd.merge(df, self.lda.description, on = "ID")
+        sns.relplot(data = df, x = xaxis, y = yaxis, hue = colour_by)
+    
+    def _violin_plot(self, samples = None, **kwargs):
+        if samples is None:
+            samples = self.colnames
+        dat = self._plot_data()
+        dat = dat[dat["Sample"].isin(samples)]
         sns.violinplot(
-            data = self._plot_data(), 
+            data = dat, 
             x = "Sample", 
-            y = "value", 
-            hue = colour_by
+            y = "value"
         )
+        plt.xticks(rotation = 90)
 
     def _correlation_heatmap(
             self, 
@@ -364,8 +410,6 @@ class pydata(ldata):
 
         return plot
 
-    def _density_plot(self, samples = None, **kwargs):
-        if samples is None:
-            samples = self.colnames
-        sns.kdeplot(data = self.data[samples], **kwargs)
+    def _density_plot(self, **kwargs):
+        sns.kdeplot(data = self.data, **kwargs)
         plt.xlabel("Feature value")

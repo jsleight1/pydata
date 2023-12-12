@@ -4,8 +4,7 @@ import re
 
 class pca(ldata): 
     """
-    Class to store principal component analysis (PCA) from 
-    numeric data set.
+    Class to store results from principal component analysis (PCA)
     """
 
     def __init__(
@@ -28,6 +27,10 @@ class pca(ldata):
         annotation : pd.DataFrame
             A DataFrame of PC annotation with ID column matching 
             row names of data attribute e.g. PC1, PC2, etc
+        scaling: str 
+            String describing the scaling procedure used before PCA e.g. Zscore
+        method: str 
+            String describing the method used to perform PCA e.g. SVD
         """
 
         super().__init__(data, description, annotation)

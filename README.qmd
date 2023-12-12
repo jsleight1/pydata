@@ -27,11 +27,12 @@ print(x.annotation.head(2))
 
 ```
 
-## Linear dimensionality reduction using principal component analysis (PCA).
+## Linear dimensionality reduction
 
+### PCA
 ```{python}
 
-x.compute_pca()
+x.perform_pca()
 
 print(x.pcs)
 
@@ -40,29 +41,45 @@ print(x.pcs.description.head(2))
 print(x.pcs.annotation)
 ```
 
+### LDA
+```{python}
+
+x.perform_lda(target = "Species", n_comp = 2)
+
+print(x.lda)
+
+print(x.lda.data)
+```
+
 
 ## Plotting
 
 ```{python}
-x.plot(type = "pca", colour_by = "Treatment")
+x.plot(type = "pca", colour_by = "Species")
 plt.show()
 
-x.plot(type = "violin", colour_by = "Treatment")
+x.plot(type = "lda")
+plt.show()
+
+x.plot(type = "violin", samples = x.colnames[0:10], hue = "Species")
 plt.show()
 
 x.plot(
     type = "feature_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"], 
-    annotate_features_by = ["Group"]
+    annotate_samples_by = ["Species"], 
+    annotate_features_by = ["type"], 
+    xticklabels = False
 )
 plt.show()
 
 x.plot(
     type = "correlation_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"]
+    annotate_samples_by = ["Species"], 
+    xticklabels = False,
+    yticklabels = False
 )
 plt.show()
 
-x.plot(type = "density")
+x.plot(type = "density", legend = False)
 plt.show()
 ```

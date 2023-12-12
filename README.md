@@ -22,21 +22,37 @@ print(x.annotation.head(2))
 ```
 
     pydata object:
-     - Dimensions: 6 (samples) x 20 (features)
-              Sample1  Sample2  Sample3  Sample4  Sample5  Sample6
-    Feature1        1       11       19        4        2        1
-    Feature2       16       10        1       13        3        1
-            ID Treatment
-    0  Sample1   Control
-    1  Sample2   Control
-             ID   Group
-    0  Feature1  Group1
-    1  Feature2  Group1
+     - Dimensions: 150 (samples) x 4 (features)
+                  Sample1  Sample2  Sample3  Sample4  Sample5  Sample6  Sample7  \
+    sepal_length      5.1      4.9      4.7      4.6      5.0      5.4      4.6   
+    sepal_width       3.5      3.0      3.2      3.1      3.6      3.9      3.4   
 
-## Linear dimensionality reduction using principal component analysis (PCA).
+                  Sample8  Sample9  Sample10  ...  Sample141  Sample142  \
+    sepal_length      5.0      4.4       4.9  ...        6.7        6.9   
+    sepal_width       3.4      2.9       3.1  ...        3.1        3.1   
+
+                  Sample143  Sample144  Sample145  Sample146  Sample147  \
+    sepal_length        5.8        6.8        6.7        6.7        6.3   
+    sepal_width         2.7        3.2        3.3        3.0        2.5   
+
+                  Sample148  Sample149  Sample150  
+    sepal_length        6.5        6.2        5.9  
+    sepal_width         3.0        3.4        3.0  
+
+    [2 rows x 150 columns]
+            ID Species
+    0  Sample1  setosa
+    1  Sample2  setosa
+                 ID    type
+    0  sepal_length  length
+    1   sepal_width   width
+
+## Linear dimensionality reduction
+
+### PCA
 
 ``` python
-x.compute_pca()
+x.perform_pca()
 
 print(x.pcs)
 
@@ -46,57 +62,109 @@ print(x.pcs.annotation)
 ```
 
     pca object:
-     - Dimensions: 6 (samples) x 5 (principal components)
+     - Dimensions: 150 (samples) x 2 (principal components)
      - Scaling: Zscore
      - Method: SVD
-          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6
-    PC1 -3.140591 -3.520674 -3.185890  2.816192  3.928544  3.102418
-    PC2  1.850772 -0.743074 -1.536801  2.752167 -2.715325  0.392261
-    PC3 -0.828635  0.184406  0.456646 -1.375358 -1.784198  3.347140
-    PC4 -1.955908  2.090800 -0.386352  1.168430 -0.554704 -0.362266
-    PC5 -0.784204 -1.037324  1.772208  0.814677 -0.470526 -0.294831
-            ID Treatment
-    0  Sample1   Control
-    1  Sample2   Control
+          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
+    PC1 -2.264703 -2.080961 -2.364229 -2.299384 -2.389842 -2.075631 -2.444029   
+    PC2  0.480027 -0.674134 -0.341908 -0.597395  0.646835  1.489178  0.047644   
+
+          Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
+    PC1 -2.232847 -2.334640 -2.184328  ...   2.014810   1.901784   1.157882   
+    PC2  0.223148 -1.115328 -0.469014  ...   0.613886   0.689575  -0.698870   
+
+         Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
+    PC1   2.040558   1.998147   1.870503   1.564580   1.521170   1.372788   
+    PC2   0.867521   1.049169   0.386966  -0.896687   0.269069   1.011254   
+
+         Sample150  
+    PC1   0.960656  
+    PC2  -0.024332  
+
+    [2 rows x 150 columns]
+            ID Species
+    0  Sample1  setosa
+    1  Sample2  setosa
         ID Percentage variance explained
-    0  PC1                     54.498126
-    1  PC2                     17.867131
-    2  PC3                     14.339572
-    3  PC4                      8.458709
-    4  PC5                      4.836462
+    0  PC1                     72.962445
+    1  PC2                     22.850762
+
+### LDA
+
+``` python
+x.perform_lda(target = "Species", n_comp = 2)
+
+print(x.lda)
+
+print(x.lda.data)
+```
+
+    lda object:
+     - Dimensions: 150 (samples) x 2 (LDA components)
+     - Target: Species
+          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
+    LD1  8.061800  7.128688  7.489828  6.813201  8.132309  7.701947  7.212618   
+    LD2 -0.300421  0.786660  0.265384  0.670631 -0.514463 -1.461721 -0.355836   
+
+          Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
+    LD1  7.605294  6.560552  7.343060  ...  -6.653087  -5.105559  -5.507480   
+    LD2  0.011634  1.015164  0.947319  ...  -1.805320  -1.992182   0.035814   
+
+         Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
+    LD1  -6.796019  -6.847359  -5.645003  -5.179565  -4.967741  -5.886145   
+    LD2  -1.460687  -2.428951  -1.677717   0.363475  -0.821141  -2.345091   
+
+         Sample150  
+    LD1  -4.683154  
+    LD2  -0.332034  
+
+    [2 rows x 150 columns]
 
 ## Plotting
 
 ``` python
-x.plot(type = "pca", colour_by = "Treatment")
+x.plot(type = "pca", colour_by = "Species")
 plt.show()
 
-x.plot(type = "violin", colour_by = "Treatment")
+x.plot(type = "lda")
+plt.show()
+
+x.plot(type = "violin", samples = x.colnames[0:10], hue = "Species")
 plt.show()
 
 x.plot(
     type = "feature_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"], 
-    annotate_features_by = ["Group"]
+    annotate_samples_by = ["Species"], 
+    annotate_features_by = ["type"], 
+    xticklabels = False
 )
 plt.show()
 
 x.plot(
     type = "correlation_heatmap", 
-    annotate_samples_by = ["ID", "Treatment"]
+    annotate_samples_by = ["Species"], 
+    xticklabels = False,
+    yticklabels = False
 )
 plt.show()
 
-x.plot(type = "density")
+x.plot(type = "density", legend = False)
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-4-output-1.png)
+![](README_files/figure-commonmark/cell-5-output-1.png)
 
-![](README_files/figure-commonmark/cell-4-output-2.png)
+![](README_files/figure-commonmark/cell-5-output-2.png)
 
-![](README_files/figure-commonmark/cell-4-output-3.png)
+![](README_files/figure-commonmark/cell-5-output-3.png)
 
-![](README_files/figure-commonmark/cell-4-output-4.png)
+![](README_files/figure-commonmark/cell-5-output-4.png)
 
-![](README_files/figure-commonmark/cell-4-output-5.png)
+    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+      warnings.warn(msg)
+    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+      warnings.warn(msg)
+
+![](README_files/figure-commonmark/cell-5-output-6.png)
+
+![](README_files/figure-commonmark/cell-5-output-7.png)

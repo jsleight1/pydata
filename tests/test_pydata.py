@@ -1,6 +1,7 @@
 import pytest
 from pydata.pydata import pydata
 from pydata.pca import pca
+from pydata.lda import lda
 import numpy as np 
 import pandas as pd
 
@@ -41,19 +42,32 @@ def test_pydata_generation(snapshot):
     
     snapshot.assert_match(str(x), "pydata.txt")
 
-def test_compute_pca(snapshot):
+def test_perform_pca(snapshot):
     x = pydata(data, desc, annot)
 
     with pytest.raises(Exception) as err:
-        x.compute_pca(method = "custom")
+        x.perform_pca(method = "custom")
     assert "custom pca method not implemented" in str(err.value)
 
     with pytest.raises(Exception) as err:
-        x.compute_pca(scaling = "custom")
+        x.perform_pca(scaling = "custom")
     assert "custom scaling method not implemented" in str(err.value)
 
-    x.compute_pca()
+    x.perform_pca()
 
     assert isinstance(x.pcs, pca)
     snapshot.assert_match(str(x.pcs), "pydata_pca_print.txt")
     snapshot.assert_match(x.pcs.data.to_csv(), "pydata_pca_data.txt")
+
+def test_perform_lda(snapshot):
+    x = pydata(data, desc, annot)
+
+    with pytest.raises(Exception) as err:
+        x.perform_lda(target = "group", n_comp = 1)
+    assert "group is not in pydata description" in str(err.value)
+
+    x.perform_lda(target = "Treatment", n_comp = 1)
+
+    assert isinstance(x.lda, lda)
+    snapshot.assert_match(str(x.lda), "pydata_lda_print.txt")
+    snapshot.assert_match(x.lda.data.to_csv(), "pydata_lda_data.txt")

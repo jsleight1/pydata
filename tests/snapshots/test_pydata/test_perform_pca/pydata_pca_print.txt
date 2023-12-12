@@ -1,0 +1,4 @@
+pca object:
+ - Dimensions: 6 (samples) x 5 (principal components)
+ - Scaling: Zscore
+ - Method: SVD
