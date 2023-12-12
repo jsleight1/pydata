@@ -3,13 +3,14 @@ from copy import deepcopy
 import seaborn as sns
 import re
 
+
 class ldata:
     """
     Simple dataset computation and visualisation.
 
-    ldata objects use a L-shaped data structure where the underlying 
-    data set is a DataFrame of numeric values with an associated 
-    description and annotation DataFrames containing relevant sample 
+    ldata objects use a L-shaped data structure where the underlying
+    data set is a DataFrame of numeric values with an associated
+    description and annotation DataFrames containing relevant sample
     and feature metadata respectively.
 
     Examples
@@ -19,8 +20,8 @@ class ldata:
     >>> np.random.seed(38)
     >>> data = pd.DataFrame(
     >>>     np.random.randint(0, 10, size = 100).reshape(20, 5),
-    >>>     index = ["Feature" + str(i)for i in range(1, 21)], 
-    >>>     columns = ["Sample" + str(i)for i in range(1, 6)] 
+    >>>     index = ["Feature" + str(i)for i in range(1, 21)],
+    >>>     columns = ["Sample" + str(i)for i in range(1, 6)]
     >>> )
     >>>
     >>> # Generate sample metadata
@@ -36,6 +37,7 @@ class ldata:
     >>> x.description
     >>> x.annotation
     """
+
     def __init__(self, data, description, annotation):
         """
         Parameters
@@ -44,10 +46,10 @@ class ldata:
             A DataFrame of data with columns representing samples and rows
             representing features.
         description: pandas.DataFrame
-            A DataFrame of sample descriptions with ID column matching 
+            A DataFrame of sample descriptions with ID column matching
             columns names of data attribute.
         annotation : pandas.DataFrame
-            A DataFrame of feature annotation with ID column matching 
+            A DataFrame of feature annotation with ID column matching
             row names of data attribute.
         """
 
@@ -58,18 +60,15 @@ class ldata:
 
     def __str__(self):
         t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
-        return (
-            f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
-        )
+        return f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
 
     def __repr__(self):
         t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
-        return (
-            f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
-        )
+        return f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
 
     def _get_data(self):
         return self._data
+
     def _set_data(self, value: pd.DataFrame):
         """
         Set data attribute for ldata object.
@@ -79,40 +78,46 @@ class ldata:
             representing features.
         """
         assert isinstance(value, pd.DataFrame), "data is not DataFrame"
-        self._check_dimnames(data = value)
+        self._check_dimnames(data=value)
         self._data = value
+
     data = property(_get_data, _set_data)
 
     def _get_description(self):
         return self._description
+
     def _set_description(self, value: pd.DataFrame):
         """
         Set description attribute for ldata object.
         ------------------------------------
         value: pandas.core.frame.DataFrame
-            A DataFrame of sample descriptions with ID column matching 
+            A DataFrame of sample descriptions with ID column matching
             columns names of data attribute.
         """
-        self._check_dimnames(description = value)
+        self._check_dimnames(description=value)
         self._description = value
+
     description = property(_get_description, _set_description)
 
     def _get_annotation(self):
         return self._annotation
+
     def _set_annotation(self, value: pd.DataFrame):
         """
         Set description attribute for ldata object.
         ------------------------------------
         value: pandas.core.frame.DataFrame
-            A DataFrame of feature annotation with ID column matching 
+            A DataFrame of feature annotation with ID column matching
             row names of data attribute.
         """
-        self._check_dimnames(annotation = value)
+        self._check_dimnames(annotation=value)
         self._annotation = value
+
     annotation = property(_get_annotation, _set_annotation)
 
     def _get_rownames(self):
         return self.data.index.values.tolist()
+
     def _set_rownames(self, value: list):
         """
         Set feature names for ldata object.
@@ -125,10 +130,12 @@ class ldata:
         assert len(value) == len(set(value)), "value must contain unique IDs"
         self.annotation["ID"] = value
         self.data.index = value
+
     rownames = property(_get_rownames, _set_rownames)
 
     def _get_colnames(self):
         return self.data.columns.tolist()
+
     def _set_colnames(self, value: list):
         """
         Set sample names for ldata object.
@@ -141,63 +148,71 @@ class ldata:
         assert len(value) == len(set(value)), "value must contain unique IDs"
         self.description["ID"] = value
         self.data.columns = value
+
     colnames = property(_get_colnames, _set_colnames)
 
     def _get_dimnames(self):
         return [self.rownames, self.colnames]
+
     def _set_dimnames(self, value: list):
         assert isinstance(value, list), "value must be list"
         assert len(value) == 2, "value must be list with rownames and colnames"
         self.rownames = value[0]
         self.colnames = value[1]
+
     dimnames = property(_get_dimnames, _set_dimnames)
 
     def _validate(self):
         assert isinstance(self.data, pd.DataFrame), "data is not DataFrame"
-        assert isinstance(self.description, pd.DataFrame), \
-            "description is not DataFrame"
-        assert isinstance(self.annotation, pd.DataFrame), \
-            "annotation is not DataFrame"
+        assert isinstance(
+            self.description, pd.DataFrame
+        ), "description is not DataFrame"
+        assert isinstance(self.annotation, pd.DataFrame), "annotation is not DataFrame"
         self._check_dimnames()
 
     def _check_dimnames(
-            self, 
-            data: pd.DataFrame = None, 
-            description: pd.DataFrame = None, 
-            annotation: pd.DataFrame = None
-        ):
+        self,
+        data: pd.DataFrame = None,
+        description: pd.DataFrame = None,
+        annotation: pd.DataFrame = None,
+    ):
         if data is None:
-            data = self.data 
+            data = self.data
         if description is None:
             description = self.description
         if annotation is None:
             annotation = self.annotation
         rownames = data.index.values.tolist()
         colnames = data.columns.tolist()
-        assert len(rownames) == len(set(rownames)), \
-            "rownames must contain unique IDs"
-        assert len(colnames) == len(set(colnames)), \
-            "colnames must contain unique IDs"
-        assert rownames == annotation["ID"].tolist(), \
-            "data rownames do not match annotation ID"
-        assert colnames == description["ID"].tolist(), \
-            "data colnames do not match description ID"
-    
+        assert len(rownames) == len(set(rownames)), "rownames must contain unique IDs"
+        assert len(colnames) == len(set(colnames)), "colnames must contain unique IDs"
+        assert (
+            rownames == annotation["ID"].tolist()
+        ), "data rownames do not match annotation ID"
+        assert (
+            colnames == description["ID"].tolist()
+        ), "data colnames do not match description ID"
+
     @staticmethod
     def example_ldata():
         iris = sns.load_dataset("iris")
-        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 151)], "Species": iris["species"]})
-        data = iris.drop(["species"], axis = 1).transpose()
+        desc = pd.DataFrame(
+            {
+                "ID": ["Sample" + str(i) for i in range(1, 151)],
+                "Species": iris["species"],
+            }
+        )
+        data = iris.drop(["species"], axis=1).transpose()
         data.columns = desc["ID"].tolist()
         annot = pd.DataFrame({"ID": data.index.tolist()})
-        annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand = False)
+        annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand=False)
         return ldata(data, desc, annot)
 
-    def subset(self, samples = None, features = None):
+    def subset(self, samples=None, features=None):
         if samples is None:
             samples = self.colnames
         if features is None:
-            features = self.rownames 
+            features = self.rownames
 
         assert set(samples).issubset(self.colnames), "samples are not in data"
         assert set(features).issubset(self.rownames), "features are not in data"
@@ -206,9 +221,9 @@ class ldata:
         new_dat = deepcopy(self.data)
         new_dat = new_dat[samples][new_dat.index.isin(features)]
         new_desc = deepcopy(self.description)
-        new_desc = new_desc[new_desc["ID"].isin(samples)].reset_index(drop = True)
+        new_desc = new_desc[new_desc["ID"].isin(samples)].reset_index(drop=True)
         new_annot = deepcopy(self.annotation)
-        new_annot = new_annot[new_annot["ID"].isin(features)].reset_index(drop = True)
+        new_annot = new_annot[new_annot["ID"].isin(features)].reset_index(drop=True)
 
         self._data = new_dat
         self._description = new_desc
@@ -223,6 +238,6 @@ class ldata:
         new_annot = deepcopy(self.annotation)
         self._data = new_dat.transpose()
         self._description = new_annot
-        self._annotation = new_desc 
-        self._validate() 
+        self._annotation = new_desc
+        self._validate()
         return self

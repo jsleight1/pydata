@@ -1,38 +1,39 @@
 import pytest
 from pydata.ldata import ldata
 from copy import deepcopy
-import numpy as np 
+import numpy as np
 import pandas as pd
 
 np.random.seed(38)
 data = pd.DataFrame(
-    np.random.randint(0, 10, size = 100).reshape(20, 5),
-    index = ["Feature" + str(i)for i in range(1, 21)], 
-    columns = ["Sample" + str(i)for i in range(1, 6)] 
+    np.random.randint(0, 10, size=100).reshape(20, 5),
+    index=["Feature" + str(i) for i in range(1, 21)],
+    columns=["Sample" + str(i) for i in range(1, 6)],
 )
 desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
 annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, 21)]})
+
 
 def test_ldata_generation(snapshot):
     with pytest.raises(AssertionError) as err:
         ldata(data.head(2), desc, annot)
     assert "data rownames do not match annotation ID" in str(err.value)
-    
+
     with pytest.raises(AssertionError) as err:
         ldata(data, desc.head(2), annot)
     assert "data colnames do not match description ID" in str(err.value)
-    
+
     with pytest.raises(AssertionError) as err:
         ldata(data, desc, annot.head(2))
     assert "data rownames do not match annotation ID" in str(err.value)
-    
+
     x = ldata(data, desc, annot)
 
     assert isinstance(x, ldata)
     assert x.data.equals(data)
     assert x.description.equals(desc)
     assert x.annotation.equals(annot)
-    
+
     snapshot.assert_match(str(x), "ldata.txt")
 
 
@@ -60,11 +61,13 @@ def test_description(snapshot):
     assert x.description.equals(new_desc)
     snapshot.assert_match(x.description.to_csv(), "description.txt")
 
+
 def test_annotation(snapshot):
     x = ldata(data, desc, annot)
     new_annot = deepcopy(annot)
-    new_annot["Group"] = ["Group" + str(i)for i in range(1, 11)] + \
-        ["Group" + str(i)for i in range(1, 11)]
+    new_annot["Group"] = ["Group" + str(i) for i in range(1, 11)] + [
+        "Group" + str(i) for i in range(1, 11)
+    ]
     with pytest.raises(AssertionError) as err:
         x.annotation = new_annot.head(2)
     assert "data rownames do not match annotation ID" in str(err.value)
@@ -72,6 +75,7 @@ def test_annotation(snapshot):
     x.annotation = new_annot
     assert x.annotation.equals(new_annot)
     snapshot.assert_match(x.annotation.to_csv(), "annotation.txt")
+
 
 def test_dimnames():
     x = ldata(data, desc, annot)
@@ -81,7 +85,7 @@ def test_dimnames():
     with pytest.raises(AssertionError) as err:
         x.colnames = "A"
     assert "value must be list" in str(err.value)
-    
+
     with pytest.raises(AssertionError) as err:
         x.colnames = ["A", "B"]
     assert "value does not match data dims" in str(err.value)
@@ -106,38 +110,41 @@ def test_dimnames():
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]
     assert x.description["ID"].tolist() == ["A", "B", "C", "D", "E"][::-1]
 
+
 def test_example_ldata(snapshot):
     x = ldata.example_ldata()
     assert isinstance(x, ldata)
     snapshot.assert_match(str(x), "example_ldata.txt")
 
+
 def test_subset(snapshot):
     x = ldata(data, desc, annot)
 
     with pytest.raises(AssertionError) as err:
-        x.subset(samples = ["sample"])
+        x.subset(samples=["sample"])
     assert "samples are not in data" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
-        x.subset(features = ["feature"])
+        x.subset(features=["feature"])
     assert "features are not in data" in str(err.value)
 
     samples = ["Sample1", "Sample3"]
     features = ["Feature1", "Feature3", "Feature18"]
-    s = x.subset(samples = samples, features = features)
+    s = x.subset(samples=samples, features=features)
 
     assert isinstance(s, ldata)
-    assert s.colnames == samples 
-    assert s.rownames == features 
+    assert s.colnames == samples
+    assert s.rownames == features
     assert s.description["ID"].tolist() == samples
     assert s.description.index.tolist() == [0, 1]
     assert s.annotation["ID"].tolist() == features
     assert s.annotation.index.tolist() == [0, 1, 2]
-    assert s.data.columns.tolist() == samples 
+    assert s.data.columns.tolist() == samples
     assert s.data.index.tolist() == features
     assert x.colnames == data.columns.tolist()
     assert x.rownames == data.index.tolist()
     snapshot.assert_match(str(s), "subset_ldata.txt")
+
 
 def test_transpose(snapshot):
     x = ldata(data, desc, annot)
