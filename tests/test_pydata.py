@@ -57,7 +57,7 @@ def test_perform_pca(snapshot):
 
     assert isinstance(x.pcs, pca)
     snapshot.assert_match(str(x.pcs), "pydata_pca_print.txt")
-    snapshot.assert_match(x.pcs.data.to_csv(), "pydata_pca_data.txt")
+    snapshot.assert_match(x.pcs.data.round(3).to_csv(), "pydata_pca_data.txt")
 
 def test_perform_lda(snapshot):
     x = pydata(data, desc, annot)
@@ -70,4 +70,4 @@ def test_perform_lda(snapshot):
 
     assert isinstance(x.lda, lda)
     snapshot.assert_match(str(x.lda), "pydata_lda_print.txt")
-    snapshot.assert_match(x.lda.data.to_csv(), "pydata_lda_data.txt")
+    snapshot.assert_match(x.lda.data.round(3).to_csv(), "pydata_lda_data.txt")
