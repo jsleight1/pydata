@@ -55,13 +55,13 @@ class pydata(ldata):
         """
         Parameters
         ----------
-        data: pd.DataFrame
+        data: pandas.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
-        description: pd.DataFrame
+        description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching 
             columns names of data attribute.
-        annotation: pd.DataFrame
+        annotation: pandas.DataFrame
             A DataFrame of feature annotation with ID column matching 
             row names of data attribute.
         pcs: pydata.pca
@@ -75,16 +75,6 @@ class pydata(ldata):
         super().__init__(data, description, annotation)
         self._pcs = pcs
         self._lda = lda
-
-    def __str__(self):
-        return (
-            f"pydata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
-        )
-
-    def __repr__(self):
-        return (
-            f"pydata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
-        )
 
     @staticmethod
     def example_pydata():
@@ -131,7 +121,7 @@ class pydata(ldata):
         """
         Parameters
         ----------
-        npcs: Number of principal component to compute. Default is 5.
+        npcs: Number of principal component to compute. Default is 2.
         scaling: Scaling method before PCA calculation. Default is "Zscore".
         method: PCA method for PCA calculation: Default is "SVD" for singular
             value decomposition.
@@ -181,11 +171,18 @@ class pydata(ldata):
         return out
 
     def perform_lda(self, target: str, n_comp: int = 2, **kwargs):
+        """
+        Parameters
+        ----------
+        target: String indicating the classifier variable to use for LDA.
+        n_comp: Number of LDA components to compute. Default is 2.
+        **kwargs: Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
+        """
         assert target in self.description.columns, \
             target + " is not in pydata description"
         target_df = self.description[target]
         dat = self.data.transpose()
-        l = LinearDiscriminantAnalysis(n_components = n_comp)
+        l = LinearDiscriminantAnalysis(n_components = n_comp, **kwargs)
         fit = l.fit(dat, target_df).transform(dat)
         fit = pd.DataFrame(
             fit, 

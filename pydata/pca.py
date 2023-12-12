@@ -1,8 +1,8 @@
-from pydata.ldata import ldata
+from pydata.drdata import drdata
 import pandas as pd
 import re
 
-class pca(ldata): 
+class pca(drdata): 
     """
     Class to store results from principal component analysis (PCA)
     """
@@ -18,13 +18,13 @@ class pca(ldata):
         """
         Parameters
         ----------
-        data : pd.DataFrame
+        data : pandas.DataFrame
             A DataFrame of principal component data for ncol samples and nrow 
             principal components.
-        description: pd.DataFrame
+        description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching 
             columns names of data attribute.
-        annotation : pd.DataFrame
+        annotation : pandas.DataFrame
             A DataFrame of PC annotation with ID column matching 
             row names of data attribute e.g. PC1, PC2, etc
         scaling: str 
@@ -38,16 +38,15 @@ class pca(ldata):
         self._method = method
         self._validate()
 
-
     def __str__(self):
-        return (
-            f"pca object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (principal components)\n - Scaling: {self.scaling}\n - Method: {self.method}"
-        )
+        out = super().__str__()
+        out = re.sub("features", "principal components", out)
+        return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
 
     def __repr__(self):
-        return (
-            f"pca object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (principal components)\n - Scaling: {self.scaling}\n - Method: {self.method}"
-        )
+        out = super().__repr__()
+        out = re.sub("features", "principal components", out)
+        return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
 
     def _get_method(self):
         return getattr(self, "_method")
@@ -98,11 +97,3 @@ class pca(ldata):
         assert "Percentage variance explained" in self.annotation.columns, \
             "annotation must contain 'Percentage variance explained' column"
         super()._validate()
-
-    def subset(self):
-        raise Exception("Cannot subset pca object")
-    
-    def transpose(self):
-        raise Exception("Cannot transpose pca object")
-
-    

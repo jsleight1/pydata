@@ -1,8 +1,7 @@
-from pydata.ldata import ldata
-import pandas as pd
+from pydata.drdata import drdata
 import re
 
-class lda(ldata): 
+class lda(drdata): 
     """
     Class to store results from linear discriminant analysis (LDA)
     """
@@ -17,13 +16,13 @@ class lda(ldata):
         """
         Parameters
         ----------
-        data : pd.DataFrame
+        data : pandas.DataFrame
             A DataFrame of LDA component data for ncol samples and nrow 
             LDA components.
-        description: pd.DataFrame
+        description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching 
             columns names of data attribute.
-        annotation : pd.DataFrame
+        annotation : pandas.DataFrame
             A DataFrame of LDA components annotation
         target: str 
             String describing target variable for LDA calculations
@@ -33,14 +32,14 @@ class lda(ldata):
         self._target = target
 
     def __str__(self):
-        return (
-            f"lda object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (LDA components)\n - Target: {self.target}"
-        )
+        out = super().__str__()
+        out = re.sub("features", "LDA components", out)
+        return out + f"\n - Target: {self.target}"
 
     def __repr__(self):
-        return (
-            f"lda object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (LDA components)\n - Target: {self.target}"
-        )
+        out = super().__repr__()
+        out = re.sub("features", "LDA components", out)
+        return out + f"\n - Target: {self.target}"
     
     def _get_target(self):
         return getattr(self, "_target")
@@ -66,9 +65,3 @@ class lda(ldata):
         assert all([bool(re.search("^LD\\d+", i)) for i in self.data.index]), \
             "rownames must be in format LD1, LD2, etc"
         super()._validate()
-
-    def subset(self):
-        raise Exception("Cannot subset lda object")
-    
-    def transpose(self):
-        raise Exception("Cannot transpose lda object")

@@ -1,6 +1,7 @@
 import pandas as pd
 from copy import deepcopy
 import seaborn as sns
+import re
 
 class ldata:
     """
@@ -8,7 +9,7 @@ class ldata:
 
     ldata objects use a L-shaped data structure where the underlying 
     data set is a DataFrame of numeric values with an associated 
-    description and annotation DataFrame containing relevant sample 
+    description and annotation DataFrames containing relevant sample 
     and feature metadata respectively.
 
     Examples
@@ -39,13 +40,13 @@ class ldata:
         """
         Parameters
         ----------
-        data : pd.DataFrame
+        data : pandas.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
-        description: pd.DataFrame
+        description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching 
             columns names of data attribute.
-        annotation : pd.DataFrame
+        annotation : pandas.DataFrame
             A DataFrame of feature annotation with ID column matching 
             row names of data attribute.
         """
@@ -56,13 +57,15 @@ class ldata:
         self._validate()
 
     def __str__(self):
+        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
         return (
-            f"ldata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
+            f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
         )
 
     def __repr__(self):
+        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
         return (
-            f"ldata object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
+            f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
         )
 
     def _get_data(self):
