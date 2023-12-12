@@ -18,16 +18,19 @@ from pydata.pydata import pydata
 x = pydata.example_pydata()
 
 print(x)
+# Data
 print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
 
-x.subset(
+s = x.subset(
     samples = ["Sample1", "Sample30", "Sample52"], 
     features = ["sepal_length", "petal_length"]
 )
+print(s)
 
-x.transpose()
+t = x.transpose()
+print(t)
 ```
 
     pydata object:
@@ -55,7 +58,8 @@ x.transpose()
                  ID    type
     0  sepal_length  length
     1   sepal_width   width
-
+    pydata object:
+     - Dimensions: 3 (samples) x 2 (features)
     pydata object:
      - Dimensions: 4 (samples) x 150 (features)
 

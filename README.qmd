@@ -27,12 +27,14 @@ print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
 
-x.subset(
+s = x.subset(
     samples = ["Sample1", "Sample30", "Sample52"], 
     features = ["sepal_length", "petal_length"]
 )
+print(s)
 
-x.transpose()
+t = x.transpose()
+print(t)
 
 ```
 
