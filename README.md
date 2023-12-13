@@ -15,20 +15,20 @@ which can be used for development and running the following examples.
 import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
-x = pydata.example_pydata()
+x=pydata.example_pydata()
 
 print(x)
 print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
 
-s = x.subset(
-    samples = ["Sample1", "Sample30", "Sample52"], 
-    features = ["sepal_length", "petal_length"]
+s=x.subset(
+    samples=["Sample1", "Sample30", "Sample52"], 
+    features=["sepal_length", "petal_length"]
 )
 print(s)
 
-t = x.transpose()
+t=x.transpose()
 print(t)
 ```
 
@@ -107,7 +107,7 @@ print(x.pcs.annotation)
 ### LDA
 
 ``` python
-x.perform_lda(target = "Species", n_comp = 2)
+x.perform_lda(target="Species", n_comp=2)
 
 print(x.lda)
 
@@ -138,53 +138,71 @@ print(x.lda.data)
 ## Plotting
 
 ``` python
-x.plot(type = "pca", colour_by = "Species")
-plt.show()
-
-x.plot(type = "lda")
-plt.show()
-
-x.subset(samples = ["Sample1", "Sample2"]).plot(type = "violin")
-plt.show()
-
-x.plot(
-    type = "feature_heatmap", 
-    annotate_samples_by = ["Species"], 
-    annotate_features_by = ["type"], 
-    xticklabels = False
-)
-plt.show()
-
-x.plot(
-    type = "correlation_heatmap", 
-    annotate_samples_by = ["Species"], 
-    xticklabels = False,
-    yticklabels = False
-)
-plt.show()
-
-x.plot(type = "density", legend = False)
-plt.show()
-
-x.transpose().plot(type = "scatter")
+x.plot(type="pca", colour_by="Species")
 plt.show()
 ```
 
 ![](README_files/figure-commonmark/cell-5-output-1.png)
 
-![](README_files/figure-commonmark/cell-5-output-2.png)
+``` python
+x.plot(type="lda")
+plt.show()
+```
 
-![](README_files/figure-commonmark/cell-5-output-3.png)
+![](README_files/figure-commonmark/cell-6-output-1.png)
 
-![](README_files/figure-commonmark/cell-5-output-4.png)
+``` python
+x.transpose().plot(type="violin", fill=False)
+plt.show()
+```
+
+![](README_files/figure-commonmark/cell-7-output-1.png)
+
+``` python
+x.plot(
+    type="feature_heatmap", 
+    annotate_samples_by=["Species"], 
+    annotate_features_by=["type"], 
+    xticklabels=False
+)
+plt.show()
+```
+
+![](README_files/figure-commonmark/cell-8-output-1.png)
+
+``` python
+x.plot(
+    type="correlation_heatmap", 
+    annotate_samples_by=["Species"], 
+    xticklabels=False,
+    yticklabels=False
+)
+plt.show()
+```
 
     /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
       warnings.warn(msg)
     /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
       warnings.warn(msg)
 
-![](README_files/figure-commonmark/cell-5-output-6.png)
+![](README_files/figure-commonmark/cell-9-output-2.png)
 
-![](README_files/figure-commonmark/cell-5-output-7.png)
+``` python
+x.plot(type="distribution", kind="kde", legend=False)
+x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
+x.transpose().plot(type="distribution", kind="ecdf")
+plt.show()
+```
 
-![](README_files/figure-commonmark/cell-5-output-8.png)
+![](README_files/figure-commonmark/cell-10-output-1.png)
+
+![](README_files/figure-commonmark/cell-10-output-2.png)
+
+![](README_files/figure-commonmark/cell-10-output-3.png)
+
+``` python
+x.transpose().plot(type="scatter")
+plt.show()
+```
+
+![](README_files/figure-commonmark/cell-11-output-1.png)

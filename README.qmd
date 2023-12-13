@@ -20,20 +20,20 @@ development and running the following examples.
 import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
-x = pydata.example_pydata()
+x=pydata.example_pydata()
 
 print(x)
 print(x.data.head(2))
 print(x.description.head(2))
 print(x.annotation.head(2))
 
-s = x.subset(
-    samples = ["Sample1", "Sample30", "Sample52"], 
-    features = ["sepal_length", "petal_length"]
+s=x.subset(
+    samples=["Sample1", "Sample30", "Sample52"], 
+    features=["sepal_length", "petal_length"]
 )
 print(s)
 
-t = x.transpose()
+t=x.transpose()
 print(t)
 
 ```
@@ -55,7 +55,7 @@ print(x.pcs.annotation)
 ### LDA
 ```{python}
 
-x.perform_lda(target = "Species", n_comp = 2)
+x.perform_lda(target="Species", n_comp=2)
 
 print(x.lda)
 
@@ -66,34 +66,48 @@ print(x.lda.data)
 ## Plotting
 
 ```{python}
-x.plot(type = "pca", colour_by = "Species")
+x.plot(type="pca", colour_by="Species")
 plt.show()
+```
 
-x.plot(type = "lda")
+```{python}
+x.plot(type="lda")
 plt.show()
+```
 
-x.subset(samples = ["Sample1", "Sample2"]).plot(type = "violin")
+```{python}
+x.transpose().plot(type="violin", fill=False)
 plt.show()
+```
 
+```{python}
 x.plot(
-    type = "feature_heatmap", 
-    annotate_samples_by = ["Species"], 
-    annotate_features_by = ["type"], 
-    xticklabels = False
+    type="feature_heatmap", 
+    annotate_samples_by=["Species"], 
+    annotate_features_by=["type"], 
+    xticklabels=False
 )
 plt.show()
+```
 
+```{python}
 x.plot(
-    type = "correlation_heatmap", 
-    annotate_samples_by = ["Species"], 
-    xticklabels = False,
-    yticklabels = False
+    type="correlation_heatmap", 
+    annotate_samples_by=["Species"], 
+    xticklabels=False,
+    yticklabels=False
 )
 plt.show()
+```
 
-x.plot(type = "density", legend = False)
+```{python}
+x.plot(type="distribution", kind="kde", legend=False)
+x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
+x.transpose().plot(type="distribution", kind="ecdf")
 plt.show()
+```
 
-x.transpose().plot(type = "scatter")
+```{python}
+x.transpose().plot(type="scatter")
 plt.show()
 ```

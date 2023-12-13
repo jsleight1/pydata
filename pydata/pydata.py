@@ -196,8 +196,8 @@ class pydata(ldata):
                 self._feature_heatmap(**kwargs)
             case "correlation_heatmap":
                 self._correlation_heatmap(**kwargs)
-            case "density":
-                self._density_plot(**kwargs)
+            case "distribution":
+                self._distribution_plot(**kwargs)
             case "scatter":
                 self._scatter_plot(**kwargs)
             case _:
@@ -238,7 +238,7 @@ class pydata(ldata):
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _violin_plot(self, **kwargs):
-        sns.violinplot(data=self._plot_data(), x="Sample", y="value")
+        sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
         plt.xticks(rotation=90)
 
     def _correlation_heatmap(
@@ -355,8 +355,8 @@ class pydata(ldata):
 
         return plot
 
-    def _density_plot(self, **kwargs):
-        sns.kdeplot(data=self.data, **kwargs)
+    def _distribution_plot(self, **kwargs):
+        sns.displot(data=self.data, **kwargs)
         plt.xlabel("Feature value")
 
     def _scatter_plot(self, samplex=None, sampley=None, **kwargs):
