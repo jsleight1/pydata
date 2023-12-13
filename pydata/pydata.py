@@ -359,9 +359,9 @@ class pydata(ldata):
         sns.displot(data=self.data, **kwargs)
         plt.xlabel("Feature value")
 
-    def _scatter_plot(self, samplex=None, sampley=None, **kwargs):
-        if samplex is None:
-            samplex = self.colnames[0]
-        if sampley is None:
-            sampley = self.colnames[1]
-        sns.scatterplot(data=self.data, x=samplex, y=sampley, **kwargs)
+    def _scatter_plot(self, xaxis=None, yaxis=None, **kwargs):
+        if xaxis is None:
+            xaxis = self.colnames[0]
+        if yaxis is None:
+            yaxis = self.colnames[1]
+        sns.regplot(data=self.data, x=xaxis, y=yaxis, **kwargs)

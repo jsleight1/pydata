@@ -201,7 +201,7 @@ plt.show()
 ![](README_files/figure-commonmark/cell-10-output-3.png)
 
 ``` python
-x.transpose().plot(type="scatter")
+x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
 plt.show()
 ```
 
