@@ -1,6 +1,7 @@
 from pydata.ldata import ldata
 from pydata.pca import pca
 from pydata.lda import lda
+from pydata.tsne import tsne
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -95,6 +96,17 @@ class pydata(ldata):
 
     lda = property(_get_lda, _set_lda)
 
+    def _get_tsne(self):
+        return getattr(self, "_tsne")
+
+    def _set_tsne(self, value: tsne):
+        if value is not None:
+            assert isinstance(value, tsne)
+            value._validate()
+        self._tsne = value
+
+    tsne = property(_get_tsne, _set_tsne)
+
     def subset(self, samples=None, features=None):
         out = super().subset(samples=samples, features=features)
         out.pcs = None
@@ -120,6 +132,8 @@ class pydata(ldata):
                 self.pcs = pca.analyse(self, **kwargs)
             case "lda":
                 self.lda = lda.analyse(self, **kwargs)
+            case "tsne":
+                self.tsne = tsne.analyse(self, **kwargs)
             case _:
                 raise Exception(type + " dimension reduction not implemented")
 
@@ -130,6 +144,8 @@ class pydata(ldata):
                 self._pca_plot(**kwargs)
             case "lda":
                 self._lda_plot(**kwargs)
+            case "tsne":
+                self._tsne_plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
             case "feature_heatmap":
@@ -171,8 +187,17 @@ class pydata(ldata):
         self.lda._validate()
         if colour_by is None:
             colour_by = self.lda.target
-        df = deepcopy(self.lda.data.transpose())
         df = deepcopy(self.lda.data.transpose().reset_index(names="ID"))
+        df = pd.merge(df, self.description, on="ID")
+        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
+
+    def _tsne_plot(
+        self, xaxis: str = "TSNE1", yaxis: str = "TSNE2", colour_by: str  = "ID", **kwargs
+    ):
+        if not isinstance(self.tsne, tsne):
+            self.perform_dimension_reduction("tsne", **kwargs)
+        self.tsne._validate()
+        df = deepcopy(self.tsne.data.transpose().reset_index(names="ID"))
         df = pd.merge(df, self.description, on="ID")
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 

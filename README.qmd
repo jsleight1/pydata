@@ -42,7 +42,6 @@ print(t)
 
 ### PCA
 ```{python}
-
 x.perform_dimension_reduction("pca")
 
 print(x.pcs)
@@ -54,12 +53,20 @@ print(x.pcs.annotation)
 
 ### LDA
 ```{python}
-
 x.perform_dimension_reduction("lda", target="Species")
 
 print(x.lda)
 
 print(x.lda.data)
+```
+
+### t-SNE
+```{python}
+x.perform_dimension_reduction("tsne")
+
+print(x.tsne)
+
+print(x.tsne.data)
 ```
 
 
@@ -72,6 +79,11 @@ plt.show()
 
 ```{python}
 x.plot(type="lda")
+plt.show()
+```
+
+```{python}
+x.plot(type="tsne", colour_by="Species")
 plt.show()
 ```
 

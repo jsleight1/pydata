@@ -1,0 +1,2 @@
+tsne object:
+ - Dimensions: 2 (samples) x 2 (features)

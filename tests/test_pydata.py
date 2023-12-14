@@ -2,6 +2,7 @@ import pytest
 from pydata.pydata import pydata
 from pydata.pca import pca
 from pydata.lda import lda
+from pydata.tsne import tsne
 import numpy as np
 import pandas as pd
 

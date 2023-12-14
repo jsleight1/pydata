@@ -16,7 +16,7 @@ class lda(drdata):
         Parameters
         ----------
         data : pandas.DataFrame
-            A DataFrame of LDA component data for ncol samples and nrow
+            A DataFrame of LDA components data for ncol samples and nrow
             LDA components.
         description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching

@@ -137,7 +137,7 @@ class pca(drdata):
 
         match method:
             case "SVD":
-                pcs = pca._svd_pca(x=dat, ids=data.colnames, npcs=npcs, **kwargs)
+                pcs = pca._svd_pca(x=dat, desc=data.description, npcs=npcs, **kwargs)
             case _:
                 raise Exception(method + " pca method not implemented")
 
@@ -146,11 +146,13 @@ class pca(drdata):
         return pcs
 
     @staticmethod
-    def _svd_pca(x, ids, npcs, **kwargs):
+    def _svd_pca(x, desc, npcs, **kwargs):
         p = PCA(n_components=npcs, **kwargs)
         p_c = p.fit_transform(x)
         p_df = pd.DataFrame(
-            data=p_c, columns=["PC" + str(i) for i in range(1, npcs + 1)], index=ids
+            data=p_c,
+            columns=["PC" + str(i) for i in range(1, npcs + 1)], 
+            index=desc["ID"].tolist()
         )
         var_expl = pd.DataFrame(
             [p_df.columns.tolist(), (p.explained_variance_ratio_ * 100).tolist()]
@@ -158,7 +160,7 @@ class pca(drdata):
         var_expl.columns = ["ID", "Percentage variance explained"]
         out = pca(
             data=p_df.transpose(),
-            description=pd.DataFrame({"ID": ids}),
+            description=desc,
             annotation=var_expl,
         )
         return out

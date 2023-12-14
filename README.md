@@ -97,9 +97,9 @@ print(x.pcs.annotation)
     PC2  -0.024332  
 
     [2 rows x 150 columns]
-            ID
-    0  Sample1
-    1  Sample2
+            ID Species
+    0  Sample1  setosa
+    1  Sample2  setosa
         ID Percentage variance explained
     0  PC1                     72.962445
     1  PC2                     22.850762
@@ -135,6 +135,36 @@ print(x.lda.data)
 
     [2 rows x 150 columns]
 
+### t-SNE
+
+``` python
+x.perform_dimension_reduction("tsne")
+
+print(x.tsne)
+
+print(x.tsne.data)
+```
+
+    tsne object:
+     - Dimensions: 150 (samples) x 2 (features)
+             Sample1    Sample2    Sample3    Sample4    Sample5    Sample6  \
+    TSNE1 -23.580931 -26.291704 -26.193335 -26.638256 -23.545013 -21.608295   
+    TSNE2  -0.522060  -1.093696   0.053057  -0.321696  -0.941377  -0.810961   
+
+             Sample7    Sample8    Sample9   Sample10  ...  Sample141  Sample142  \
+    TSNE1 -25.960800 -24.347078 -27.391277 -25.768770  ...   12.46354  11.074054   
+    TSNE2   0.458465  -0.496077  -0.301682  -0.945293  ...   -4.81950  -4.504594   
+
+           Sample143  Sample144  Sample145  Sample146  Sample147  Sample148  \
+    TSNE1  11.334437  12.740586  13.016592  11.363099  10.691204  11.097084   
+    TSNE2   0.373205  -5.528937  -5.062658  -4.289077  -1.015444  -3.357184   
+
+           Sample149  Sample150  
+    TSNE1  13.195991  10.712410  
+    TSNE2  -3.724547   0.427633  
+
+    [2 rows x 150 columns]
+
 ## Plotting
 
 ``` python
@@ -142,21 +172,28 @@ x.plot(type="pca", colour_by="Species")
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-5-output-1.png)
+![](README_files/figure-commonmark/cell-6-output-1.png)
 
 ``` python
 x.plot(type="lda")
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-6-output-1.png)
+![](README_files/figure-commonmark/cell-7-output-1.png)
+
+``` python
+x.plot(type="tsne", colour_by="Species")
+plt.show()
+```
+
+![](README_files/figure-commonmark/cell-8-output-1.png)
 
 ``` python
 x.transpose().plot(type="violin", fill=False)
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-7-output-1.png)
+![](README_files/figure-commonmark/cell-9-output-1.png)
 
 ``` python
 x.plot(
@@ -168,7 +205,7 @@ x.plot(
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-8-output-1.png)
+![](README_files/figure-commonmark/cell-10-output-1.png)
 
 ``` python
 x.plot(
@@ -185,7 +222,7 @@ plt.show()
     /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
       warnings.warn(msg)
 
-![](README_files/figure-commonmark/cell-9-output-2.png)
+![](README_files/figure-commonmark/cell-11-output-2.png)
 
 ``` python
 x.plot(type="distribution", kind="kde", legend=False)
@@ -194,15 +231,15 @@ x.transpose().plot(type="distribution", kind="ecdf")
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-10-output-1.png)
+![](README_files/figure-commonmark/cell-12-output-1.png)
 
-![](README_files/figure-commonmark/cell-10-output-2.png)
+![](README_files/figure-commonmark/cell-12-output-2.png)
 
-![](README_files/figure-commonmark/cell-10-output-3.png)
+![](README_files/figure-commonmark/cell-12-output-3.png)
 
 ``` python
 x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
 plt.show()
 ```
 
-![](README_files/figure-commonmark/cell-11-output-1.png)
+![](README_files/figure-commonmark/cell-13-output-1.png)
