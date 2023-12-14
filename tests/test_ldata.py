@@ -162,10 +162,11 @@ def test_transpose(snapshot):
     assert x.rownames == data.index.tolist()
     snapshot.assert_match(str(l), "transpose_ldata.txt")
 
+
 def test_concat(snapshot):
-    a=ldata.example_ldata(type="simulate")
-    b=ldata.example_ldata(type="simulate", min=5, max=6)
-    c=ldata.example_ldata(type="simulate", min=15, max=20)
+    a = ldata.example_ldata(type="simulate")
+    b = ldata.example_ldata(type="simulate", min=5, max=6)
+    c = ldata.example_ldata(type="simulate", min=15, max=20)
 
     with pytest.raises(AssertionError) as err:
         a.concat([b, "c"])
@@ -180,12 +181,14 @@ def test_concat(snapshot):
     with pytest.raises(AssertionError) as err:
         a.concat([b, c])
     assert "colnames must contain unique IDs" in str(err.value)
-    b.colnames=["Sample" + str(i) for i in range(6, 11)]
-    c.colnames=["Sample" + str(i) for i in range(11, 16)]
+    b.colnames = ["Sample" + str(i) for i in range(6, 11)]
+    c.colnames = ["Sample" + str(i) for i in range(11, 16)]
 
-    x=a.concat([b, c])
+    x = a.concat([b, c])
 
     assert x.data.equals(pd.concat([a.data, b.data, c.data], axis=1))
     assert x.annotation.equals(a.annotation)
-    assert x.description.equals(pd.concat([a.description, b.description, c.description]).reset_index(drop=True))
+    assert x.description.equals(
+        pd.concat([a.description, b.description, c.description]).reset_index(drop=True)
+    )
     snapshot.assert_match(str(x), "concat_ldata.txt")

@@ -221,20 +221,22 @@ class ldata:
 
     @staticmethod
     def _simulate_ldata(
-            min: float=0, 
-            max: float=10,
-            nsamples: int=5, 
-            nfeatures: int=20, 
-            **kwargs
-        ):
+        min: float = 0,
+        max: float = 10,
+        nsamples: int = 5,
+        nfeatures: int = 20,
+        **kwargs,
+    ):
         np.random.seed(38)
         data = pd.DataFrame(
             np.random.uniform(min, max, (nfeatures, nsamples)),
-            index=["Feature" + str(i) for i in range(1, nfeatures+1)],
-            columns=["Sample" + str(i) for i in range(1, nsamples+1)],
+            index=["Feature" + str(i) for i in range(1, nfeatures + 1)],
+            columns=["Sample" + str(i) for i in range(1, nsamples + 1)],
         )
-        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, nsamples+1)]})
-        annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, nfeatures+1)]})
+        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, nsamples + 1)]})
+        annot = pd.DataFrame(
+            {"ID": ["Feature" + str(i) for i in range(1, nfeatures + 1)]}
+        )
         return ldata(data, desc, annot)
 
     def subset(self, samples=None, features=None):
@@ -271,12 +273,14 @@ class ldata:
         self._validate()
         return self
 
-    def concat(self, objs = []):
-        assert all([isinstance(i, type(self)) for i in objs]), \
-            "objects must all be of same class"
-        assert all([i.rownames == self.rownames for i in objs]), \
-            "objects must have same feature IDs" 
-        self = deepcopy(self) 
+    def concat(self, objs=[]):
+        assert all(
+            [isinstance(i, type(self)) for i in objs]
+        ), "objects must all be of same class"
+        assert all(
+            [i.rownames == self.rownames for i in objs]
+        ), "objects must have same feature IDs"
+        self = deepcopy(self)
         self._data = pd.concat([self.data] + [i.data for i in objs], axis=1)
         self._description = pd.concat(
             [self.description] + [i.description for i in objs]

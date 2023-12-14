@@ -104,6 +104,7 @@ def test_transpose():
         x.transpose()
     assert "Cannot transpose lda object" in str(err.value)
 
+
 def test_concat():
     a = lda(lds, desc, annot)
     b = lda(lds, desc, annot)

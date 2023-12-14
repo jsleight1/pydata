@@ -110,7 +110,7 @@ class pydata(ldata):
         out.lda = None
         return out
 
-    def concat(self, objs = []):
+    def concat(self, objs=[]):
         out = super().concat(objs=objs)
         out.pcs = None
         out.lda = None

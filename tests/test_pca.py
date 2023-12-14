@@ -118,6 +118,7 @@ def test_transpose():
         x.transpose()
     assert "Cannot transpose pca object" in str(err.value)
 
+
 def test_concat():
     a = pca(pcs, desc, annot)
     b = pca(pcs, desc, annot)
