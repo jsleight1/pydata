@@ -50,3 +50,4 @@ jobs:
           poetry --version
           poetry check
           poetry run coverage run -m pytest
+          poetry run coverage report
