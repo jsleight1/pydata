@@ -117,3 +117,10 @@ def test_transpose():
     with pytest.raises(Exception) as err:
         x.transpose()
     assert "Cannot transpose pca object" in str(err.value)
+
+def test_concat():
+    a = pca(pcs, desc, annot)
+    b = pca(pcs, desc, annot)
+    with pytest.raises(Exception) as err:
+        a.concat([b])
+    assert "Cannot concat pca object" in str(err.value)

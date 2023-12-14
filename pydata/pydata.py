@@ -72,8 +72,8 @@ class pydata(ldata):
         self._lda = lda
 
     @staticmethod
-    def example_pydata():
-        out = ldata.example_ldata()
+    def example_pydata(**kwargs):
+        out = ldata.example_ldata(**kwargs)
         return pydata(out.data, out.description, out.annotation)
 
     def _get_pcs(self):
@@ -106,6 +106,12 @@ class pydata(ldata):
 
     def transpose(self):
         out = super().transpose()
+        out.pcs = None
+        out.lda = None
+        return out
+
+    def concat(self, objs = []):
+        out = super().concat(objs=objs)
         out.pcs = None
         out.lda = None
         return out
@@ -170,8 +176,8 @@ class pydata(ldata):
         assert target in self.description.columns, (
             target + " is not in pydata description"
         )
-        target_df = self.description[target]
-        dat = self.data.transpose()
+        target_df = deepcopy(self.description[target])
+        dat = deepcopy(self.data.transpose())
         l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
         fit = l.fit(dat, target_df).transform(dat)
         fit = pd.DataFrame(fit, columns=["LD" + str(i) for i in range(1, n_comp + 1)])

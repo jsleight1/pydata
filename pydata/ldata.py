@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from copy import deepcopy
 import seaborn as sns
 import re
@@ -42,7 +43,7 @@ class ldata:
         """
         Parameters
         ----------
-        data : pandas.DataFrame
+        data: pandas.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
         description: pandas.DataFrame
@@ -194,7 +195,17 @@ class ldata:
         ), "data colnames do not match description ID"
 
     @staticmethod
-    def example_ldata():
+    def example_ldata(type: str = "iris", **kwargs):
+        match type:
+            case "iris":
+                return ldata._iris_ldata(**kwargs)
+            case "simulate":
+                return ldata._simulate_ldata(**kwargs)
+            case _:
+                raise Exception(type + " type data not available")
+
+    @staticmethod
+    def _iris_ldata(**kwargs):
         iris = sns.load_dataset("iris")
         desc = pd.DataFrame(
             {
@@ -206,6 +217,24 @@ class ldata:
         data.columns = desc["ID"].tolist()
         annot = pd.DataFrame({"ID": data.index.tolist()})
         annot["type"] = annot["ID"].str.extract(r"_(.*)$", expand=False)
+        return ldata(data, desc, annot)
+
+    @staticmethod
+    def _simulate_ldata(
+            min: float=0, 
+            max: float=10,
+            nsamples: int=5, 
+            nfeatures: int=20, 
+            **kwargs
+        ):
+        np.random.seed(38)
+        data = pd.DataFrame(
+            np.random.uniform(min, max, (nfeatures, nsamples)),
+            index=["Feature" + str(i) for i in range(1, nfeatures+1)],
+            columns=["Sample" + str(i) for i in range(1, nsamples+1)],
+        )
+        desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, nsamples+1)]})
+        annot = pd.DataFrame({"ID": ["Feature" + str(i) for i in range(1, nfeatures+1)]})
         return ldata(data, desc, annot)
 
     def subset(self, samples=None, features=None):
@@ -239,5 +268,18 @@ class ldata:
         self._data = new_dat.transpose()
         self._description = new_annot
         self._annotation = new_desc
+        self._validate()
+        return self
+
+    def concat(self, objs = []):
+        assert all([isinstance(i, type(self)) for i in objs]), \
+            "objects must all be of same class"
+        assert all([i.rownames == self.rownames for i in objs]), \
+            "objects must have same feature IDs" 
+        self = deepcopy(self) 
+        self._data = pd.concat([self.data] + [i.data for i in objs], axis=1)
+        self._description = pd.concat(
+            [self.description] + [i.description for i in objs]
+        ).reset_index(drop=True)
         self._validate()
         return self

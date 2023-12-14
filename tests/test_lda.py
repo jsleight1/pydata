@@ -103,3 +103,10 @@ def test_transpose():
     with pytest.raises(Exception) as err:
         x.transpose()
     assert "Cannot transpose lda object" in str(err.value)
+
+def test_concat():
+    a = lda(lds, desc, annot)
+    b = lda(lds, desc, annot)
+    with pytest.raises(Exception) as err:
+        a.concat([b])
+    assert "Cannot concat lda object" in str(err.value)

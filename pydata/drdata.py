@@ -30,3 +30,7 @@ class drdata(ldata):
     def transpose(self):
         t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
         raise Exception(f"Cannot transpose {t} object")
+
+    def concat(self, objs=[]):
+        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
+        raise Exception(f"Cannot concat {t} object")
