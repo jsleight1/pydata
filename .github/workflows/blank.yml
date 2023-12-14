@@ -29,15 +29,24 @@ jobs:
           pip install black
           poetry run black . --check --verbose --diff --color
   test:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
       image: docker.io/jsleight1/pydata:3.10-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Run tests 
+      - name: Run tests
         run: |
           poetry --version
           poetry check
           poetry run pytest
+  coverage:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Report test coverage
+        run: |
+          poetry --version
+          poetry check
+          poetry run coverage report
