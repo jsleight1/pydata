@@ -17,14 +17,14 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  lint:
+  format:
     runs-on: ubuntu-latest
     container:
       image: docker.io/jsleight1/pydata:3.10-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Run lint 
+      - name: Format code
         run: |
           pip install black
           poetry run black . --check --verbose --diff --color
