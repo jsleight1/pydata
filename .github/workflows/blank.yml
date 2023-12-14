@@ -49,4 +49,4 @@ jobs:
         run: |
           poetry --version
           poetry check
-          poetry run coverage report
+          poetry run coverage run -m pytest
