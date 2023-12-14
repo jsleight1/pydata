@@ -1,5 +1,6 @@
 import pytest
 from pydata.pca import pca
+from pydata.pydata import pydata
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -125,3 +126,21 @@ def test_concat():
     with pytest.raises(Exception) as err:
         a.concat([b])
     assert "Cannot concat pca object" in str(err.value)
+
+
+def test_analyse(snapshot):
+    x = pydata.example_pydata()
+
+    with pytest.raises(Exception) as err:
+        pca.analyse(x, method="custom")
+    assert "custom pca method not implemented" in str(err.value)
+
+    with pytest.raises(Exception) as err:
+        pca.analyse(x, scaling="custom")
+    assert "custom scaling method not implemented" in str(err.value)
+
+    out = pca.analyse(x)
+
+    assert isinstance(out, pca)
+    snapshot.assert_match(str(out), "pca_print.txt")
+    snapshot.assert_match(out.data.round(3).to_csv(), "pca_data.txt")

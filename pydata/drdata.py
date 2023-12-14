@@ -7,7 +7,7 @@ class drdata(ldata):
     Class to store results from a dimension reduction analysis
     """
 
-    def __init__(self, data, description, annotation, target=None):
+    def __init__(self, data, description, annotation):
         """
         Parameters
         ----------

@@ -1,5 +1,9 @@
+from pydata.ldata import ldata
 from pydata.drdata import drdata
 import re
+import pandas as pd
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from copy import deepcopy
 
 
 class lda(drdata):
@@ -66,3 +70,27 @@ class lda(drdata):
             [bool(re.search("^LD\\d+", i)) for i in self.data.index]
         ), "rownames must be in format LD1, LD2, etc"
         super()._validate()
+
+    @staticmethod
+    def analyse(data: ldata, target: str, n_comp: int = 2, **kwargs):
+        """
+        Parameters
+        ----------
+        target: String indicating the classifier variable to use for LDA.
+        n_comp: Number of LDA components to compute. Default is 2.
+        **kwargs: Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
+        """
+        assert target in data.description.columns, target + " is not in description"
+        target_df = deepcopy(data.description[target])
+        dat = deepcopy(data.data.transpose())
+        l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
+        fit = l.fit(dat, target_df).transform(dat)
+        fit = pd.DataFrame(fit, columns=["LD" + str(i) for i in range(1, n_comp + 1)])
+        fit.index = data.description["ID"].tolist()
+        out = lda(
+            data=fit.transpose(),
+            description=data.description,
+            annotation=pd.DataFrame(fit.columns.tolist(), columns=["ID"]),
+            target=target,
+        )
+        return out

@@ -1,6 +1,9 @@
+from pydata.ldata import ldata
 from pydata.drdata import drdata
 import pandas as pd
 import re
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 
 class pca(drdata):
@@ -104,3 +107,58 @@ class pca(drdata):
             "Percentage variance explained" in self.annotation.columns
         ), "annotation must contain 'Percentage variance explained' column"
         super()._validate()
+
+    @staticmethod
+    def analyse(
+        data: ldata,
+        npcs: int = 2,
+        scaling: str = "Zscore",
+        method: str = "SVD",
+        **kwargs,
+    ):
+        """
+        Parameters
+        ----------
+        data: ldata object
+        npcs: Number of principal component to compute. Default is 2.
+        scaling: Scaling method before PCA calculation. Default is "Zscore".
+        method: PCA method for PCA calculation: Default is "SVD" for singular
+            value decomposition.
+        **kwargs: Passed to PCA method.
+        """
+        dat = data.data.transpose()
+        match scaling:
+            case "none":
+                dat = dat
+            case "Zscore":
+                dat = StandardScaler().fit_transform(dat)
+            case _:
+                raise Exception(scaling + " scaling method not implemented")
+
+        match method:
+            case "SVD":
+                pcs = pca._svd_pca(x=dat, ids=data.colnames, npcs=npcs, **kwargs)
+            case _:
+                raise Exception(method + " pca method not implemented")
+
+        pcs.scaling = scaling
+        pcs.method = method
+        return pcs
+
+    @staticmethod
+    def _svd_pca(x, ids, npcs, **kwargs):
+        p = PCA(n_components=npcs, **kwargs)
+        p_c = p.fit_transform(x)
+        p_df = pd.DataFrame(
+            data=p_c, columns=["PC" + str(i) for i in range(1, npcs + 1)], index=ids
+        )
+        var_expl = pd.DataFrame(
+            [p_df.columns.tolist(), (p.explained_variance_ratio_ * 100).tolist()]
+        ).transpose()
+        var_expl.columns = ["ID", "Percentage variance explained"]
+        out = pca(
+            data=p_df.transpose(),
+            description=pd.DataFrame({"ID": ids}),
+            annotation=var_expl,
+        )
+        return out

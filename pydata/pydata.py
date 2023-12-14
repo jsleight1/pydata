@@ -6,9 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import gcf
 import seaborn as sns
-from sklearn.decomposition import PCA, SparsePCA
-from sklearn.preprocessing import StandardScaler
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from copy import deepcopy
 
 
@@ -116,78 +113,15 @@ class pydata(ldata):
         out.lda = None
         return out
 
-    def perform_pca(
-        self, npcs: int = 2, scaling: str = "Zscore", method: str = "SVD", **kwargs
-    ):
-        """
-        Parameters
-        ----------
-        npcs: Number of principal component to compute. Default is 2.
-        scaling: Scaling method before PCA calculation. Default is "Zscore".
-        method: PCA method for PCA calculation: Default is "SVD" for singular
-            value decomposition.
-        **kwargs: Passed to PCA method.
-        """
-
-        dat = self.data.transpose()
-
-        match scaling:
-            case "none":
-                dat = dat
-            case "Zscore":
-                dat = StandardScaler().fit_transform(dat)
+    def perform_dimension_reduction(self, type: str, **kwargs):
+        self._validate()
+        match type:
+            case "pca":
+                self.pcs = pca.analyse(self, **kwargs)
+            case "lda":
+                self.lda = lda.analyse(self, **kwargs)
             case _:
-                raise Exception(scaling + " scaling method not implemented")
-
-        match method:
-            case "SVD":
-                pcs = self._svd_pca(x=dat, npcs=npcs, **kwargs)
-            case _:
-                raise Exception(method + " pca method not implemented")
-
-        pcs.scaling = scaling
-        pcs.method = method
-        self.pcs = pcs
-
-    def _svd_pca(self, x, npcs, **kwargs):
-        p = PCA(n_components=npcs, **kwargs)
-        p_c = p.fit_transform(x)
-        p_df = pd.DataFrame(
-            data=p_c, columns=["PC" + str(i) for i in range(1, npcs + 1)]
-        )
-        p_df.index = self.description["ID"].tolist()
-        var_expl = pd.DataFrame(
-            [p_df.columns.tolist(), (p.explained_variance_ratio_ * 100).tolist()]
-        ).transpose()
-        var_expl.columns = ["ID", "Percentage variance explained"]
-        out = pca(
-            data=p_df.transpose(), description=self.description, annotation=var_expl
-        )
-        return out
-
-    def perform_lda(self, target: str, n_comp: int = 2, **kwargs):
-        """
-        Parameters
-        ----------
-        target: String indicating the classifier variable to use for LDA.
-        n_comp: Number of LDA components to compute. Default is 2.
-        **kwargs: Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
-        """
-        assert target in self.description.columns, (
-            target + " is not in pydata description"
-        )
-        target_df = deepcopy(self.description[target])
-        dat = deepcopy(self.data.transpose())
-        l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
-        fit = l.fit(dat, target_df).transform(dat)
-        fit = pd.DataFrame(fit, columns=["LD" + str(i) for i in range(1, n_comp + 1)])
-        fit.index = self.description["ID"].tolist()
-        self.lda = lda(
-            data=fit.transpose(),
-            description=self.description,
-            annotation=pd.DataFrame(fit.columns.tolist(), columns=["ID"]),
-            target=target,
-        )
+                raise Exception(type + " dimension reduction not implemented")
 
     def plot(self, type: str, **kwargs):
         self._validate()
@@ -207,7 +141,7 @@ class pydata(ldata):
             case "scatter":
                 self._scatter_plot(**kwargs)
             case _:
-                raise Exception(type + " plot type not implement")
+                raise Exception(type + " plot type not implemented")
 
     def _plot_data(self):
         df = deepcopy(self.data)
@@ -223,24 +157,23 @@ class pydata(ldata):
         self, xaxis: str = "PC1", yaxis: str = "PC2", colour_by: str = "ID", **kwargs
     ):
         if not isinstance(self.pcs, pca):
-            self.perform_pca(**kwargs)
+            self.perform_dimension_reduction("pca", **kwargs)
         self.pcs._validate()
-        df = deepcopy(self.pcs.data.transpose())
-        df["ID"] = df.index
-        df = pd.merge(df, self.pcs.description, on="ID")
+        df = deepcopy(self.pcs.data.transpose().reset_index(names="ID"))
+        df = pd.merge(df, self.description, on="ID")
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _lda_plot(
         self, xaxis: str = "LD1", yaxis: str = "LD2", colour_by=None, **kwargs
     ):
         if not isinstance(self.lda, lda):
-            self.perform_lda(**kwargs)
+            self.perform_dimension_reduction("lda", **kwargs)
         self.lda._validate()
         if colour_by is None:
             colour_by = self.lda.target
         df = deepcopy(self.lda.data.transpose())
-        df["ID"] = df.index
-        df = pd.merge(df, self.lda.description, on="ID")
+        df = deepcopy(self.lda.data.transpose().reset_index(names="ID"))
+        df = pd.merge(df, self.description, on="ID")
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _violin_plot(self, **kwargs):
@@ -370,4 +303,4 @@ class pydata(ldata):
             xaxis = self.colnames[0]
         if yaxis is None:
             yaxis = self.colnames[1]
-        sns.regplot(data=self.data, x=xaxis, y=yaxis, **kwargs)
+        sns.regplot(data=self.data, x=xaxis, y=yaxis, seed=32, **kwargs)

@@ -1,5 +1,6 @@
 import pytest
 from pydata.lda import lda
+from pydata.pydata import pydata
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -111,3 +112,17 @@ def test_concat():
     with pytest.raises(Exception) as err:
         a.concat([b])
     assert "Cannot concat lda object" in str(err.value)
+
+
+def test_analyse(snapshot):
+    x = pydata.example_pydata()
+
+    with pytest.raises(Exception) as err:
+        lda.analyse(x, target="group")
+    assert "group is not in description" in str(err.value)
+
+    out = lda.analyse(x, target="Species")
+
+    assert isinstance(out, lda)
+    snapshot.assert_match(str(out), "lda_print.txt")
+    snapshot.assert_match(out.data.round(3).to_csv(), "lda_data.txt")

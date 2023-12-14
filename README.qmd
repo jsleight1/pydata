@@ -43,7 +43,7 @@ print(t)
 ### PCA
 ```{python}
 
-x.perform_pca()
+x.perform_dimension_reduction("pca")
 
 print(x.pcs)
 
@@ -55,7 +55,7 @@ print(x.pcs.annotation)
 ### LDA
 ```{python}
 
-x.perform_lda(target="Species", n_comp=2)
+x.perform_dimension_reduction("lda", target="Species")
 
 print(x.lda)
 

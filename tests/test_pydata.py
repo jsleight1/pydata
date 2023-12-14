@@ -50,36 +50,18 @@ def test_example_pydata(snapshot):
     snapshot.assert_match(str(x), "example_pydata.txt")
 
 
-def test_perform_pca(snapshot):
+def test_perform_dimension_reduction(snapshot):
     x = pydata(data, desc, annot)
 
     with pytest.raises(Exception) as err:
-        x.perform_pca(method="custom")
-    assert "custom pca method not implemented" in str(err.value)
+        x.perform_dimension_reduction("dr")
+    assert "dr dimension reduction not implemented" in str(err.value)
 
-    with pytest.raises(Exception) as err:
-        x.perform_pca(scaling="custom")
-    assert "custom scaling method not implemented" in str(err.value)
-
-    x.perform_pca()
+    x.perform_dimension_reduction("pca")
+    x.perform_dimension_reduction("lda", target="Treatment", n_comp=1)
 
     assert isinstance(x.pcs, pca)
-    snapshot.assert_match(str(x.pcs), "pydata_pca_print.txt")
-    snapshot.assert_match(x.pcs.data.round(3).to_csv(), "pydata_pca_data.txt")
-
-
-def test_perform_lda(snapshot):
-    x = pydata(data, desc, annot)
-
-    with pytest.raises(Exception) as err:
-        x.perform_lda(target="group", n_comp=1)
-    assert "group is not in pydata description" in str(err.value)
-
-    x.perform_lda(target="Treatment", n_comp=1)
-
     assert isinstance(x.lda, lda)
-    snapshot.assert_match(str(x.lda), "pydata_lda_print.txt")
-    snapshot.assert_match(x.lda.data.round(3).to_csv(), "pydata_lda_data.txt")
 
 
 def test_subset():
@@ -93,8 +75,8 @@ def test_subset():
         x.subset(features=["feature"])
     assert "features are not in data" in str(err.value)
 
-    x.perform_pca()
-    x.perform_lda(target="Treatment", n_comp=1)
+    x.perform_dimension_reduction("pca")
+    x.perform_dimension_reduction("lda", target="Treatment", n_comp=1)
     samples = ["Sample1", "Sample3"]
     features = ["Feature1", "Feature3", "Feature18"]
     s = x.subset(samples=samples, features=features)
@@ -116,8 +98,8 @@ def test_subset():
 
 def test_transpose():
     x = pydata(data, desc, annot)
-    x.perform_pca()
-    x.perform_lda(target="Treatment", n_comp=1)
+    x.perform_dimension_reduction("pca")
+    x.perform_dimension_reduction("lda", target="Treatment", n_comp=1)
 
     l = x.transpose()
 

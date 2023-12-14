@@ -67,7 +67,7 @@ print(t)
 ### PCA
 
 ``` python
-x.perform_pca()
+x.perform_dimension_reduction("pca")
 
 print(x.pcs)
 
@@ -97,9 +97,9 @@ print(x.pcs.annotation)
     PC2  -0.024332  
 
     [2 rows x 150 columns]
-            ID Species
-    0  Sample1  setosa
-    1  Sample2  setosa
+            ID
+    0  Sample1
+    1  Sample2
         ID Percentage variance explained
     0  PC1                     72.962445
     1  PC2                     22.850762
@@ -107,7 +107,7 @@ print(x.pcs.annotation)
 ### LDA
 
 ``` python
-x.perform_lda(target="Species", n_comp=2)
+x.perform_dimension_reduction("lda", target="Species")
 
 print(x.lda)
 
