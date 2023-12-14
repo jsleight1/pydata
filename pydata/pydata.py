@@ -192,7 +192,11 @@ class pydata(ldata):
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _tsne_plot(
-        self, xaxis: str = "TSNE1", yaxis: str = "TSNE2", colour_by: str  = "ID", **kwargs
+        self,
+        xaxis: str = "TSNE1",
+        yaxis: str = "TSNE2",
+        colour_by: str = "ID",
+        **kwargs,
     ):
         if not isinstance(self.tsne, tsne):
             self.perform_dimension_reduction("tsne", **kwargs)

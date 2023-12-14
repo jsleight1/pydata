@@ -151,8 +151,8 @@ class pca(drdata):
         p_c = p.fit_transform(x)
         p_df = pd.DataFrame(
             data=p_c,
-            columns=["PC" + str(i) for i in range(1, npcs + 1)], 
-            index=desc["ID"].tolist()
+            columns=["PC" + str(i) for i in range(1, npcs + 1)],
+            index=desc["ID"].tolist(),
         )
         var_expl = pd.DataFrame(
             [p_df.columns.tolist(), (p.explained_variance_ratio_ * 100).tolist()]
