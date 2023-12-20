@@ -27,6 +27,12 @@ def test_ldata_generation(snapshot):
         ldata(data, desc, annot.head(2))
     assert "data rownames do not match annotation ID" in str(err.value)
 
+    tst = deepcopy(data)
+    tst.Sample1 = "a"
+    with pytest.raises(AssertionError) as err:
+        ldata(tst, desc, annot)
+    assert "data must all be numeric values" in str(err.value)
+
     x = ldata(data, desc, annot)
 
     assert isinstance(x, ldata)

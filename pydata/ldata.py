@@ -165,6 +165,9 @@ class ldata:
 
     def _validate(self):
         assert isinstance(self.data, pd.DataFrame), "data is not DataFrame"
+        assert all(
+            self.data.dtypes.map(pd.api.types.is_numeric_dtype)
+        ), "data must all be numeric values"
         assert isinstance(
             self.description, pd.DataFrame
         ), "description is not DataFrame"
