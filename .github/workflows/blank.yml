@@ -51,3 +51,13 @@ jobs:
           poetry check
           poetry run coverage run -m pytest
           poetry run coverage report
+  readme:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check readme builds
+        run: |
+          quarto --version
+          quarto render README.qmd
