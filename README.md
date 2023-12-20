@@ -100,9 +100,9 @@ print(x.pcs.annotation)
             ID Species
     0  Sample1  setosa
     1  Sample2  setosa
-        ID Percentage variance explained
-    0  PC1                     72.962445
-    1  PC2                     22.850762
+        ID  Percentage variance explained
+    0  PC1                      72.962445
+    1  PC2                      22.850762
 
 ### LDA
 

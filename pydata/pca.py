@@ -1,8 +1,9 @@
 from pydata.ldata import ldata
 from pydata.drdata import drdata
 import pandas as pd
+import numpy as np
 import re
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, KernelPCA
 from sklearn.preprocessing import StandardScaler
 
 
@@ -138,6 +139,8 @@ class pca(drdata):
         match method:
             case "SVD":
                 pcs = pca._svd_pca(x=dat, desc=data.description, npcs=npcs, **kwargs)
+            case "Kernel":
+                pcs = pca._kernel_pca(x=dat, desc=data.description, npcs=npcs, **kwargs)
             case _:
                 raise Exception(method + " pca method not implemented")
 
@@ -155,9 +158,35 @@ class pca(drdata):
             index=desc["ID"].tolist(),
         )
         var_expl = pd.DataFrame(
-            [p_df.columns.tolist(), (p.explained_variance_ratio_ * 100).tolist()]
-        ).transpose()
-        var_expl.columns = ["ID", "Percentage variance explained"]
+            {
+                "ID": p_df.columns.tolist(),
+                "Percentage variance explained": p.explained_variance_ratio_ * 100,
+            }
+        )
+        out = pca(
+            data=p_df.transpose(),
+            description=desc,
+            annotation=var_expl,
+        )
+        return out
+
+    @staticmethod
+    def _kernel_pca(x, desc, npcs, **kwargs):
+        p = KernelPCA(n_components=npcs, **kwargs)
+        p_c = p.fit_transform(x)
+        p_df = pd.DataFrame(
+            data=p_c,
+            columns=["PC" + str(i) for i in range(1, npcs + 1)],
+            index=desc["ID"].tolist(),
+        )
+        var_expl = pd.DataFrame(
+            {
+                "ID": p_df.columns.tolist(),
+                "Percentage variance explained": (
+                    (np.var(p_c, axis=0) / np.sum(np.var(p_c, axis=0))) * 100
+                ),
+            }
+        )
         out = pca(
             data=p_df.transpose(),
             description=desc,
