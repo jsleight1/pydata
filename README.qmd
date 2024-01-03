@@ -99,7 +99,7 @@ print(x.tsne.data)
 ## Plotting
 
 ```{python}
-x.plot(type="pca", colour_by="Species"
+x.plot(type="pca", colour_by="Species")
 ```
 
 ```{python}
