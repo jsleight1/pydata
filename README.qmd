@@ -20,76 +20,98 @@ development and running the following examples.
 import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
-x=pydata.example_pydata()
-
+x=pydata.example_pydata(type="iris")
 print(x)
-print(x.data.head(2))
-print(x.description.head(2))
-print(x.annotation.head(2))
+```
 
+```{python}
+print(x.data)
+```
+
+```{python}
+print(x.description.head(2))
+```
+
+```{python}
+print(x.annotation)
+```
+
+```{python}
 s=x.subset(
     samples=["Sample1", "Sample30", "Sample52"], 
     features=["sepal_length", "petal_length"]
 )
 print(s)
-
-t=x.transpose()
-print(t)
-
 ```
 
-## Linear dimensionality reduction
+```{python}
+t=x.transpose()
+print(t)
+```
+
+## Dimension reduction
 
 ### PCA
 ```{python}
 x.perform_dimension_reduction("pca")
 
 print(x.pcs)
+```
 
+```{python}
 print(x.pcs.data)
-print(x.pcs.description.head(2))
+```
+
+```{python}
+print(x.pcs.description)
+```
+
+```{python}
 print(x.pcs.annotation)
 ```
 
 ### LDA
 ```{python}
 x.perform_dimension_reduction("lda", target="Species")
+```
 
+```{python}
 print(x.lda)
+```
 
+```{python}
 print(x.lda.data)
 ```
 
 ### t-SNE
 ```{python}
 x.perform_dimension_reduction("tsne")
-
-print(x.tsne)
-
-print(x.tsne.data)
 ```
 
+```{python}
+print(x.tsne)
+```
+
+```{python}
+print(x.tsne.data)
+```
 
 ## Plotting
 
 ```{python}
 x.plot(type="pca", colour_by="Species")
-plt.show()
 ```
 
 ```{python}
 x.plot(type="lda")
-plt.show()
 ```
 
 ```{python}
 x.plot(type="tsne", colour_by="Species")
-plt.show()
 ```
 
 ```{python}
 x.transpose().plot(type="violin", fill=False)
-plt.show()
 ```
 
 ```{python}
@@ -99,7 +121,6 @@ x.plot(
     annotate_features_by=["type"], 
     xticklabels=False
 )
-plt.show()
 ```
 
 ```{python}
@@ -109,17 +130,20 @@ x.plot(
     xticklabels=False,
     yticklabels=False
 )
-plt.show()
 ```
 
 ```{python}
 x.plot(type="distribution", kind="kde", legend=False)
+```
+
+```{python}
 x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
+```
+
+```{python}
 x.transpose().plot(type="distribution", kind="ecdf")
-plt.show()
 ```
 
 ```{python}
 x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
-plt.show()
 ```
