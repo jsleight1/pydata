@@ -96,6 +96,19 @@ print(x.tsne)
 print(x.tsne.data)
 ```
 
+### UMAP 
+```{python}
+x.perform_dimension_reduction("umap")
+```
+
+```{python}
+print(x.umap)
+```
+
+```{python}
+print(x.umap.data)
+```
+
 ## Plotting
 
 ```{python}
@@ -108,6 +121,10 @@ x.plot(type="lda")
 
 ```{python}
 x.plot(type="tsne", colour_by="Species")
+```
+
+```{python}
+x.plot(type="umap", colour_by="Species")
 ```
 
 ```{python}

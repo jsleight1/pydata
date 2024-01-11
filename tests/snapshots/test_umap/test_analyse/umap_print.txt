@@ -1,0 +1,3 @@
+umap object:
+ - Dimensions: 4 (samples) x 2 (UMAP projections)
+ - Scaling: Zscore

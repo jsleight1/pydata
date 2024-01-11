@@ -8,7 +8,7 @@ from copy import deepcopy
 
 class lda(drdata):
     """
-    Class to store results from linear discriminant analysis (LDA)
+    Class to perform and store results from linear discriminant analysis (LDA)
     """
 
     def __init__(self, data, description, annotation, target=None):
@@ -20,7 +20,7 @@ class lda(drdata):
             LDA components.
         description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching
-            columns names of data attribute.
+            column names of data attribute.
         annotation : pandas.DataFrame
             A DataFrame of LDA components annotation
         target: str
@@ -53,7 +53,7 @@ class lda(drdata):
 
     def _set_rownames(self, value: list):
         """
-        Set feature names for ldata object.
+        Set feature names for pca object.
         ------------------------------------
         value: list
             A list of feature names.

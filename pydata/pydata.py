@@ -2,6 +2,7 @@ from pydata.ldata import ldata
 from pydata.pca import pca
 from pydata.lda import lda
 from pydata.tsne import tsne
+from pydata.umap import umap
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -107,6 +108,17 @@ class pydata(ldata):
 
     tsne = property(_get_tsne, _set_tsne)
 
+    def _get_umap(self):
+        return getattr(self, "_umap")
+
+    def _set_umap(self, value: umap):
+        if value is not None:
+            assert isinstance(value, umap)
+            value._validate()
+        self._umap = value
+
+    umap = property(_get_umap, _set_umap)
+
     def subset(self, samples=None, features=None):
         out = super().subset(samples=samples, features=features)
         out.pcs = None
@@ -134,6 +146,8 @@ class pydata(ldata):
                 self.lda = lda.analyse(self, **kwargs)
             case "tsne":
                 self.tsne = tsne.analyse(self, **kwargs)
+            case "umap":
+                self.umap = umap.analyse(self, **kwargs)
             case _:
                 raise Exception(type + " dimension reduction not implemented")
 
@@ -146,6 +160,8 @@ class pydata(ldata):
                 self._lda_plot(**kwargs)
             case "tsne":
                 self._tsne_plot(**kwargs)
+            case "umap":
+                self._umap_plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
             case "feature_heatmap":
@@ -202,6 +218,20 @@ class pydata(ldata):
             self.perform_dimension_reduction("tsne", **kwargs)
         self.tsne._validate()
         df = deepcopy(self.tsne.data.transpose().reset_index(names="ID"))
+        df = pd.merge(df, self.description, on="ID")
+        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
+
+    def _umap_plot(
+        self,
+        xaxis: str = "UMAP1",
+        yaxis: str = "UMAP2",
+        colour_by: str = "ID",
+        **kwargs,
+    ):
+        if not isinstance(self.umap, umap):
+            self.perform_dimension_reduction("umap", **kwargs)
+        self.umap._validate()
+        df = deepcopy(self.umap.data.transpose().reset_index(names="ID"))
         df = pd.merge(df, self.description, on="ID")
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 

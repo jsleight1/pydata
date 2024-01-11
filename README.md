@@ -200,7 +200,7 @@ print(x.tsne)
 ```
 
     tsne object:
-     - Dimensions: 150 (samples) x 2 (features)
+     - Dimensions: 150 (samples) x 2 (t-SNE components)
 
 ``` python
 print(x.tsne.data)
@@ -224,31 +224,77 @@ print(x.tsne.data)
 
     [2 rows x 150 columns]
 
+### UMAP
+
+``` python
+x.perform_dimension_reduction("umap")
+```
+
+    /usr/local/lib/python3.10/site-packages/umap/umap_.py:1943: UserWarning:
+
+    n_jobs value -1 overridden to 1 by setting random_state. Use no seed for parallelism.
+
+``` python
+print(x.umap)
+```
+
+    umap object:
+     - Dimensions: 150 (samples) x 2 (UMAP projections)
+     - Scaling: Zscore
+
+``` python
+print(x.umap.data)
+```
+
+             Sample1    Sample2    Sample3    Sample4    Sample5    Sample6  \
+    UMAP1  13.386802  13.435769  14.054417  13.881824  13.202879  13.335918   
+    UMAP2   9.793719   7.594136   7.752531   7.409498  10.024071  11.176532   
+
+             Sample7    Sample8    Sample9   Sample10  ...  Sample141  Sample142  \
+    UMAP1  13.591583  13.632071  13.486156  13.657273  ...   3.845543   4.033737   
+    UMAP2   8.710538   9.101402   7.161908   7.695811  ...   1.539070   1.608526   
+
+           Sample143  Sample144  Sample145  Sample146  Sample147  Sample148  \
+    UMAP1   3.059679   3.746723   3.564396   3.981827   3.312455   4.161446   
+    UMAP2  -0.596922   1.913777   1.807070   1.468371  -0.912279   0.848303   
+
+           Sample149  Sample150  
+    UMAP1   3.310499   4.284542  
+    UMAP2   1.561345  -0.664872  
+
+    [2 rows x 150 columns]
+
 ## Plotting
 
 ``` python
 x.plot(type="pca", colour_by="Species")
 ```
 
-![](README_files/figure-commonmark/cell-18-output-1.png)
+![](README_files/figure-commonmark/cell-21-output-1.png)
 
 ``` python
 x.plot(type="lda")
 ```
 
-![](README_files/figure-commonmark/cell-19-output-1.png)
+![](README_files/figure-commonmark/cell-22-output-1.png)
 
 ``` python
 x.plot(type="tsne", colour_by="Species")
 ```
 
-![](README_files/figure-commonmark/cell-20-output-1.png)
+![](README_files/figure-commonmark/cell-23-output-1.png)
+
+``` python
+x.plot(type="umap", colour_by="Species")
+```
+
+![](README_files/figure-commonmark/cell-24-output-1.png)
 
 ``` python
 x.transpose().plot(type="violin", fill=False)
 ```
 
-![](README_files/figure-commonmark/cell-21-output-1.png)
+![](README_files/figure-commonmark/cell-25-output-1.png)
 
 ``` python
 x.plot(
@@ -259,7 +305,7 @@ x.plot(
 )
 ```
 
-![](README_files/figure-commonmark/cell-22-output-1.png)
+![](README_files/figure-commonmark/cell-26-output-1.png)
 
 ``` python
 x.plot(
@@ -270,33 +316,36 @@ x.plot(
 )
 ```
 
-    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
-      warnings.warn(msg)
-    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
-      warnings.warn(msg)
+    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning:
 
-![](README_files/figure-commonmark/cell-23-output-2.png)
+    Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+
+    /usr/local/lib/python3.10/site-packages/seaborn/matrix.py:560: UserWarning:
+
+    Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+
+![](README_files/figure-commonmark/cell-27-output-2.png)
 
 ``` python
 x.plot(type="distribution", kind="kde", legend=False)
 ```
 
-![](README_files/figure-commonmark/cell-24-output-1.png)
+![](README_files/figure-commonmark/cell-28-output-1.png)
 
 ``` python
 x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
 ```
 
-![](README_files/figure-commonmark/cell-25-output-1.png)
+![](README_files/figure-commonmark/cell-29-output-1.png)
 
 ``` python
 x.transpose().plot(type="distribution", kind="ecdf")
 ```
 
-![](README_files/figure-commonmark/cell-26-output-1.png)
+![](README_files/figure-commonmark/cell-30-output-1.png)
 
 ``` python
 x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
 ```
 
-![](README_files/figure-commonmark/cell-27-output-1.png)
+![](README_files/figure-commonmark/cell-31-output-1.png)
