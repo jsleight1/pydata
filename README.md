@@ -312,6 +312,7 @@ x.plot(
 ``` python
 x.plot(
     type="correlation_heatmap", 
+    cor_method="pearson",
     annotate_samples_by=["Species"], 
     xticklabels=False,
     yticklabels=False
