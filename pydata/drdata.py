@@ -1,5 +1,8 @@
 from pydata.ldata import ldata
 import re
+from copy import deepcopy
+import pandas as pd 
+import seaborn as sns
 
 
 class drdata(ldata):
@@ -80,3 +83,14 @@ class drdata(ldata):
 
     def concat(self, objs=[]):
         raise Exception(f"Cannot concat {super().format_type()} object")
+
+    def plot(self, xaxis=None, yaxis=None, colour_by: str = "ID", **kwargs):
+        self._validate()
+        t = super().format_type().upper()
+        if xaxis is None:
+            xaxis = t + "1"
+        if yaxis is None:
+            yaxis = t + "2"
+        df = deepcopy(self.data.transpose().reset_index(names="ID"))
+        df = pd.merge(df, self.description, on="ID")
+        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)

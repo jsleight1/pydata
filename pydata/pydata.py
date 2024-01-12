@@ -167,13 +167,13 @@ class pydata(ldata):
         self._validate()
         match type:
             case "pca":
-                self._pca_plot(**kwargs)
+                self.pcs.plot(**kwargs)
             case "lda":
-                self._lda_plot(**kwargs)
+                self.lda.plot(**kwargs)
             case "tsne":
-                self._tsne_plot(**kwargs)
+                self.tsne.plot(**kwargs)
             case "umap":
-                self._umap_plot(**kwargs)
+                self.umap.plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
             case "feature_heatmap":
@@ -196,56 +196,6 @@ class pydata(ldata):
         df = pd.merge(df, self.annotation, left_on="Feature", right_on="ID")
         df = df.drop(columns=["ID"])
         return df
-
-    def _pca_plot(
-        self, xaxis: str = "PCA1", yaxis: str = "PCA2", colour_by: str = "ID", **kwargs
-    ):
-        if not isinstance(self.pcs, pca):
-            self.perform_dimension_reduction("pca", **kwargs)
-        self.pcs._validate()
-        df = deepcopy(self.pcs.data.transpose().reset_index(names="ID"))
-        df = pd.merge(df, self.description, on="ID")
-        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
-
-    def _lda_plot(
-        self, xaxis: str = "LDA1", yaxis: str = "LDA2", colour_by=None, **kwargs
-    ):
-        if not isinstance(self.lda, lda):
-            self.perform_dimension_reduction("lda", **kwargs)
-        self.lda._validate()
-        if colour_by is None:
-            colour_by = self.lda.target
-        df = deepcopy(self.lda.data.transpose().reset_index(names="ID"))
-        df = pd.merge(df, self.description, on="ID")
-        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
-
-    def _tsne_plot(
-        self,
-        xaxis: str = "TSNE1",
-        yaxis: str = "TSNE2",
-        colour_by: str = "ID",
-        **kwargs,
-    ):
-        if not isinstance(self.tsne, tsne):
-            self.perform_dimension_reduction("tsne", **kwargs)
-        self.tsne._validate()
-        df = deepcopy(self.tsne.data.transpose().reset_index(names="ID"))
-        df = pd.merge(df, self.description, on="ID")
-        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
-
-    def _umap_plot(
-        self,
-        xaxis: str = "UMAP1",
-        yaxis: str = "UMAP2",
-        colour_by: str = "ID",
-        **kwargs,
-    ):
-        if not isinstance(self.umap, umap):
-            self.perform_dimension_reduction("umap", **kwargs)
-        self.umap._validate()
-        df = deepcopy(self.umap.data.transpose().reset_index(names="ID"))
-        df = pd.merge(df, self.description, on="ID")
-        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _violin_plot(self, **kwargs):
         sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)

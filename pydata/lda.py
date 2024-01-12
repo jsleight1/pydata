@@ -46,6 +46,11 @@ class lda(drdata):
 
     target = property(_get_target, _set_target)
 
+    def plot(self, colour_by=None, **kwargs):
+        if colour_by is None: 
+            colour_by = self.target
+        super().plot(colour_by=colour_by)
+
     @staticmethod
     def analyse(
         data: ldata, target: str, n_comp: int = 2, scaling: str = "Zscore", **kwargs
