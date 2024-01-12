@@ -11,7 +11,7 @@ class lda(drdata):
     Class to perform and store results from linear discriminant analysis (LDA)
     """
 
-    def __init__(self, data, description, annotation, target=None):
+    def __init__(self, data, description, annotation, scaling=None, target=None):
         """
         Parameters
         ----------
@@ -27,7 +27,7 @@ class lda(drdata):
             String describing target variable for LDA calculations
         """
 
-        super().__init__(data, description, annotation)
+        super().__init__(data, description, annotation, scaling)
         self._target = target
 
     def __str__(self):
@@ -47,17 +47,20 @@ class lda(drdata):
     target = property(_get_target, _set_target)
 
     @staticmethod
-    def analyse(data: ldata, target: str, n_comp: int = 2, **kwargs):
+    def analyse(
+        data: ldata, target: str, n_comp: int = 2, scaling: str = "Zscore", **kwargs
+    ):
         """
         Parameters
         ----------
         target: String indicating the classifier variable to use for LDA.
         n_comp: Number of LDA components to compute. Default is 2.
+        scaling: Scaling method before LDA calculation. Default is "Zscore".
         **kwargs: Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
         """
         assert target in data.description.columns, target + " is not in description"
         target_df = deepcopy(data.description[target])
-        dat = deepcopy(data.data.transpose())
+        dat = data.scale(method=scaling)
         l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
         fit = l.fit(dat, target_df).transform(dat)
         fit = pd.DataFrame(fit, columns=["LDA" + str(i) for i in range(1, n_comp + 1)])
@@ -67,5 +70,6 @@ class lda(drdata):
             description=data.description,
             annotation=pd.DataFrame(fit.columns.tolist(), columns=["ID"]),
             target=target,
+            scaling=scaling,
         )
         return out

@@ -12,7 +12,7 @@ class tsne(drdata):
     embedding (t-SNE)
     """
 
-    def __init__(self, data, description, annotation):
+    def __init__(self, data, description, annotation, scaling=None):
         """
         Parameters
         ----------
@@ -25,24 +25,26 @@ class tsne(drdata):
         annotation: pandas.DataFrame
             A DataFrame of t-SNE components annotation.
         """
-        super().__init__(data, description, annotation)
+        super().__init__(data, description, annotation, scaling)
 
     @staticmethod
-    def analyse(data: ldata, n_comp: int = 2, **kwargs):
+    def analyse(data: ldata, n_comp: int = 2, scaling: str = "Zscore", **kwargs):
         """
         Parameters
         ----------
         n_comp: Number of t-SNE components to compute. Default is 2.
+        scaling: Scaling method before TSNE calculation. Default is "Zscore".
         **kwargs: Passed to sklearn.manifold.TSNE
         """
-
+        dat = data.scale(method=scaling)
         t = TSNE(n_components=n_comp, **kwargs)
-        fit = t.fit_transform(data.data.transpose())
+        fit = t.fit_transform(dat)
         fit = pd.DataFrame(fit, columns=["TSNE" + str(i) for i in range(1, n_comp + 1)])
         fit.index = data.description["ID"].tolist()
         out = tsne(
             data=fit.transpose(),
             description=data.description,
             annotation=pd.DataFrame(fit.columns.tolist(), columns=["ID"]),
+            scaling=scaling,
         )
         return out

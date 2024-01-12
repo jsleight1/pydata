@@ -4,7 +4,6 @@ import pandas as pd
 from umap import UMAP
 import re
 from copy import deepcopy
-from sklearn.preprocessing import StandardScaler
 
 
 class umap(drdata):
@@ -29,24 +28,7 @@ class umap(drdata):
             String describing the scaling procedure used before UMAP e.g.
             zscore.
         """
-        super().__init__(data, description, annotation)
-        self._scaling = scaling
-
-    def __str__(self):
-        out = super().__str__()
-        return out + f"\n - Scaling: {self.scaling}"
-
-    def __repr__(self):
-        out = super().__repr__()
-        return out + f"\n - Scaling: {self.scaling}"
-
-    def _get_scaling(self):
-        return getattr(self, "_scaling")
-
-    def _set_scaling(self, value: str):
-        self._scaling = value
-
-    scaling = property(_get_scaling, _set_scaling)
+        super().__init__(data, description, annotation, scaling)
 
     @staticmethod
     def analyse(data: ldata, n_comp: int = 2, scaling: str = "Zscore", **kwargs):
@@ -58,15 +40,7 @@ class umap(drdata):
         scaling: Scaling method before UMAP calculation. Default is "Zscore".
         **kwargs: Passed to UMAP method.
         """
-        dat = deepcopy(data.data.transpose())
-        match scaling:
-            case "none":
-                dat = dat
-            case "Zscore":
-                dat = StandardScaler().fit_transform(dat)
-            case _:
-                raise Exception(scaling + " scaling method not implemented")
-
+        dat = data.scale(method=scaling)
         u = UMAP(n_components=n_comp, random_state=42, **kwargs)
         fit = u.fit_transform(dat)
         fit = pd.DataFrame(fit, columns=["UMAP" + str(i) for i in range(1, n_comp + 1)])

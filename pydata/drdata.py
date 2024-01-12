@@ -7,7 +7,7 @@ class drdata(ldata):
     Class to store results from a dimension reduction analysis
     """
 
-    def __init__(self, data, description, annotation):
+    def __init__(self, data, description, annotation, scaling=None):
         """
         Parameters
         ----------
@@ -19,18 +19,24 @@ class drdata(ldata):
             columns names of data attribute.
         annotation : pandas.DataFrame
             A DataFrame of reduce dimensions annotation
+        scaling: str
+            String describing the scaling procedure used before PCA e.g. "None", "Zscore".
         """
 
-        super().__init__(data, description, annotation)
+        out = super().__init__(data, description, annotation)
+        self._scaling = scaling
+        self._validate()
 
     def __str__(self):
         out = super().__str__()
         out = re.sub("features", f"{super().format_type()} components", out)
+        out = out + f"\n - Scaling: {self.scaling}"
         return out
 
     def __repr__(self):
-        out = super().__repr__()
+        out = super().__str__()
         out = re.sub("features", f"{super().format_type()} components", out)
+        out = out + f"\n - Scaling: {self.scaling}"
         return out
 
     def _get_rownames(self):
@@ -50,6 +56,14 @@ class drdata(ldata):
         super(drdata, self)._set_rownames(value)
 
     rownames = property(_get_rownames, _set_rownames)
+
+    def _get_scaling(self):
+        return getattr(self, "_scaling")
+
+    def _set_scaling(self, value: str):
+        self._scaling = value
+
+    scaling = property(_get_scaling, _set_scaling)
 
     def _validate(self):
         t = super().format_type().upper()

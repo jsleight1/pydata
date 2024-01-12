@@ -5,7 +5,6 @@ import numpy as np
 import re
 from copy import deepcopy
 from sklearn.decomposition import PCA, KernelPCA
-from sklearn.preprocessing import StandardScaler
 
 
 class pca(drdata):
@@ -32,18 +31,17 @@ class pca(drdata):
             String describing the method used to perform PCA e.g. SVD
         """
 
-        super().__init__(data, description, annotation)
-        self._scaling = scaling
+        super().__init__(data, description, annotation, scaling)
         self._method = method
         self._validate()
 
     def __str__(self):
         out = super().__str__()
-        return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
+        return out + f"\n - Method: {self.method}"
 
     def __repr__(self):
         out = super().__repr__()
-        return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
+        return out + f"\n - Method: {self.method}"
 
     def _get_method(self):
         return getattr(self, "_method")
@@ -52,14 +50,6 @@ class pca(drdata):
         self._method = value
 
     method = property(_get_method, _set_method)
-
-    def _get_scaling(self):
-        return getattr(self, "_scaling")
-
-    def _set_scaling(self, value: str):
-        self._scaling = value
-
-    scaling = property(_get_scaling, _set_scaling)
 
     def _get_annotation(self):
         return super(pca, self)._get_annotation()
@@ -106,15 +96,7 @@ class pca(drdata):
             value decomposition.
         **kwargs: Passed to PCA method.
         """
-        dat = deepcopy(data.data.transpose())
-        match scaling:
-            case "none":
-                dat = dat
-            case "Zscore":
-                dat = StandardScaler().fit_transform(dat)
-            case _:
-                raise Exception(scaling + " scaling method not implemented")
-
+        dat = data.scale(method=scaling)
         match method:
             case "SVD":
                 pcs = pca._svd_pca(

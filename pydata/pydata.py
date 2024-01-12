@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import gcf
+from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 from copy import deepcopy
 
@@ -118,6 +119,17 @@ class pydata(ldata):
         self._umap = value
 
     umap = property(_get_umap, _set_umap)
+
+    def scale(self, method, **kwargs):
+        dat = deepcopy(self.data.transpose())
+        match method:
+            case "none":
+                dat = dat
+            case "Zscore":
+                dat = StandardScaler().fit_transform(dat)
+            case _:
+                raise Exception(method + " scaling method not implemented")
+        return dat
 
     def subset(self, samples=None, features=None):
         out = super().subset(samples=samples, features=features)
