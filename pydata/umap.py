@@ -34,12 +34,10 @@ class umap(drdata):
 
     def __str__(self):
         out = super().__str__()
-        out = re.sub("features", "UMAP projections", out)
         return out + f"\n - Scaling: {self.scaling}"
 
     def __repr__(self):
         out = super().__repr__()
-        out = re.sub("features", "UMAP projections", out)
         return out + f"\n - Scaling: {self.scaling}"
 
     def _get_scaling(self):

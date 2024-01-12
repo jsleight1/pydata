@@ -23,6 +23,16 @@ class drdata(ldata):
 
         super().__init__(data, description, annotation)
 
+    def __str__(self):
+        out = super().__str__()
+        out = re.sub("features", f"{super().format_type()} components", out)
+        return out
+
+    def __repr__(self):
+        out = super().__repr__()
+        out = re.sub("features", f"{super().format_type()} components", out)
+        return out
+
     def _get_rownames(self):
         return super(drdata, self)._get_rownames()
 

@@ -32,12 +32,10 @@ class lda(drdata):
 
     def __str__(self):
         out = super().__str__()
-        out = re.sub("features", "LDA components", out)
         return out + f"\n - Target: {self.target}"
 
     def __repr__(self):
         out = super().__repr__()
-        out = re.sub("features", "LDA components", out)
         return out + f"\n - Target: {self.target}"
 
     def _get_target(self):

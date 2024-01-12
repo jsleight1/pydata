@@ -1,4 +1,4 @@
 pca object:
- - Dimensions: 5 (samples) x 5 (principal components)
+ - Dimensions: 5 (samples) x 5 (pca components)
  - Scaling: None
  - Method: None

@@ -39,12 +39,10 @@ class pca(drdata):
 
     def __str__(self):
         out = super().__str__()
-        out = re.sub("features", "principal components", out)
         return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
 
     def __repr__(self):
         out = super().__repr__()
-        out = re.sub("features", "principal components", out)
         return out + f"\n - Scaling: {self.scaling}\n - Method: {self.method}"
 
     def _get_method(self):

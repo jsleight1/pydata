@@ -27,16 +27,6 @@ class tsne(drdata):
         """
         super().__init__(data, description, annotation)
 
-    def __str__(self):
-        out = super().__str__()
-        out = re.sub("features", "t-SNE components", out)
-        return out
-
-    def __repr__(self):
-        out = super().__repr__()
-        out = re.sub("features", "t-SNE components", out)
-        return out
-
     @staticmethod
     def analyse(data: ldata, n_comp: int = 2, **kwargs):
         """

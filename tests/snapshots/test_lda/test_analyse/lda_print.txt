@@ -1,3 +1,3 @@
 lda object:
- - Dimensions: 150 (samples) x 2 (LDA components)
+ - Dimensions: 150 (samples) x 2 (lda components)
  - Target: Species
