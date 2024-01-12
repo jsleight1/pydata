@@ -42,23 +42,6 @@ class umap(drdata):
         out = re.sub("features", "UMAP projections", out)
         return out + f"\n - Scaling: {self.scaling}"
 
-    def _get_rownames(self):
-        return super(umap, self)._get_rownames()
-
-    def _set_rownames(self, value: list):
-        """
-        Set feature names for umap object.
-        ------------------------------------
-        value: list
-            A list of feature names.
-        """
-        assert all(
-            [bool(re.search("^UMAP\\d+", i)) for i in value]
-        ), "rownames must be in format UMAP1, UMAP2, etc"
-        super(umap, self)._set_rownames(value)
-
-    rownames = property(_get_rownames, _set_rownames)
-
     def _get_scaling(self):
         return getattr(self, "_scaling")
 

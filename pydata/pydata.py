@@ -186,7 +186,7 @@ class pydata(ldata):
         return df
 
     def _pca_plot(
-        self, xaxis: str = "PC1", yaxis: str = "PC2", colour_by: str = "ID", **kwargs
+        self, xaxis: str = "PCA1", yaxis: str = "PCA2", colour_by: str = "ID", **kwargs
     ):
         if not isinstance(self.pcs, pca):
             self.perform_dimension_reduction("pca", **kwargs)
@@ -196,7 +196,7 @@ class pydata(ldata):
         sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
 
     def _lda_plot(
-        self, xaxis: str = "LD1", yaxis: str = "LD2", colour_by=None, **kwargs
+        self, xaxis: str = "LDA1", yaxis: str = "LDA2", colour_by=None, **kwargs
     ):
         if not isinstance(self.lda, lda):
             self.perform_dimension_reduction("lda", **kwargs)

@@ -8,11 +8,11 @@ import pandas as pd
 np.random.seed(38)
 lds = pd.DataFrame(
     np.random.randn(5, 5),
-    index=["LD" + str(i) for i in range(1, 6)],
+    index=["LDA" + str(i) for i in range(1, 6)],
     columns=["Sample" + str(i) for i in range(1, 6)],
 )
 desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
-annot = pd.DataFrame({"ID": ["LD" + str(i) for i in range(1, 6)]})
+annot = pd.DataFrame({"ID": ["LDA" + str(i) for i in range(1, 6)]})
 
 
 def test_lda_generation(snapshot):
@@ -85,7 +85,7 @@ def test_dimnames():
 
     with pytest.raises(AssertionError) as err:
         x.dimnames = [["A", "B", "C", "D", "E"], x.colnames]
-    assert "rownames must be in format LD1, LD2, etc" in str(err.value)
+    assert "rownames must be in format LDA1, LDA2, etc" in str(err.value)
 
     x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]

@@ -48,27 +48,10 @@ class lda(drdata):
 
     target = property(_get_target, _set_target)
 
-    def _get_rownames(self):
-        return super(lda, self)._get_rownames()
-
-    def _set_rownames(self, value: list):
-        """
-        Set feature names for pca object.
-        ------------------------------------
-        value: list
-            A list of feature names.
-        """
-        assert all(
-            [bool(re.search("^LD\\d+", i)) for i in value]
-        ), "rownames must be in format LD1, LD2, etc"
-        super(lda, self)._set_rownames(value)
-
-    rownames = property(_get_rownames, _set_rownames)
-
     def _validate(self):
         assert all(
-            [bool(re.search("^LD\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format LD1, LD2, etc"
+            [bool(re.search("^LDA\\d+", i)) for i in self.data.index]
+        ), "rownames must be in format LDA1, LDA2, etc"
         super()._validate()
 
     @staticmethod
@@ -85,7 +68,7 @@ class lda(drdata):
         dat = deepcopy(data.data.transpose())
         l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
         fit = l.fit(dat, target_df).transform(dat)
-        fit = pd.DataFrame(fit, columns=["LD" + str(i) for i in range(1, n_comp + 1)])
+        fit = pd.DataFrame(fit, columns=["LDA" + str(i) for i in range(1, n_comp + 1)])
         fit.index = data.description["ID"].tolist()
         out = lda(
             data=fit.transpose(),

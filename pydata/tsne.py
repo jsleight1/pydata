@@ -37,23 +37,6 @@ class tsne(drdata):
         out = re.sub("features", "t-SNE components", out)
         return out
 
-    def _get_rownames(self):
-        return super(tsne, self)._get_rownames()
-
-    def _set_rownames(self, value: list):
-        """
-        Set feature names for pca object.
-        ------------------------------------
-        value: list
-            A list of feature names.
-        """
-        assert all(
-            [bool(re.search("^TSNE\\d+", i)) for i in value]
-        ), "rownames must be in format TSNE1, TSNE2, etc"
-        super(tsne, self)._set_rownames(value)
-
-    rownames = property(_get_rownames, _set_rownames)
-
     def _validate(self):
         assert all(
             [bool(re.search("^TSNE\\d+", i)) for i in self.data.index]

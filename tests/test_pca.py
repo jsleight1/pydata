@@ -8,13 +8,13 @@ import pandas as pd
 np.random.seed(38)
 pcs = pd.DataFrame(
     np.random.randn(5, 5),
-    index=["PC" + str(i) for i in range(1, 6)],
+    index=["PCA" + str(i) for i in range(1, 6)],
     columns=["Sample" + str(i) for i in range(1, 6)],
 )
 desc = pd.DataFrame({"ID": ["Sample" + str(i) for i in range(1, 6)]})
 annot = pd.DataFrame(
     {
-        "ID": ["PC" + str(i) for i in range(1, 6)],
+        "ID": ["PCA" + str(i) for i in range(1, 6)],
         "Percentage variance explained": [52.5, 32.5, 8.1, 5.2, 1.7],
     }
 )
@@ -49,7 +49,7 @@ def test_annotation(snapshot):
     new_annot["ID"] = ["a", "b", "c", "d", "e"]
     with pytest.raises(AssertionError) as err:
         x.annotation = new_annot
-    assert "ID column must be in format PC1, PC2, etc" in str(err.value)
+    assert "ID column must be in format PCA1, PCA2, etc" in str(err.value)
 
     with pytest.raises(AssertionError) as err:
         x.annotation = annot.drop(["Percentage variance explained"], axis=1)
@@ -99,7 +99,7 @@ def test_dimnames():
 
     with pytest.raises(AssertionError) as err:
         x.dimnames = [["A", "B", "C", "D", "E"], x.colnames]
-    assert "rownames must be in format PC1, PC2, etc" in str(err.value)
+    assert "rownames must be in format PCA1, PCA2, etc" in str(err.value)
 
     x.dimnames = [x.rownames, ["A", "B", "C", "D", "E"][::-1]]
     assert x.colnames == ["A", "B", "C", "D", "E"][::-1]

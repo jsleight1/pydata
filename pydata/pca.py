@@ -75,8 +75,8 @@ class pca(drdata):
             row names of data attribute.
         """
         assert all(
-            [bool(re.search("^PC\\d+", i)) for i in value["ID"]]
-        ), "ID column must be in format PC1, PC2, etc"
+            [bool(re.search("^PCA\\d+", i)) for i in value["ID"]]
+        ), "ID column must be in format PCA1, PCA2, etc"
         assert (
             "Percentage variance explained" in value.columns
         ), "annotation must contain 'Percentage variance explained' column"
@@ -84,27 +84,10 @@ class pca(drdata):
 
     annotation = property(_get_annotation, _set_annotation)
 
-    def _get_rownames(self):
-        return super(pca, self)._get_rownames()
-
-    def _set_rownames(self, value: list):
-        """
-        Set feature names for pca object.
-        ------------------------------------
-        value: list
-            A list of feature names.
-        """
-        assert all(
-            [bool(re.search("^PC\\d+", i)) for i in value]
-        ), "rownames must be in format PC1, PC2, etc"
-        super(pca, self)._set_rownames(value)
-
-    rownames = property(_get_rownames, _set_rownames)
-
     def _validate(self):
         assert all(
-            [bool(re.search("^PC\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format PC1, PC2, etc"
+            [bool(re.search("^PCA\\d+", i)) for i in self.data.index]
+        ), "rownames must be in format PCA1, PCA2, etc"
         assert (
             "Percentage variance explained" in self.annotation.columns
         ), "annotation must contain 'Percentage variance explained' column"
@@ -159,7 +142,7 @@ class pca(drdata):
         p_c = p.fit_transform(x)
         p_df = pd.DataFrame(
             data=p_c,
-            columns=["PC" + str(i) for i in range(1, n_comp + 1)],
+            columns=["PCA" + str(i) for i in range(1, n_comp + 1)],
             index=desc["ID"].tolist(),
         )
         var_expl = pd.DataFrame(
@@ -181,7 +164,7 @@ class pca(drdata):
         p_c = p.fit_transform(x)
         p_df = pd.DataFrame(
             data=p_c,
-            columns=["PC" + str(i) for i in range(1, n_comp + 1)],
+            columns=["PCA" + str(i) for i in range(1, n_comp + 1)],
             index=desc["ID"].tolist(),
         )
         var_expl = pd.DataFrame(

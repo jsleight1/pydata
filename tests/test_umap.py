@@ -114,7 +114,7 @@ def test_concat():
     assert "Cannot concat umap object" in str(err.value)
 
 
-@pytest.mark.filterwarnings('ignore::UserWarning')
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_analyse(snapshot):
     x = pydata.example_pydata().subset(["Sample1", "Sample2", "Sample3", "Sample4"])
 

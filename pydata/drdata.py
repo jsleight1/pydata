@@ -23,6 +23,24 @@ class drdata(ldata):
 
         super().__init__(data, description, annotation)
 
+    def _get_rownames(self):
+        return super(drdata, self)._get_rownames()
+
+    def _set_rownames(self, value: list):
+        """
+        Set feature names for drdata object.
+        ------------------------------------
+        value: list
+            A list of feature names.
+        """
+        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1].upper()
+        assert all(
+            [bool(re.search(f"^{t}\\d+", i)) for i in value]
+        ), f"rownames must be in format {t}1, {t}2, etc"
+        super(drdata, self)._set_rownames(value)
+
+    rownames = property(_get_rownames, _set_rownames)
+
     def subset(self):
         t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
         raise Exception(f"Cannot subset {t} object")
