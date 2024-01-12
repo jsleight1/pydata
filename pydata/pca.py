@@ -85,9 +85,6 @@ class pca(drdata):
     annotation = property(_get_annotation, _set_annotation)
 
     def _validate(self):
-        assert all(
-            [bool(re.search("^PCA\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format PCA1, PCA2, etc"
         assert (
             "Percentage variance explained" in self.annotation.columns
         ), "annotation must contain 'Percentage variance explained' column"

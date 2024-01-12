@@ -37,12 +37,6 @@ class tsne(drdata):
         out = re.sub("features", "t-SNE components", out)
         return out
 
-    def _validate(self):
-        assert all(
-            [bool(re.search("^TSNE\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format TSNE1, TSNE2, etc"
-        super()._validate()
-
     @staticmethod
     def analyse(data: ldata, n_comp: int = 2, **kwargs):
         """

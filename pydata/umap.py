@@ -50,12 +50,6 @@ class umap(drdata):
 
     scaling = property(_get_scaling, _set_scaling)
 
-    def _validate(self):
-        assert all(
-            [bool(re.search("^UMAP\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format UMAP1, UMAP2, etc"
-        super()._validate()
-
     @staticmethod
     def analyse(data: ldata, n_comp: int = 2, scaling: str = "Zscore", **kwargs):
         """

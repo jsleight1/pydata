@@ -48,12 +48,6 @@ class lda(drdata):
 
     target = property(_get_target, _set_target)
 
-    def _validate(self):
-        assert all(
-            [bool(re.search("^LDA\\d+", i)) for i in self.data.index]
-        ), "rownames must be in format LDA1, LDA2, etc"
-        super()._validate()
-
     @staticmethod
     def analyse(data: ldata, target: str, n_comp: int = 2, **kwargs):
         """

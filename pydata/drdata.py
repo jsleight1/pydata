@@ -33,7 +33,7 @@ class drdata(ldata):
         value: list
             A list of feature names.
         """
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1].upper()
+        t = super().format_type().upper()
         assert all(
             [bool(re.search(f"^{t}\\d+", i)) for i in value]
         ), f"rownames must be in format {t}1, {t}2, etc"
@@ -41,14 +41,18 @@ class drdata(ldata):
 
     rownames = property(_get_rownames, _set_rownames)
 
+    def _validate(self):
+        t = super().format_type().upper()
+        assert all(
+            [bool(re.search(f"^{t}\\d+", i)) for i in self.rownames]
+        ), f"rownames must be in format {t}1, {t}2, etc"
+        super()._validate()
+
     def subset(self):
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
-        raise Exception(f"Cannot subset {t} object")
+        raise Exception(f"Cannot subset {super().format_type()} object")
 
     def transpose(self):
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
-        raise Exception(f"Cannot transpose {t} object")
+        raise Exception(f"Cannot transpose {super().format_type()} object")
 
     def concat(self, objs=[]):
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
-        raise Exception(f"Cannot concat {t} object")
+        raise Exception(f"Cannot concat {super().format_type()} object")

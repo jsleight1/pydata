@@ -290,3 +290,6 @@ class ldata:
         ).reset_index(drop=True)
         self._validate()
         return self
+
+    def format_type(self):
+        return re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
