@@ -69,7 +69,7 @@ class umap(drdata):
 
     def _validate(self):
         assert all(
-            [bool(re.search("^UMAP\d+", i)) for i in self.data.index]
+            [bool(re.search("^UMAP\\d+", i)) for i in self.data.index]
         ), "rownames must be in format UMAP1, UMAP2, etc"
         super()._validate()
 
