@@ -100,7 +100,7 @@ print(x.pcs)
 ```
 
     pca object:
-     - Dimensions: 150 (samples) x 2 (principal components)
+     - Dimensions: 150 (samples) x 2 (pca components)
      - Scaling: Zscore
      - Method: SVD
 
@@ -108,21 +108,21 @@ print(x.pcs)
 print(x.pcs.data)
 ```
 
-          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
-    PC1 -2.264703 -2.080961 -2.364229 -2.299384 -2.389842 -2.075631 -2.444029   
-    PC2  0.480027 -0.674134 -0.341908 -0.597395  0.646835  1.489178  0.047644   
+           Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
+    PCA1 -2.264703 -2.080961 -2.364229 -2.299384 -2.389842 -2.075631 -2.444029   
+    PCA2  0.480027 -0.674134 -0.341908 -0.597395  0.646835  1.489178  0.047644   
 
-          Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
-    PC1 -2.232847 -2.334640 -2.184328  ...   2.014810   1.901784   1.157882   
-    PC2  0.223148 -1.115328 -0.469014  ...   0.613886   0.689575  -0.698870   
+           Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
+    PCA1 -2.232847 -2.334640 -2.184328  ...   2.014810   1.901784   1.157882   
+    PCA2  0.223148 -1.115328 -0.469014  ...   0.613886   0.689575  -0.698870   
 
-         Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
-    PC1   2.040558   1.998147   1.870503   1.564580   1.521170   1.372788   
-    PC2   0.867521   1.049169   0.386966  -0.896687   0.269069   1.011254   
+          Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
+    PCA1   2.040558   1.998147   1.870503   1.564580   1.521170   1.372788   
+    PCA2   0.867521   1.049169   0.386966  -0.896687   0.269069   1.011254   
 
-         Sample150  
-    PC1   0.960656  
-    PC2  -0.024332  
+          Sample150  
+    PCA1   0.960656  
+    PCA2  -0.024332  
 
     [2 rows x 150 columns]
 
@@ -149,9 +149,9 @@ print(x.pcs.description)
 print(x.pcs.annotation)
 ```
 
-        ID  Percentage variance explained
-    0  PC1                      72.962445
-    1  PC2                      22.850762
+         ID  Percentage variance explained
+    0  PCA1                      72.962445
+    1  PCA2                      22.850762
 
 ### LDA
 
@@ -164,28 +164,29 @@ print(x.lda)
 ```
 
     lda object:
-     - Dimensions: 150 (samples) x 2 (LDA components)
+     - Dimensions: 150 (samples) x 2 (lda components)
+     - Scaling: Zscore
      - Target: Species
 
 ``` python
 print(x.lda.data)
 ```
 
-          Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
-    LD1  8.061800  7.128688  7.489828  6.813201  8.132309  7.701947  7.212618   
-    LD2 -0.300421  0.786660  0.265384  0.670631 -0.514463 -1.461721 -0.355836   
+           Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
+    LDA1  8.061800  7.128688  7.489828  6.813201  8.132309  7.701947  7.212618   
+    LDA2 -0.300421  0.786660  0.265384  0.670631 -0.514463 -1.461721 -0.355836   
 
-          Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
-    LD1  7.605294  6.560552  7.343060  ...  -6.653087  -5.105559  -5.507480   
-    LD2  0.011634  1.015164  0.947319  ...  -1.805320  -1.992182   0.035814   
+           Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
+    LDA1  7.605294  6.560552  7.343060  ...  -6.653087  -5.105559  -5.507480   
+    LDA2  0.011634  1.015164  0.947319  ...  -1.805320  -1.992182   0.035814   
 
-         Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
-    LD1  -6.796019  -6.847359  -5.645003  -5.179565  -4.967741  -5.886145   
-    LD2  -1.460687  -2.428951  -1.677717   0.363475  -0.821141  -2.345091   
+          Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
+    LDA1  -6.796019  -6.847359  -5.645003  -5.179565  -4.967741  -5.886145   
+    LDA2  -1.460687  -2.428951  -1.677717   0.363475  -0.821141  -2.345091   
 
-         Sample150  
-    LD1  -4.683154  
-    LD2  -0.332034  
+          Sample150  
+    LDA1  -4.683154  
+    LDA2  -0.332034  
 
     [2 rows x 150 columns]
 
@@ -200,27 +201,28 @@ print(x.tsne)
 ```
 
     tsne object:
-     - Dimensions: 150 (samples) x 2 (t-SNE components)
+     - Dimensions: 150 (samples) x 2 (tsne components)
+     - Scaling: Zscore
 
 ``` python
 print(x.tsne.data)
 ```
 
              Sample1    Sample2    Sample3    Sample4    Sample5    Sample6  \
-    TSNE1 -23.580931 -26.291704 -26.193335 -26.638256 -23.545013 -21.608295   
-    TSNE2  -0.522060  -1.093696   0.053057  -0.321696  -0.941377  -0.810961   
+    TSNE1 -26.283514 -22.458551 -23.502516 -22.724354 -26.786913 -28.650599   
+    TSNE2  -0.934040  -1.582246  -0.568364  -0.502646  -0.364475  -0.741429   
 
              Sample7    Sample8    Sample9   Sample10  ...  Sample141  Sample142  \
-    TSNE1 -25.960800 -24.347078 -27.391277 -25.768770  ...   12.46354  11.074054   
-    TSNE2   0.458465  -0.496077  -0.301682  -0.945293  ...   -4.81950  -4.504594   
+    TSNE1 -24.550871 -25.286180 -21.671492 -23.178801  ...  12.926679  12.963368   
+    TSNE2   0.185788  -0.886462  -0.708517  -1.504229  ...   0.023204   0.624381   
 
            Sample143  Sample144  Sample145  Sample146  Sample147  Sample148  \
-    TSNE1  11.334437  12.740586  13.016592  11.363099  10.691204  11.097084   
-    TSNE2   0.373205  -5.528937  -5.062658  -4.289077  -1.015444  -3.357184   
+    TSNE1   7.881903  13.546475  13.831253   12.38452   6.782580  11.200541   
+    TSNE2  -1.946566   0.282336  -0.369666    0.20085  -2.073794   0.227081   
 
            Sample149  Sample150  
-    TSNE1  13.195991  10.712410  
-    TSNE2  -3.724547   0.427633  
+    TSNE1  13.349828   8.691272  
+    TSNE2  -1.299510   0.213793  
 
     [2 rows x 150 columns]
 
@@ -239,7 +241,7 @@ print(x.umap)
 ```
 
     umap object:
-     - Dimensions: 150 (samples) x 2 (UMAP projections)
+     - Dimensions: 150 (samples) x 2 (umap components)
      - Scaling: Zscore
 
 ``` python
