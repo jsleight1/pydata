@@ -28,7 +28,7 @@ class pca(drdata):
             A DataFrame of PC annotation with ID column matching
             row names of data attribute e.g. PC1, PC2, etc
         scaling: str
-            String describing the scaling procedure used before PCA e.g. Zscore
+            String describing the scaling procedure used before PCA e.g. zscore
         method: str
             String describing the method used to perform PCA e.g. SVD
         """
@@ -112,23 +112,27 @@ class pca(drdata):
 
     @staticmethod
     def analyse(
-        data: ldata,
+        data, 
         n_comp: int = 2,
-        scaling: str = "Zscore",
+        scaling: str = "zscore",
         method: str = "SVD",
         **kwargs,
     ):
-        """
+        """Perform PCA dimension reduction
         Parameters
         ----------
-        data: ldata object
+        data: pydata object.
         n_comp: Number of principal component to compute. Default is 2.
-        scaling: Scaling method before PCA calculation. Default is "Zscore".
+        scaling: Scaling method before PCA calculation. Default is "zscore".
         method: PCA method for PCA calculation: Default is "SVD" for singular
             value decomposition.
         **kwargs: Passed to PCA method.
+        ---------
+        Returns
+        ---------
+        pca object.
         """
-        dat = data.scale(method=scaling)
+        dat = drdata.scale(data=data, method=scaling)
         match method:
             case "SVD":
                 pcs = pca._svd_pca(

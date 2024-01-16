@@ -28,15 +28,20 @@ class tsne(drdata):
         super().__init__(data, description, annotation, scaling)
 
     @staticmethod
-    def analyse(data: ldata, n_comp: int = 2, scaling: str = "Zscore", **kwargs):
-        """
+    def analyse(data, n_comp: int = 2, scaling: str = "zscore", **kwargs):
+        """Perform t-SNE dimension reduction
         Parameters
         ----------
+        data: pydata object.
         n_comp: Number of t-SNE components to compute. Default is 2.
-        scaling: Scaling method before TSNE calculation. Default is "Zscore".
+        scaling: Scaling method before TSNE calculation. Default is "zscore".
         **kwargs: Passed to sklearn.manifold.TSNE
+        ---------
+        Returns
+        ---------
+        tsne object.
         """
-        dat = data.scale(method=scaling)
+        dat = drdata.scale(data=data, method=scaling)
         t = TSNE(n_components=n_comp, **kwargs)
         fit = t.fit_transform(dat)
         fit = pd.DataFrame(fit, columns=["TSNE" + str(i) for i in range(1, n_comp + 1)])

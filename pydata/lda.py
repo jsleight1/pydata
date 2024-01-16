@@ -53,19 +53,24 @@ class lda(drdata):
 
     @staticmethod
     def analyse(
-        data: ldata, target: str, n_comp: int = 2, scaling: str = "Zscore", **kwargs
+        data, target: str, n_comp: int = 2, scaling: str = "zscore", **kwargs
     ):
-        """
+        """Perform LDA dimension reduction
         Parameters
         ----------
+        data: pydata object.
         target: String indicating the classifier variable to use for LDA.
         n_comp: Number of LDA components to compute. Default is 2.
-        scaling: Scaling method before LDA calculation. Default is "Zscore".
+        scaling: Scaling method before LDA calculation. Default is "zscore".
         **kwargs: Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
+        ---------
+        Returns
+        ---------
+        lda object.
         """
         assert target in data.description.columns, target + " is not in description"
         target_df = deepcopy(data.description[target])
-        dat = data.scale(method=scaling)
+        dat = drdata.scale(data=data, method=scaling)
         l = LinearDiscriminantAnalysis(n_components=n_comp, **kwargs)
         fit = l.fit(dat, target_df).transform(dat)
         fit = pd.DataFrame(fit, columns=["LDA" + str(i) for i in range(1, n_comp + 1)])

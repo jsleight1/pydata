@@ -2,6 +2,7 @@ from pydata.ldata import ldata
 import re
 from copy import deepcopy
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 import plotly.express as px
 
@@ -24,7 +25,7 @@ class drdata(ldata):
         annotation : pandas.DataFrame
             A DataFrame of reduce dimensions annotation
         scaling: str
-            String describing the scaling procedure used before PCA e.g. "None", "Zscore".
+            String describing the scaling procedure used before PCA e.g. "None", "zscore".
         """
 
         out = super().__init__(data, description, annotation)
@@ -68,6 +69,36 @@ class drdata(ldata):
         self._scaling = value
 
     scaling = property(_get_scaling, _set_scaling)
+
+    @staticmethod
+    def scale(data: ldata, method: str="none", **kwargs):
+        """
+        Method for scaling pydata object on feature level prior to dimension 
+        reduction.
+        ----------
+        Parameters
+        ----------
+        data: ldata object.
+        method: Scaling method. Options: "none", "zscore". Default is "none".
+        **kwargs: Passed to methods.
+        ---------
+        Returns
+        ---------
+        pd.DataFrame of scaled data.
+        """
+        dat = deepcopy(data.data.transpose())
+        match method:
+            case "none":
+                dat = dat
+            case "zscore":
+                dat = pd.DataFrame(
+                    StandardScaler().fit_transform(dat), 
+                    index = data.colnames, 
+                    columns = data.rownames
+                )
+            case _:
+                raise Exception(method + " scaling method not implemented")
+        return dat
 
     def _validate(self):
         t = super().format_type().upper()
