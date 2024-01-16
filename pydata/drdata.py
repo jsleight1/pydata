@@ -102,6 +102,8 @@ class drdata(ldata):
         df = deepcopy(self.data.transpose().reset_index(names="ID"))
         df = pd.merge(df, self.description, on="ID")
         if interactive:
-            px.scatter(df, x=xaxis, y=yaxis, color=colour_by, **kwargs).show()
+            px.scatter(
+                df, x=xaxis, y=yaxis, color=colour_by, hover_name="ID", **kwargs
+            ).show()
         else:
             sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by, **kwargs)
