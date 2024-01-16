@@ -115,7 +115,7 @@ x.plot(type="pca", colour_by="Species")
 ```
 
 ```{python}
-x.plot(type="pca", dr_type="elbow")
+x.plot(type="pca_elbow")
 ```
 
 ```{python}

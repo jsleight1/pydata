@@ -34,13 +34,13 @@ class drdata(ldata):
 
     def __str__(self):
         out = super().__str__()
-        out = re.sub("features", f"{super().format_type()} components", out)
+        out = re.sub("features", f"{super()._format_type()} components", out)
         out = out + f"\n - Scaling: {self.scaling}"
         return out
 
     def __repr__(self):
         out = super().__str__()
-        out = re.sub("features", f"{super().format_type()} components", out)
+        out = re.sub("features", f"{super()._format_type()} components", out)
         out = out + f"\n - Scaling: {self.scaling}"
         return out
 
@@ -54,7 +54,7 @@ class drdata(ldata):
         value: list
             A list of feature names.
         """
-        t = super().format_type().upper()
+        t = super()._format_type().upper()
         assert all(
             [bool(re.search(f"^{t}\\d+", i)) for i in value]
         ), f"rownames must be in format {t}1, {t}2, etc"
@@ -71,9 +71,9 @@ class drdata(ldata):
     scaling = property(_get_scaling, _set_scaling)
 
     @staticmethod
-    def scale(data: ldata, method: str="none", **kwargs):
+    def scale(data: ldata, method: str = "none", **kwargs):
         """
-        Method for scaling pydata object on feature level prior to dimension 
+        Method for scaling pydata object on feature level prior to dimension
         reduction.
         ----------
         Parameters
@@ -92,33 +92,41 @@ class drdata(ldata):
                 dat = dat
             case "zscore":
                 dat = pd.DataFrame(
-                    StandardScaler().fit_transform(dat), 
-                    index = data.colnames, 
-                    columns = data.rownames
+                    StandardScaler().fit_transform(dat),
+                    index=data.colnames,
+                    columns=data.rownames,
                 )
             case _:
                 raise Exception(method + " scaling method not implemented")
         return dat
 
     def _validate(self):
-        t = super().format_type().upper()
+        t = super()._format_type().upper()
         assert all(
             [bool(re.search(f"^{t}\\d+", i)) for i in self.rownames]
         ), f"rownames must be in format {t}1, {t}2, etc"
         super()._validate()
 
     def subset(self):
-        raise Exception(f"Cannot subset {super().format_type()} object")
+        raise Exception(f"Cannot subset {super()._format_type()} object")
 
     def transpose(self):
-        raise Exception(f"Cannot transpose {super().format_type()} object")
+        raise Exception(f"Cannot transpose {super()._format_type()} object")
 
     def concat(self, objs=[]):
-        raise Exception(f"Cannot concat {super().format_type()} object")
+        raise Exception(f"Cannot concat {super()._format_type()} object")
 
-    def plot(self, dr_type: str = "scatter", **kwargs):
+    def plot(self, type: str = "scatter", **kwargs):
+        """
+        Plot drdata object.
+        ------------------
+        type: str
+            Type of plot. Default is "scatter".
+        **kwargs:
+            Passed to plotting methods.
+        """
         self._validate()
-        match dr_type:
+        match type:
             case "scatter":
                 self._scatter_plot(**kwargs)
 
@@ -130,7 +138,7 @@ class drdata(ldata):
         interactive: bool = False,
         **kwargs,
     ):
-        t = super().format_type().upper()
+        t = super()._format_type().upper()
         if xaxis is None:
             xaxis = t + "1"
         if yaxis is None:

@@ -100,7 +100,7 @@ print(x.pcs)
 
     pca object:
      - Dimensions: 150 (samples) x 3 (pca components)
-     - Scaling: Zscore
+     - Scaling: zscore
      - Method: SVD
 
 ``` python
@@ -169,7 +169,7 @@ print(x.lda)
 
     lda object:
      - Dimensions: 150 (samples) x 2 (lda components)
-     - Scaling: Zscore
+     - Scaling: zscore
      - Target: Species
 
 ``` python
@@ -206,7 +206,7 @@ print(x.tsne)
 
     tsne object:
      - Dimensions: 150 (samples) x 2 (tsne components)
-     - Scaling: Zscore
+     - Scaling: zscore
 
 ``` python
 print(x.tsne.data)
@@ -246,7 +246,7 @@ print(x.umap)
 
     umap object:
      - Dimensions: 150 (samples) x 2 (umap components)
-     - Scaling: Zscore
+     - Scaling: zscore
 
 ``` python
 print(x.umap.data)
@@ -279,7 +279,7 @@ x.plot(type="pca", colour_by="Species")
 ![](README_files/figure-commonmark/cell-21-output-1.png)
 
 ``` python
-x.plot(type="pca", dr_type="elbow")
+x.plot(type="pca_elbow")
 ```
 
 ![](README_files/figure-commonmark/cell-22-output-1.png)

@@ -156,6 +156,12 @@ class ldata:
         return [self.rownames, self.colnames]
 
     def _set_dimnames(self, value: list):
+        """
+        Set dimnames for ldata object
+        --------------------------------
+        value: list
+            A list of lists of rownames and colnames
+        """
         assert isinstance(value, list), "value must be list"
         assert len(value) == 2, "value must be list with rownames and colnames"
         self.rownames = value[0]
@@ -199,6 +205,12 @@ class ldata:
 
     @staticmethod
     def example_ldata(type: str = "iris", **kwargs):
+        """
+        Generate example ldata object
+        -----------------------------
+        type: str
+            Type of example to generate. Either "iris" or "simulate" datasets.
+        """
         match type:
             case "iris":
                 return ldata._iris_ldata(**kwargs)
@@ -230,6 +242,20 @@ class ldata:
         nfeatures: int = 20,
         **kwargs,
     ):
+        """
+        Generate simulated example ldata object. This simulates data
+        from a uniform distribution between minimum and maximum values
+        for nfeatures and nsamples.
+        -----------------------------
+        min: float
+            Minimum value of uniform distribution
+        max: float
+            Maximum value to uniform distribution
+        nsamples: int
+            Number of samples in ldata object.
+        nfeatures: int
+            Number of features in ldata object.
+        """
         np.random.seed(38)
         data = pd.DataFrame(
             np.random.uniform(min, max, (nfeatures, nsamples)),
@@ -243,6 +269,12 @@ class ldata:
         return ldata(data, desc, annot)
 
     def subset(self, samples=None, features=None):
+        """
+        Subset ldata object
+        -----------------------------
+        samples: Samples to subset ldata object to.
+        features: Features to subset ldata object to.
+        """
         if samples is None:
             samples = self.colnames
         if features is None:
@@ -266,6 +298,9 @@ class ldata:
         return self
 
     def transpose(self):
+        """
+        Transpose ldata object
+        """
         self = deepcopy(self)
         new_dat = deepcopy(self.data)
         new_desc = deepcopy(self.description)
@@ -277,6 +312,13 @@ class ldata:
         return self
 
     def concat(self, objs=[]):
+        """
+        Concatenate samples from multiple ldata objects to create larger
+        ldata object with same feature set.
+        ----------------------------------
+        objs: list
+            List of ldata objects.
+        """
         assert all(
             [isinstance(i, type(self)) for i in objs]
         ), "objects must all be of same class"
@@ -291,5 +333,5 @@ class ldata:
         self._validate()
         return self
 
-    def format_type(self):
+    def _format_type(self):
         return re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]

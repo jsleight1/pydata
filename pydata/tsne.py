@@ -29,17 +29,17 @@ class tsne(drdata):
 
     @staticmethod
     def analyse(data, n_comp: int = 2, scaling: str = "zscore", **kwargs):
-        """Perform t-SNE dimension reduction
-        Parameters
-        ----------
-        data: pydata object.
-        n_comp: Number of t-SNE components to compute. Default is 2.
-        scaling: Scaling method before TSNE calculation. Default is "zscore".
-        **kwargs: Passed to sklearn.manifold.TSNE
-        ---------
-        Returns
-        ---------
-        tsne object.
+        """
+        Perform t-SNE dimension reduction
+        ---------------------------------
+        data:
+            pydata object.
+        n_comp: int
+            Number of t-SNE components to compute. Default is 2.
+        scaling: str
+            Scaling method before TSNE calculation. Default is "zscore".
+        **kwargs:
+            Passed to sklearn.manifold.TSNE
         """
         dat = drdata.scale(data=data, method=scaling)
         t = TSNE(n_components=n_comp, **kwargs)

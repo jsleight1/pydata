@@ -43,9 +43,12 @@ class pydata(ldata):
     >>> x.data
     >>> x.description
     >>> x.annotation
+    >>> x.perform_dimension_reduction("pca")
+    >>> x.plot("pca")
+    >>> x.plot("distribution")
     """
 
-    def __init__(self, data, description, annotation, pcs: pca = None, lda: lda = None):
+    def __init__(self, data, description, annotation):
         """
         Parameters
         ----------
@@ -58,20 +61,15 @@ class pydata(ldata):
         annotation: pandas.DataFrame
             A DataFrame of feature annotation with ID column matching
             row names of data attribute.
-        pcs: pydata.pca
-            A pca class object containing principal components calculated from
-            data.
-        lda: pydata.lda
-            A lda class object containing results from linear discriminant analysis
-            (LDA) calculated from data.
         """
 
         super().__init__(data, description, annotation)
-        self._pcs = pcs
-        self._lda = lda
 
     @staticmethod
     def example_pydata(**kwargs):
+        """
+        Generate example pydata. See ldata.example_ldata for details.
+        """
         out = ldata.example_ldata(**kwargs)
         return pydata(out.data, out.description, out.annotation)
 
@@ -144,6 +142,17 @@ class pydata(ldata):
         return out
 
     def perform_dimension_reduction(self, type: str, **kwargs):
+        """
+        Perform dimension reduction.
+        ---------------------------
+        type: str
+            Type of dimension reduction to perform. Either "pca" for principal
+            component analysis, "lda" for linear discriminant analysis, "tsne"
+            for t-distributed stochastic neighbor embedding or "umap" for
+            uniform manifold approximation and projection.
+        **kwargs:
+            Passed to dimension reduction methods.
+        """
         self._validate()
         match type:
             case "pca":
@@ -158,10 +167,22 @@ class pydata(ldata):
                 raise Exception(type + " dimension reduction not implemented")
 
     def plot(self, type: str, **kwargs):
+        """
+        Plot pydata object.
+        ------------------
+        type: str
+            Type of plot. Either "pca", "pca_elbow", "lda", "tsne", "umap",
+            "violin", "feature_heatmap", "correlation_heatmap", "distribution"
+            or "scatter"
+        **kwargs:
+            Passed to plotting methods
+        """
         self._validate()
         match type:
             case "pca":
-                self.pcs.plot(**kwargs)
+                self.pcs.plot(type="scatter", **kwargs)
+            case "pca_elbow":
+                self.pcs.plot(type="elbow", **kwargs)
             case "lda":
                 self.lda.plot(**kwargs)
             case "tsne":
@@ -204,7 +225,7 @@ class pydata(ldata):
     ):
         dat = self.data.corr(method=cor_method)
         if annotate_samples_by is not None:
-            annotate_samples_by = self.colour_by_df(
+            annotate_samples_by = self._colour_by_df(
                 self.description, annotate_samples_by
             )
             annotate_samples_by["colour_df"].index = self.description["ID"]
@@ -225,13 +246,13 @@ class pydata(ldata):
         **kwargs,
     ):
         if annotate_samples_by is not None:
-            annotate_samples_by = self.colour_by_df(
+            annotate_samples_by = self._colour_by_df(
                 self.description, annotate_samples_by
             )
             annotate_samples_by["colour_df"].index = self.description["ID"]
 
         if annotate_features_by is not None:
-            annotate_features_by = self.colour_by_df(
+            annotate_features_by = self._colour_by_df(
                 self.annotation, annotate_features_by
             )
             annotate_features_by["colour_df"].index = self.annotation["ID"]
@@ -246,7 +267,7 @@ class pydata(ldata):
         )
 
     @staticmethod
-    def colour_by_df(x, colour_by):
+    def _colour_by_df(x, colour_by):
         colours = []
         lut = []
         for i in colour_by:

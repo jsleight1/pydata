@@ -80,12 +80,20 @@ class pca(drdata):
         ), "annotation must contain 'Percentage variance explained' column"
         super()._validate()
 
-    def plot(self, dr_type: str = "scatter", **kwargs):
+    def plot(self, type: str = "scatter", **kwargs):
+        """
+        Plot pca object.
+        ---------------
+        type: str
+            Type of plot. Either "scatter" or "elbow", Default is "scatter".
+        **kwargs:
+            Passed to plotting methods.
+        """
         self._validate()
-        if dr_type == "elbow":
+        if type == "elbow":
             self._elbow_plot(**kwargs)
         else:
-            super().plot(dr_type=dr_type, **kwargs)
+            super().plot(type=type, **kwargs)
 
     def _elbow_plot(self, n_comp=None, interactive: bool = False, **kwargs):
         if n_comp is None:
@@ -112,25 +120,26 @@ class pca(drdata):
 
     @staticmethod
     def analyse(
-        data, 
+        data,
         n_comp: int = 2,
         scaling: str = "zscore",
         method: str = "SVD",
         **kwargs,
     ):
-        """Perform PCA dimension reduction
-        Parameters
-        ----------
-        data: pydata object.
-        n_comp: Number of principal component to compute. Default is 2.
-        scaling: Scaling method before PCA calculation. Default is "zscore".
-        method: PCA method for PCA calculation: Default is "SVD" for singular
+        """
+        Perform PCA dimension reduction
+        -------------------------------
+        data:
+            pydata object.
+        n_comp: int
+            Number of principal component to compute. Default is 2.
+        scaling: str
+            Scaling method before PCA calculation. Default is "zscore".
+        method: str
+            PCA method for PCA calculation: Default is "SVD" for singular
             value decomposition.
-        **kwargs: Passed to PCA method.
-        ---------
-        Returns
-        ---------
-        pca object.
+        **kwargs:
+            Passed to PCA method.
         """
         dat = drdata.scale(data=data, method=scaling)
         match method:

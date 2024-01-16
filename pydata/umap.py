@@ -32,17 +32,17 @@ class umap(drdata):
 
     @staticmethod
     def analyse(data, n_comp: int = 2, scaling: str = "zscore", **kwargs):
-        """Perform UMAP dimension reduction
-        Parameters
-        ----------
-        data: pydata object.
-        n_comp: Number of UMAP projections to compute. Default is 2.
-        scaling: Scaling method before UMAP calculation. Default is "zscore".
-        **kwargs: Passed to UMAP method.
-        ---------
-        Returns
-        ---------
-        umap object.
+        """
+        Perform UMAP dimension reduction
+        --------------------------------
+        data:
+            pydata object.
+        n_comp: int
+            Number of UMAP projections to compute. Default is 2.
+        scaling: str
+            Scaling method before UMAP calculation. Default is "zscore".
+        **kwargs:
+            Passed to UMAP method.
         """
         dat = drdata.scale(data=data, method=scaling)
         u = UMAP(n_components=n_comp, random_state=42, **kwargs)
