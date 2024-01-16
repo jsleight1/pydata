@@ -12,7 +12,6 @@ which can be used for development and running the following examples.
 ## Pydata generation and handling
 
 ``` python
-import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
 x=pydata.example_pydata(type="iris")
@@ -94,13 +93,13 @@ print(t)
 ### PCA
 
 ``` python
-x.perform_dimension_reduction("pca")
+x.perform_dimension_reduction("pca", n_comp = 3)
 
 print(x.pcs)
 ```
 
     pca object:
-     - Dimensions: 150 (samples) x 2 (pca components)
+     - Dimensions: 150 (samples) x 3 (pca components)
      - Scaling: Zscore
      - Method: SVD
 
@@ -111,20 +110,24 @@ print(x.pcs.data)
            Sample1   Sample2   Sample3   Sample4   Sample5   Sample6   Sample7  \
     PCA1 -2.264703 -2.080961 -2.364229 -2.299384 -2.389842 -2.075631 -2.444029   
     PCA2  0.480027 -0.674134 -0.341908 -0.597395  0.646835  1.489178  0.047644   
+    PCA3 -0.127706 -0.234609  0.044201  0.091290  0.015738  0.026968  0.335470   
 
            Sample8   Sample9  Sample10  ...  Sample141  Sample142  Sample143  \
     PCA1 -2.232847 -2.334640 -2.184328  ...   2.014810   1.901784   1.157882   
     PCA2  0.223148 -1.115328 -0.469014  ...   0.613886   0.689575  -0.698870   
+    PCA3 -0.088695  0.145077 -0.253766  ...   0.428333   0.130075   0.530160   
 
           Sample144  Sample145  Sample146  Sample147  Sample148  Sample149  \
     PCA1   2.040558   1.998147   1.870503   1.564580   1.521170   1.372788   
     PCA2   0.867521   1.049169   0.386966  -0.896687   0.269069   1.011254   
+    PCA3   0.338144   0.632413   0.256274  -0.026371   0.180178   0.933395   
 
           Sample150  
     PCA1   0.960656  
     PCA2  -0.024332  
+    PCA3   0.528249  
 
-    [2 rows x 150 columns]
+    [3 rows x 150 columns]
 
 ``` python
 print(x.pcs.description)
@@ -152,6 +155,7 @@ print(x.pcs.annotation)
          ID  Percentage variance explained
     0  PCA1                      72.962445
     1  PCA2                      22.850762
+    2  PCA3                       3.668922
 
 ### LDA
 
@@ -275,28 +279,34 @@ x.plot(type="pca", colour_by="Species")
 ![](README_files/figure-commonmark/cell-21-output-1.png)
 
 ``` python
-x.plot(type="lda")
+x.plot(type="pca", dr_type="elbow")
 ```
 
 ![](README_files/figure-commonmark/cell-22-output-1.png)
 
 ``` python
-x.plot(type="tsne", colour_by="Species")
+x.plot(type="lda")
 ```
 
 ![](README_files/figure-commonmark/cell-23-output-1.png)
 
 ``` python
-x.plot(type="umap", colour_by="Species")
+x.plot(type="tsne", colour_by="Species")
 ```
 
 ![](README_files/figure-commonmark/cell-24-output-1.png)
 
 ``` python
-x.transpose().plot(type="violin", fill=False)
+x.plot(type="umap", colour_by="Species")
 ```
 
 ![](README_files/figure-commonmark/cell-25-output-1.png)
+
+``` python
+x.transpose().plot(type="violin", fill=False)
+```
+
+![](README_files/figure-commonmark/cell-26-output-1.png)
 
 ``` python
 x.plot(
@@ -307,7 +317,7 @@ x.plot(
 )
 ```
 
-![](README_files/figure-commonmark/cell-26-output-1.png)
+![](README_files/figure-commonmark/cell-27-output-1.png)
 
 ``` python
 x.plot(
@@ -327,28 +337,28 @@ x.plot(
 
     Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
 
-![](README_files/figure-commonmark/cell-27-output-2.png)
+![](README_files/figure-commonmark/cell-28-output-2.png)
 
 ``` python
 x.plot(type="distribution", kind="kde", legend=False)
 ```
 
-![](README_files/figure-commonmark/cell-28-output-1.png)
+![](README_files/figure-commonmark/cell-29-output-1.png)
 
 ``` python
 x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
 ```
 
-![](README_files/figure-commonmark/cell-29-output-1.png)
+![](README_files/figure-commonmark/cell-30-output-1.png)
 
 ``` python
 x.transpose().plot(type="distribution", kind="ecdf")
 ```
 
-![](README_files/figure-commonmark/cell-30-output-1.png)
+![](README_files/figure-commonmark/cell-31-output-1.png)
 
 ``` python
 x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
 ```
 
-![](README_files/figure-commonmark/cell-31-output-1.png)
+![](README_files/figure-commonmark/cell-32-output-1.png)

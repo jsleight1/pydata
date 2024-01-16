@@ -85,7 +85,13 @@ class drdata(ldata):
     def concat(self, objs=[]):
         raise Exception(f"Cannot concat {super().format_type()} object")
 
-    def plot(
+    def plot(self, dr_type: str = "scatter", **kwargs):
+        self._validate()
+        match dr_type:
+            case "scatter":
+                self._scatter_plot(**kwargs)
+
+    def _scatter_plot(
         self,
         xaxis=None,
         yaxis=None,
@@ -93,7 +99,6 @@ class drdata(ldata):
         interactive: bool = False,
         **kwargs,
     ):
-        self._validate()
         t = super().format_type().upper()
         if xaxis is None:
             xaxis = t + "1"

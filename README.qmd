@@ -17,7 +17,6 @@ development and running the following examples.
 ## Pydata generation and handling
 
 ```{python}
-import matplotlib.pyplot as plt
 from pydata.pydata import pydata
 
 x=pydata.example_pydata(type="iris")
@@ -53,7 +52,7 @@ print(t)
 
 ### PCA
 ```{python}
-x.perform_dimension_reduction("pca")
+x.perform_dimension_reduction("pca", n_comp = 3)
 
 print(x.pcs)
 ```
@@ -113,6 +112,10 @@ print(x.umap.data)
 
 ```{python}
 x.plot(type="pca", colour_by="Species")
+```
+
+```{python}
+x.plot(type="pca", dr_type="elbow")
 ```
 
 ```{python}

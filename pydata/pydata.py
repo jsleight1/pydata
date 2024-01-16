@@ -313,8 +313,6 @@ class pydata(ldata):
         plot.fig.subplots_adjust(right=0.7)
         plot.ax_cbar.set_position((0.8, 0.2, 0.03, 0.4))
 
-        return plot
-
     def _distribution_plot(self, **kwargs):
         sns.displot(data=self.data, **kwargs)
         plt.xlabel("Feature value")

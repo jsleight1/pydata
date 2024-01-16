@@ -5,6 +5,8 @@ import numpy as np
 import re
 from copy import deepcopy
 from sklearn.decomposition import PCA, KernelPCA
+import seaborn as sns
+import plotly.express as px
 
 
 class pca(drdata):
@@ -77,6 +79,36 @@ class pca(drdata):
             "Percentage variance explained" in self.annotation.columns
         ), "annotation must contain 'Percentage variance explained' column"
         super()._validate()
+
+    def plot(self, dr_type: str = "scatter", **kwargs):
+        self._validate()
+        if dr_type == "elbow":
+            self._elbow_plot(**kwargs)
+        else:
+            super().plot(dr_type=dr_type, **kwargs)
+
+    def _elbow_plot(self, n_comp=None, interactive: bool = False, **kwargs):
+        if n_comp is None:
+            n_comp = self.data.shape[0]
+        if interactive:
+            plot = px.line(
+                self.annotation,
+                x="ID",
+                y="Percentage variance explained",
+                markers=True,
+                **kwargs,
+            )
+            plot.update_layout(margin=dict(l=0, r=0, t=0, b=0), xaxis_title=None)
+            plot.show()
+        else:
+            plot = sns.lineplot(
+                data=self.annotation,
+                x="ID",
+                y="Percentage variance explained",
+                marker="o",
+                **kwargs,
+            )
+            plot.set(xlabel=None)
 
     @staticmethod
     def analyse(
