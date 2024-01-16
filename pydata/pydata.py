@@ -135,18 +135,24 @@ class pydata(ldata):
         out = super().subset(samples=samples, features=features)
         out.pcs = None
         out.lda = None
+        out.tsne = None
+        out.umap = None
         return out
 
     def transpose(self):
         out = super().transpose()
         out.pcs = None
         out.lda = None
+        out.tsne = None
+        out.umap = None
         return out
 
     def concat(self, objs=[]):
         out = super().concat(objs=objs)
         out.pcs = None
         out.lda = None
+        out.tsne = None
+        out.umap = None
         return out
 
     def perform_dimension_reduction(self, type: str, **kwargs):
