@@ -12,7 +12,7 @@ L-shaped datasets. It can either be installed locally using `poetry` or an
 docker container environment has also be created which can be used for 
 development and running the following examples.
 
-`docker run -it docker.io/jsleight1/pydata:3.10-latest`
+`docker run -v $PWD:$PWD -it docker.io/jsleight1/pydata:3.10-latest`
 
 ## Pydata generation and handling
 

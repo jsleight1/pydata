@@ -3,6 +3,7 @@ import re
 from copy import deepcopy
 import pandas as pd
 import seaborn as sns
+import plotly.express as px
 
 
 class drdata(ldata):
@@ -84,7 +85,14 @@ class drdata(ldata):
     def concat(self, objs=[]):
         raise Exception(f"Cannot concat {super().format_type()} object")
 
-    def plot(self, xaxis=None, yaxis=None, colour_by: str = "ID", **kwargs):
+    def plot(
+        self,
+        xaxis=None,
+        yaxis=None,
+        colour_by: str = "ID",
+        interactive: bool = False,
+        **kwargs,
+    ):
         self._validate()
         t = super().format_type().upper()
         if xaxis is None:
@@ -93,4 +101,7 @@ class drdata(ldata):
             yaxis = t + "2"
         df = deepcopy(self.data.transpose().reset_index(names="ID"))
         df = pd.merge(df, self.description, on="ID")
-        sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by)
+        if interactive:
+            px.scatter(df, x=xaxis, y=yaxis, color=colour_by, **kwargs).show()
+        else:
+            sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by, **kwargs)

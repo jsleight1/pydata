@@ -49,7 +49,7 @@ class lda(drdata):
     def plot(self, colour_by=None, **kwargs):
         if colour_by is None:
             colour_by = self.target
-        super().plot(colour_by=colour_by)
+        super().plot(colour_by=colour_by, **kwargs)
 
     @staticmethod
     def analyse(
