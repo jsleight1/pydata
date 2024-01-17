@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy coverage to GitHub pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -40,7 +40,7 @@ jobs:
           poetry check
           poetry run coverage run -m pytest
           poetry run coverage json
-          poerty run coverage html
+          poetry run coverage html
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
           echo $covn
           anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green    
