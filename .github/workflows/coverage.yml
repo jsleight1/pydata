@@ -22,55 +22,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  coverage:
+    environment: 
+      name: github-pages 
+      url: ${{ steps.deployment.outputs.page_url }} 
     runs-on: ubuntu-latest
     container:
       image: docker.io/jsleight1/pydata:3.10-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
+      - uses: actions/checkout@v3
+      - name: Generate coverage report
+        id: coverage
+        run: |
+          pip install anybadge
+          apt-get -y install jq
+          poetry --version
+          poetry check
+          poetry run coverage run -m pytest
+          poetry run coverage json
+          poerty run coverage html
+          covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
+          echo $covn
+          anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green    
+      - name: upload artifact 
+        uses: actions/upload-pages-artifact@v1
+        with: 
+          path: './htmlcov/'
+      - name: deploy to Github pages 
+        uses: actions/deploy-pages@v2
         id: deployment
-        uses: actions/deploy-pages@v4
-
-
-  # coverage:
-  #   environment: 
-  #     name: github-pages 
-  #     url: ${{ steps.deployment.outputs.page_url }} 
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: docker.io/jsleight1/pydata:3.10-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Generate coverage report
-  #       id: coverage
-  #       run: |
-  #         pip install anybadge
-  #         apt-get -y install jq
-  #         poetry --version
-  #         poetry check
-  #         poetry run coverage run -m pytest
-  #         poetry run coverage json
-  #         poerty run coverage html
-  #         covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
-  #         echo $covn
-  #         anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green    
-  #     - name: upload artifact 
-  #       uses: actions/upload-pages-artifact@v1
-  #       with: 
-  #         path: './htmlcov/'
-  #     - name: deploy to Github pages 
-  #       uses: actions/deploy-pages@v2
-  #       id: deployment
