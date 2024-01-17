@@ -33,12 +33,12 @@ jobs:
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
           echo $covn
 
-          
+
       - name: Create Awesome Badge
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
-          gistID: <gist-ID>
+          gistID: 751d1a5c71730402c81f54e9f70444ad
           filename: test.json # Use test.svg if you want to use the SVG mode.
           label: Hello
           message: World
