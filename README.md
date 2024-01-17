@@ -1,5 +1,9 @@
 # Exploratory data analysis using pydata
 
+[![Tests](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml/badge.svg?branch=development)](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml)
+[![TestCoverageBadge](.png)](https://github.com/jsleight/pydata/actions/workflows/testcoverage.yaml)
+[![License](https://img.shields.io/badge/License-GNU%20GPL-blue.png)](https://github.com/jsleight1/pydata/blob/master/LICENSE)
+
 ## `pydata`
 
 `pydata` is a python package developed for the analysis and
