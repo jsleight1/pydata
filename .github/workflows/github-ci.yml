@@ -47,13 +47,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Generate coverage report
         run: |
+          pip install anybadge
+          sudp apt-get install jq
           poetry --version
           poetry check
           poetry run coverage run -m pytest
           poetry run coverage json
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
           echo $covn
-          pip install anybadge
           anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green
         
   readme:
