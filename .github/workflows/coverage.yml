@@ -1,25 +1,14 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy coverage to GitHub pages
+name: Create coverage badge
 
+# Controls when the workflow will run
 on:
-  # Runs on pushes targeting the default branch
+  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: ["development"]
+    branches: ["master", "development"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   coverage:
@@ -43,11 +32,14 @@ jobs:
           poetry run coverage html
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
           echo $covn
-          anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green    
-      - name: upload artifact 
-        uses: actions/upload-pages-artifact@v1
-        with: 
-          path: './htmlcov/'
-      - name: deploy to Github pages 
-        uses: actions/deploy-pages@v2
-        id: deployment
+
+          
+      - name: Create Awesome Badge
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: <gist-ID>
+          filename: test.json # Use test.svg if you want to use the SVG mode.
+          label: Hello
+          message: World
+          color: orange
