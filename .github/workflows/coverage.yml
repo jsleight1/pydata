@@ -12,9 +12,6 @@ on:
 
 jobs:
   coverage:
-    environment: 
-      name: github-pages 
-      url: ${{ steps.deployment.outputs.page_url }} 
     runs-on: ubuntu-latest
     container:
       image: docker.io/jsleight1/pydata:3.10-latest
