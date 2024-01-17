@@ -36,7 +36,7 @@ jobs:
         with: 
             path: 'coverage.json'
             prop_path: 'totals.percent_covered_display'
-      - run: echo ${{ steps.coverage_percent.outputs.prop }
+      - run: echo ${{ steps.coverage_percent.outputs.prop }}
     
       - name: Create Coverage Badge
         uses: schneegans/dynamic-badges-action@v1.6.0
