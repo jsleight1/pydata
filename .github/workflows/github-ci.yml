@@ -48,7 +48,7 @@ jobs:
       - name: Generate coverage report
         run: |
           pip install anybadge
-          sudo apt-get install jq
+          apt-get install jq
           poetry --version
           poetry check
           poetry run coverage run -m pytest
