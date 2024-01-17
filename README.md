@@ -1,6 +1,6 @@
 # Exploratory data analysis using pydata
 
-[![CI](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml/badge.svg?branch=development)](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml)
+[![CI](https://github.com/jsleight1/pydata/actions/workflows/test.yml/badge.svg?branch=development)](https://github.com/jsleight1/pydata/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/License-GNU%20GPL-blue.png)](https://github.com/jsleight1/pydata/blob/master/LICENSE)
 
 ## `pydata`
