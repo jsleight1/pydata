@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 import plotly.express as px
+import matplotlib.pyplot as plt
 
 
 class drdata(ldata):
@@ -151,3 +152,4 @@ class drdata(ldata):
             ).show()
         else:
             sns.relplot(data=df, x=xaxis, y=yaxis, hue=colour_by, **kwargs)
+            plt.show()

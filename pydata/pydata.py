@@ -215,6 +215,7 @@ class pydata(ldata):
     def _violin_plot(self, **kwargs):
         sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
         plt.xticks(rotation=90)
+        plt.show()
 
     def _correlation_heatmap(
         self,
@@ -327,10 +328,12 @@ class pydata(ldata):
 
         plot.fig.subplots_adjust(right=0.7)
         plot.ax_cbar.set_position((0.8, 0.2, 0.03, 0.4))
+        plt.show()
 
     def _distribution_plot(self, **kwargs):
         sns.displot(data=self.data, **kwargs)
         plt.xlabel("Feature value")
+        plt.show()
 
     def _scatter_plot(self, xaxis=None, yaxis=None, **kwargs):
         if xaxis is None:
@@ -338,3 +341,4 @@ class pydata(ldata):
         if yaxis is None:
             yaxis = self.colnames[1]
         sns.regplot(data=self.data, x=xaxis, y=yaxis, seed=32, **kwargs)
+        plt.show()

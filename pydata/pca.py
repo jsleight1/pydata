@@ -7,6 +7,7 @@ from copy import deepcopy
 from sklearn.decomposition import PCA, KernelPCA
 import seaborn as sns
 import plotly.express as px
+import matplotlib.pyplot as plt
 
 
 class pca(drdata):
@@ -109,14 +110,14 @@ class pca(drdata):
             plot.update_layout(margin=dict(l=0, r=0, t=0, b=0), xaxis_title=None)
             plot.show()
         else:
-            plot = sns.lineplot(
+            sns.lineplot(
                 data=self.annotation,
                 x="ID",
                 y="Percentage variance explained",
                 marker="o",
                 **kwargs,
             )
-            plot.set(xlabel=None)
+            plt.show()
 
     @staticmethod
     def analyse(
