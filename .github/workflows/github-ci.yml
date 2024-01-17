@@ -45,12 +45,17 @@ jobs:
       image: docker.io/jsleight1/pydata:3.10-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Report test coverage
+      - name: Generate coverage report
         run: |
           poetry --version
           poetry check
           poetry run coverage run -m pytest
-          poetry run coverage report
+          poetry run coverage json
+          covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
+          echo $covn
+          pip install anybadge
+          anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green
+        
   readme:
     runs-on: ubuntu-latest
     container:

@@ -6,7 +6,7 @@ format:
 ---
 
 [![Tests](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml/badge.svg?branch=development)](https://github.com/jsleight1/pydata/actions/workflows/github-ci.yml)
-[![TestCoverageBadge]()](https://github.com/jsleight/pydata/actions/workflows/testcoverage.yaml)
+[![TestCoverageBadge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/shivenchawla/45c1f54d01942c69453aac7f60401dc4/raw/pydata_test_coverage_badge.json)](https://github.com/jsleight/pydata/actions/workflows/github-ci.yml)
 [![License](https://img.shields.io/badge/License-GNU%20GPL-blue)](https://github.com/jsleight1/pydata/blob/master/LICENSE)
 
 ## `pydata`
