@@ -46,6 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Generate coverage report
+        id: coverage
         run: |
           pip install anybadge
           apt-get -y install jq
@@ -53,10 +54,19 @@ jobs:
           poetry check
           poetry run coverage run -m pytest
           poetry run coverage json
+      - name: Get coverage percentage 
+        id: cov_perc
+        with: 
+          path: 'coverage.json'
+        run: |
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
-          echo $covn
+      
+      - name: Create coverage badge 
+        id: cov_badge
+        run: |
+          echo ${{ steps.cov_perc.outputs.covn }}
           anybadge --label="Coverage" --value=$covn --file=coverage.svg 25=red 50=orange 75=yellow 100=green
-        
+
   readme:
     runs-on: ubuntu-latest
     container:
