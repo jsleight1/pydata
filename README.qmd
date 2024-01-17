@@ -10,7 +10,7 @@ format:
 
 
 
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jsleight1/751d1a5c71730402c81f54e9f70444ad/raw/test.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jsleight1/751d1a5c71730402c81f54e9f70444ad/raw/pydata_cov_badge.json)
 
 ## `pydata`
 

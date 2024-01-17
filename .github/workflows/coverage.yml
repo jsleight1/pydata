@@ -30,13 +30,22 @@ jobs:
           covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
           echo $covn
 
-
-      - name: Create Awesome Badge
-        uses: schneegans/dynamic-badges-action@v1.7.0
+      - name: Get Coverage Percentage
+        id: coverage_percent
+        uses: notiz-dev/github-action-json-property@release
+        with: 
+            path: 'coverage.json'
+            prop_path: 'totals.percent_covered_display'
+      - run: echo ${{ steps.coverage_percent.outputs.prop }
+    
+      - name: Create Coverage Badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 751d1a5c71730402c81f54e9f70444ad
-          filename: test.json # Use test.svg if you want to use the SVG mode.
-          label: Hello
-          message: World
-          color: orange
+          filename: pydata_cov_badge.json
+          label: Coverage
+          message: ${{ steps.coverage_percent.outputs.prop }}%
+          valColorRange: ${{ steps.coverage_percent.outputs.prop }}
+          maxColorRange: 100
+          minColorRange: 0
