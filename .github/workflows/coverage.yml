@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Create coverage badge
+name: Report coverage
 
 # Controls when the workflow will run
 on:
@@ -20,15 +20,10 @@ jobs:
       - name: Generate coverage report
         id: coverage
         run: |
-          pip install anybadge
-          apt-get -y install jq
           poetry --version
           poetry check
           poetry run coverage run -m pytest
           poetry run coverage json
-          poetry run coverage html
-          covn=$(cat coverage.json | jq '.["totals"]["percent_covered_display"]' | sed 's/"//g')%
-          echo $covn
 
       - name: Get Coverage Percentage
         id: coverage_percent
