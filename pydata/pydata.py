@@ -173,7 +173,7 @@ class pydata(ldata):
         ------------------
         type: str
             Type of plot. Either "pca", "pca_elbow", "lda", "tsne", "umap",
-            "violin", "feature_heatmap", "correlation_heatmap", "distribution"
+            "violin", "box", "feature_heatmap", "correlation_heatmap", "distribution"
             or "scatter"
         **kwargs:
             Passed to plotting methods
@@ -192,6 +192,8 @@ class pydata(ldata):
                 self.umap.plot(**kwargs)
             case "violin":
                 self._violin_plot(**kwargs)
+            case "box":
+                self._boxplot(**kwargs)
             case "feature_heatmap":
                 self._feature_heatmap(**kwargs)
             case "correlation_heatmap":
@@ -213,11 +215,21 @@ class pydata(ldata):
         df = df.drop(columns=["ID"])
         return df
 
-    def _violin_plot(self, interactive: bool=False, **kwargs):
+    def _violin_plot(self, interactive: bool = False, **kwargs):
         if interactive:
-            px.violin(data_frame=self._plot_data(), x="Sample", y="value", **kwargs).show()
+            px.violin(
+                data_frame=self._plot_data(), x="Sample", y="value", **kwargs
+            ).show()
         else:
             sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
+            plt.xticks(rotation=90)
+            plt.show()
+
+    def _boxplot(self, interactive: bool = False, **kwargs):
+        if interactive:
+            px.box(data_frame=self._plot_data(), x="Sample", y="value", **kwargs).show()
+        else:
+            sns.boxplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
             plt.xticks(rotation=90)
             plt.show()
 
@@ -339,7 +351,9 @@ class pydata(ldata):
         plt.xlabel("Feature value")
         plt.show()
 
-    def _scatter_plot(self, interactive: bool=False, xaxis=None, yaxis=None, **kwargs):
+    def _scatter_plot(
+        self, interactive: bool = False, xaxis=None, yaxis=None, **kwargs
+    ):
         if xaxis is None:
             xaxis = self.colnames[0]
         if yaxis is None:
@@ -347,9 +361,7 @@ class pydata(ldata):
         df = deepcopy(self.data.reset_index(names="ID"))
         df = pd.merge(df, self.annotation, on="ID")
         if interactive:
-            px.scatter(
-                df, x=xaxis, y=yaxis, hover_name="ID", **kwargs
-            ).show()
+            px.scatter(df, x=xaxis, y=yaxis, hover_name="ID", **kwargs).show()
         else:
             sns.regplot(data=df, x=xaxis, y=yaxis, seed=32, **kwargs)
             plt.show()

@@ -139,6 +139,12 @@ x.transpose().plot(type="violin", fill=False)
 ```
 
 ```{python}
+x.subset(
+    samples=["Sample1", "Sample30", "Sample52"]
+).plot(type="box")
+```
+
+```{python}
 x.plot(
     type="feature_heatmap", 
     annotate_samples_by=["Species"], 
