@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import gcf
 import seaborn as sns
+import plotly.express as px
 from copy import deepcopy
 
 
@@ -212,10 +213,13 @@ class pydata(ldata):
         df = df.drop(columns=["ID"])
         return df
 
-    def _violin_plot(self, **kwargs):
-        sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
-        plt.xticks(rotation=90)
-        plt.show()
+    def _violin_plot(self, interactive: bool=False, **kwargs):
+        if interactive:
+            px.violin(data_frame=self._plot_data(), x="Sample", y="value", **kwargs).show()
+        else:
+            sns.violinplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
+            plt.xticks(rotation=90)
+            plt.show()
 
     def _correlation_heatmap(
         self,
@@ -335,10 +339,17 @@ class pydata(ldata):
         plt.xlabel("Feature value")
         plt.show()
 
-    def _scatter_plot(self, xaxis=None, yaxis=None, **kwargs):
+    def _scatter_plot(self, interactive: bool=False, xaxis=None, yaxis=None, **kwargs):
         if xaxis is None:
             xaxis = self.colnames[0]
         if yaxis is None:
             yaxis = self.colnames[1]
-        sns.regplot(data=self.data, x=xaxis, y=yaxis, seed=32, **kwargs)
-        plt.show()
+        df = deepcopy(self.data.reset_index(names="ID"))
+        df = pd.merge(df, self.annotation, on="ID")
+        if interactive:
+            px.scatter(
+                df, x=xaxis, y=yaxis, hover_name="ID", **kwargs
+            ).show()
+        else:
+            sns.regplot(data=df, x=xaxis, y=yaxis, seed=32, **kwargs)
+            plt.show()
