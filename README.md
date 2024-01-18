@@ -313,12 +313,16 @@ x.transpose().plot(type="violin", fill=False)
 ![](README_files/figure-commonmark/cell-26-output-1.png)
 
 ``` python
-x.subset(
-    samples=["Sample1", "Sample30", "Sample52"]
-).plot(type="box")
+x.transpose().plot(type="box")
 ```
 
 ![](README_files/figure-commonmark/cell-27-output-1.png)
+
+``` python
+x.transpose().plot(type="swarm", size=3)
+```
+
+![](README_files/figure-commonmark/cell-28-output-1.png)
 
 ``` python
 x.plot(
@@ -329,7 +333,7 @@ x.plot(
 )
 ```
 
-![](README_files/figure-commonmark/cell-28-output-1.png)
+![](README_files/figure-commonmark/cell-29-output-1.png)
 
 ``` python
 x.plot(
@@ -349,28 +353,28 @@ x.plot(
 
     Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
 
-![](README_files/figure-commonmark/cell-29-output-2.png)
+![](README_files/figure-commonmark/cell-30-output-2.png)
 
 ``` python
 x.plot(type="distribution", kind="kde", legend=False)
 ```
 
-![](README_files/figure-commonmark/cell-30-output-1.png)
+![](README_files/figure-commonmark/cell-31-output-1.png)
 
 ``` python
 x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
 ```
 
-![](README_files/figure-commonmark/cell-31-output-1.png)
+![](README_files/figure-commonmark/cell-32-output-1.png)
 
 ``` python
 x.transpose().plot(type="distribution", kind="ecdf")
 ```
 
-![](README_files/figure-commonmark/cell-32-output-1.png)
+![](README_files/figure-commonmark/cell-33-output-1.png)
 
 ``` python
 x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
 ```
 
-![](README_files/figure-commonmark/cell-33-output-1.png)
+![](README_files/figure-commonmark/cell-34-output-1.png)

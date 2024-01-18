@@ -139,9 +139,11 @@ x.transpose().plot(type="violin", fill=False)
 ```
 
 ```{python}
-x.subset(
-    samples=["Sample1", "Sample30", "Sample52"]
-).plot(type="box")
+x.transpose().plot(type="box")
+```
+
+```{python}
+x.transpose().plot(type="swarm", size=3)
 ```
 
 ```{python}

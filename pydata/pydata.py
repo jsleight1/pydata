@@ -193,7 +193,9 @@ class pydata(ldata):
             case "violin":
                 self._violin_plot(**kwargs)
             case "box":
-                self._boxplot(**kwargs)
+                self._box_plot(**kwargs)
+            case "swarm":
+                self._swarm_plot(**kwargs)
             case "feature_heatmap":
                 self._feature_heatmap(**kwargs)
             case "correlation_heatmap":
@@ -225,11 +227,21 @@ class pydata(ldata):
             plt.xticks(rotation=90)
             plt.show()
 
-    def _boxplot(self, interactive: bool = False, **kwargs):
+    def _box_plot(self, interactive: bool = False, **kwargs):
         if interactive:
             px.box(data_frame=self._plot_data(), x="Sample", y="value", **kwargs).show()
         else:
             sns.boxplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
+            plt.xticks(rotation=90)
+            plt.show()
+
+    def _swarm_plot(self, interactive: bool = False, **kwargs):
+        if interactive:
+            px.strip(
+                data_frame=self._plot_data(), x="Sample", y="value", **kwargs
+            ).show()
+        else:
+            sns.swarmplot(data=self._plot_data(), x="Sample", y="value", **kwargs)
             plt.xticks(rotation=90)
             plt.show()
 

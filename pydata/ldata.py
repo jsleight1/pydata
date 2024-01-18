@@ -60,11 +60,11 @@ class ldata:
         self._validate()
 
     def __str__(self):
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
+        t = self._format_type()
         return f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
 
     def __repr__(self):
-        t = re.findall("'([^']*)'", str(type(self)))[0].split(".")[-1]
+        t = self._format_type()
         return f"{t} object:\n - Dimensions: {self.data.shape[1]} (samples) x {self.data.shape[0]} (features)"
 
     def _get_data(self):
