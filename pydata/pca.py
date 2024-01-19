@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 class pca(drdata):
     """
-    Class to perform and store results from principal component analysis (PCA)
+    Perform and store results from principal component analysis (PCA)
     """
 
     def __init__(self, data, description, annotation, scaling=None, method=None):
@@ -58,9 +58,10 @@ class pca(drdata):
         return super(pca, self)._get_annotation()
 
     def _set_annotation(self, value: pd.DataFrame):
-        """
-        Set description attribute for pca object.
-        ------------------------------------
+        """Set description attribute for pca object.
+
+        Parameters
+        ----------
         value: pandas.core.frame.DataFrame
             A DataFrame of PC annotation with ID column matching
             row names of data attribute.
@@ -82,9 +83,10 @@ class pca(drdata):
         super()._validate()
 
     def plot(self, type: str = "scatter", **kwargs):
-        """
-        Plot pca object.
-        ---------------
+        """Plot pca object.
+
+        Parameters
+        ----------
         type: str
             Type of plot. Either "scatter" or "elbow", Default is "scatter".
         **kwargs:
@@ -127,9 +129,10 @@ class pca(drdata):
         method: str = "SVD",
         **kwargs,
     ):
-        """
-        Perform PCA dimension reduction
-        -------------------------------
+        """Perform PCA dimension reduction
+
+        Parameters
+        ----------
         data:
             pydata object.
         n_comp: int
@@ -141,6 +144,15 @@ class pca(drdata):
             value decomposition.
         **kwargs:
             Passed to PCA method.
+
+        Returns
+        ----------
+        pca object
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> pca.analyse(x)
         """
         dat = drdata.scale(data=data, method=scaling)
         match method:

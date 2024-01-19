@@ -49,9 +49,10 @@ class drdata(ldata):
         return super(drdata, self)._get_rownames()
 
     def _set_rownames(self, value: list):
-        """
-        Set feature names for drdata object.
-        ------------------------------------
+        """Set feature names for drdata object.
+
+        Parameters
+        ----------
         value: list
             A list of feature names.
         """
@@ -73,16 +74,14 @@ class drdata(ldata):
 
     @staticmethod
     def scale(data: ldata, method: str = "none", **kwargs):
-        """
-        Method for scaling pydata object on feature level prior to dimension
-        reduction.
-        ----------
+        """Scale ldata object
+
         Parameters
         ----------
         data: ldata object.
         method: Scaling method. Options: "none", "zscore". Default is "none".
         **kwargs: Passed to methods.
-        ---------
+
         Returns
         ---------
         pd.DataFrame of scaled data.
@@ -118,9 +117,10 @@ class drdata(ldata):
         raise Exception(f"Cannot concat {super()._format_type()} object")
 
     def plot(self, type: str = "scatter", **kwargs):
-        """
-        Plot drdata object.
-        ------------------
+        """Plot drdata object.
+
+        Parameters
+        ----------
         type: str
             Type of plot. Default is "scatter".
         **kwargs:

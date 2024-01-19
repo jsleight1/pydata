@@ -8,7 +8,7 @@ from copy import deepcopy
 
 class lda(drdata):
     """
-    Class to perform and store results from linear discriminant analysis (LDA)
+    Perform and store results from linear discriminant analysis (LDA)
     """
 
     def __init__(self, data, description, annotation, scaling=None, target=None):
@@ -53,9 +53,10 @@ class lda(drdata):
 
     @staticmethod
     def analyse(data, target: str, n_comp: int = 2, scaling: str = "zscore", **kwargs):
-        """
-        Perform LDA dimension reduction
-        -------------------------------
+        """Perform LDA dimension reduction
+
+        Parameters
+        ----------
         data:
             pydata object.
         target: str
@@ -66,6 +67,15 @@ class lda(drdata):
             Scaling method before LDA calculation. Default is "zscore".
         **kwargs:
             Passed to sklearn.discriminant_analysis.LinearDiscriminantAnalysis.
+
+        Returns
+        ----------
+        lda object
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> lda.analyse(x, target = "Species")
         """
         assert target in data.description.columns, target + " is not in description"
         target_df = deepcopy(data.description[target])

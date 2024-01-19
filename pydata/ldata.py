@@ -6,8 +6,7 @@ import re
 
 
 class ldata:
-    """
-    Simple dataset computation and visualisation.
+    """L-shared data structure object.
 
     ldata objects use a L-shaped data structure where the underlying
     data set is a DataFrame of numeric values with an associated
@@ -15,7 +14,7 @@ class ldata:
     and feature metadata respectively.
 
     Examples
-    --------
+    ----------
 
     >>> # Generate some random data
     >>> np.random.seed(38)
@@ -43,13 +42,13 @@ class ldata:
         """
         Parameters
         ----------
-        data: pandas.DataFrame
+        data : pandas.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
         description: pandas.DataFrame
             A DataFrame of sample descriptions with ID column matching
             columns names of data attribute.
-        annotation : pandas.DataFrame
+        annotation: pandas.DataFrame
             A DataFrame of feature annotation with ID column matching
             row names of data attribute.
         """
@@ -71,9 +70,10 @@ class ldata:
         return self._data
 
     def _set_data(self, value: pd.DataFrame):
-        """
-        Set data attribute for ldata object.
-        ------------------------------------
+        """Set data attribute for ldata object.
+
+        Parameters
+        ----------
         value: pandas.core.frame.DataFrame
             A DataFrame of data with columns representing samples and rows
             representing features.
@@ -88,9 +88,10 @@ class ldata:
         return self._description
 
     def _set_description(self, value: pd.DataFrame):
-        """
-        Set description attribute for ldata object.
-        ------------------------------------
+        """Set description attribute for ldata object.
+
+        Parameters
+        ----------
         value: pandas.core.frame.DataFrame
             A DataFrame of sample descriptions with ID column matching
             columns names of data attribute.
@@ -104,9 +105,10 @@ class ldata:
         return self._annotation
 
     def _set_annotation(self, value: pd.DataFrame):
-        """
-        Set description attribute for ldata object.
-        ------------------------------------
+        """Set description attribute for ldata object.
+
+        Parameters
+        ----------
         value: pandas.core.frame.DataFrame
             A DataFrame of feature annotation with ID column matching
             row names of data attribute.
@@ -120,9 +122,10 @@ class ldata:
         return self.data.index.values.tolist()
 
     def _set_rownames(self, value: list):
-        """
-        Set feature names for ldata object.
-        ------------------------------------
+        """Set feature names for ldata object.
+
+        Parameters
+        ----------
         value: list
             A list of feature names.
         """
@@ -138,9 +141,10 @@ class ldata:
         return self.data.columns.tolist()
 
     def _set_colnames(self, value: list):
-        """
-        Set sample names for ldata object.
-        ------------------------------------
+        """Set sample names for ldata object.
+
+        Parameters
+        ----------
         value: list
             A list of sample names.
         """
@@ -156,9 +160,10 @@ class ldata:
         return [self.rownames, self.colnames]
 
     def _set_dimnames(self, value: list):
-        """
-        Set dimnames for ldata object
-        --------------------------------
+        """Set dimnames for ldata object
+
+        Parameters
+        ----------
         value: list
             A list of lists of rownames and colnames
         """
@@ -205,11 +210,25 @@ class ldata:
 
     @staticmethod
     def example_ldata(type: str = "iris", **kwargs):
-        """
-        Generate example ldata object
-        -----------------------------
+        """Generate example ldata object
+
+        Generate example ldata object. Options for example data sets include
+        the "iris" dataset or one can also generate a "simulate" dataset.
+        See ldata_.simulate_ldata for details.
+
+        Parameters
+        ----------
         type: str
             Type of example to generate. Either "iris" or "simulate" datasets.
+
+        Returns
+        ----------
+        ldata object.
+
+        Examples
+        ----------
+        >>> x = ldata.example_ldata()
+        >>> print(x)
         """
         match type:
             case "iris":
@@ -242,11 +261,13 @@ class ldata:
         nfeatures: int = 20,
         **kwargs,
     ):
-        """
-        Generate simulated example ldata object. This simulates data
-        from a uniform distribution between minimum and maximum values
-        for nfeatures and nsamples.
-        -----------------------------
+        """Generate simulated example ldata object.
+
+        This simulates data from a uniform distribution between minimum and
+        maximum values for nfeatures and nsamples.
+
+        Parameters
+        ----------
         min: float
             Minimum value of uniform distribution
         max: float
@@ -255,6 +276,10 @@ class ldata:
             Number of samples in ldata object.
         nfeatures: int
             Number of features in ldata object.
+
+        Returns
+        ----------
+        ldata object
         """
         np.random.seed(38)
         data = pd.DataFrame(
@@ -269,11 +294,23 @@ class ldata:
         return ldata(data, desc, annot)
 
     def subset(self, samples=None, features=None):
-        """
-        Subset ldata object
-        -----------------------------
-        samples: Samples to subset ldata object to.
-        features: Features to subset ldata object to.
+        """Subset ldata object
+
+        Parameters
+        ----------
+        samples:
+            Samples to subset ldata object to.
+        features:
+            Features to subset ldata object to.
+
+        Returns
+        ----------
+        ldata object.
+
+        Examples
+        ----------
+        >>> x = ldata.example_ldata()
+        >>> x.subset(samples = ["Sample1"])
         """
         if samples is None:
             samples = self.colnames
@@ -298,8 +335,20 @@ class ldata:
         return self
 
     def transpose(self):
-        """
-        Transpose ldata object
+        """Transpose ldata object
+
+        Similar to pandas.DataFrame.transpose where columns of ldata object
+        become rows and rows become columns but includes correct ldata
+        description and annotation switching.
+
+        Returns
+        ----------
+        ldata object.
+
+        Examples
+        ----------
+        >>> x = ldata.example_ldata()
+        >>> x.transpose()
         """
         self = deepcopy(self)
         new_dat = deepcopy(self.data)
@@ -312,12 +361,29 @@ class ldata:
         return self
 
     def concat(self, objs=[]):
-        """
-        Concatenate samples from multiple ldata objects to create larger
-        ldata object with same feature set.
-        ----------------------------------
+        """Concatenate samples from multiple ldata objects
+
+        Similar to pandas.DataFrame.concat where ldata objects
+        are bound to each other to allow the addition of samples only.
+        The feature set must be shared between ldata objects.
+
+        Parameters
+        ----------
         objs: list
             List of ldata objects.
+
+        Returns
+        ----------
+        ldata object.
+
+        Examples
+        ----------
+        >>> a = ldata.example_ldata(type="simulate")
+        >>> b = ldata.example_ldata(type="simulate", min=5, max=6)
+        >>> c = ldata.example_ldata(type="simulate", min=15, max=20)
+        >>> b.colnames = ["Sample" + str(i) for i in range(6, 11)]
+        >>> c.colnames = ["Sample" + str(i) for i in range(11, 16)]
+        >>> a.concat([b, c])
         """
         assert all(
             [isinstance(i, type(self)) for i in objs]

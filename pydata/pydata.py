@@ -13,8 +13,7 @@ from copy import deepcopy
 
 
 class pydata(ldata):
-    """
-    Simple dataset computation and visualisation.
+    """High-dimension data computation and visualisation
 
     pydata objects use a L-shaped data structure where the underlying
     data set is a DataFrame of numeric values with an associated
@@ -68,8 +67,23 @@ class pydata(ldata):
 
     @staticmethod
     def example_pydata(**kwargs):
-        """
-        Generate example pydata. See ldata.example_ldata for details.
+        """Generate example pydata.
+
+        See ldata.example_ldata for details.
+
+        Parameters
+        ----------
+        **kwargs:
+            Passed to ldata.example_ldata
+
+        Returns
+        ----------
+        pydata object
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> print(x)
         """
         out = ldata.example_ldata(**kwargs)
         return pydata(out.data, out.description, out.annotation)
@@ -143,16 +157,25 @@ class pydata(ldata):
         return out
 
     def perform_dimension_reduction(self, type: str, **kwargs):
-        """
-        Perform dimension reduction.
-        ---------------------------
+        """Perform dimension reduction.
+
+        Performs dimension reduction using techniques such as
+        principal component analysis (pca), linear discriminant analysis (lda),
+        t-distributed stochastic neighour embedding (tsne), or
+        uniform manifold approximation and projection (umap).
+
+        Parameters
+        ----------
         type: str
-            Type of dimension reduction to perform. Either "pca" for principal
-            component analysis, "lda" for linear discriminant analysis, "tsne"
-            for t-distributed stochastic neighbor embedding or "umap" for
-            uniform manifold approximation and projection.
+            Type of dimension reduction to perform. Either "pca", "lda", "tsne"
+            or "umap".
         **kwargs:
             Passed to dimension reduction methods.
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> x.perform_dimension_reduction("pca")
         """
         self._validate()
         match type:
@@ -168,15 +191,22 @@ class pydata(ldata):
                 raise Exception(type + " dimension reduction not implemented")
 
     def plot(self, type: str, **kwargs):
-        """
-        Plot pydata object.
-        ------------------
+        """Plot pydata object.
+
+        Parameters
+        ----------
         type: str
             Type of plot. Either "pca", "pca_elbow", "lda", "tsne", "umap",
             "violin", "box", "feature_heatmap", "correlation_heatmap", "distribution"
-            or "scatter"
+            or "scatter".
         **kwargs:
-            Passed to plotting methods
+            Passed to plotting methods.
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> x.plot("violin")
+        >>> x.plot("scatter")
         """
         self._validate()
         match type:
@@ -218,6 +248,16 @@ class pydata(ldata):
         return df
 
     def _violin_plot(self, interactive: bool = False, **kwargs):
+        """Generate per sample violin plot of pydata object
+
+        Parameters
+        ----------
+        interactive: bool
+            Logical indicating whether to create static or plotly interactive
+            figure.
+        **kwargs:
+            Passed to seaborn.violinplot or plotly.express.volin
+        """
         if interactive:
             px.violin(
                 data_frame=self._plot_data(), x="Sample", y="value", **kwargs
@@ -228,6 +268,16 @@ class pydata(ldata):
             plt.show()
 
     def _box_plot(self, interactive: bool = False, **kwargs):
+        """Generate per sample box plot of pydata object
+
+        Parameters
+        ----------
+        interactive: bool
+            Logical indicating whether to create static or plotly interactive
+            figure.
+        **kwargs:
+            Passed to seaborn.boxplot or plotly.express.box
+        """
         if interactive:
             px.box(data_frame=self._plot_data(), x="Sample", y="value", **kwargs).show()
         else:
@@ -236,6 +286,16 @@ class pydata(ldata):
             plt.show()
 
     def _swarm_plot(self, interactive: bool = False, **kwargs):
+        """Generate per sample swarm plot of pydata object
+
+        Parameters
+        ----------
+        interactive: bool
+            Logical indicating whether to create static or plotly interactive
+            figure.
+        **kwargs:
+            Passed to seaborn.swarmplot or plotly.express.strip
+        """
         if interactive:
             px.strip(
                 data_frame=self._plot_data(), x="Sample", y="value", **kwargs
@@ -252,6 +312,22 @@ class pydata(ldata):
         cmap="coolwarm",
         **kwargs,
     ):
+        """Generate per sample correlation heatmap
+
+        Parameters
+        ----------
+        cor_method: str
+            Method of correlation. See pandas.core.frame.corr for details.
+            Default is "pearson".
+        annotate_samples_by:
+            List of strings indicating which columns of self.description to
+            create heatmap sample annotation for.
+        cmap: str
+            matplotlib colormap name or object. See seaborn.heatmap for details.
+            Default is "coolwarm"
+        **kwargs:
+            Passed to seaborn.clustermap
+        """
         dat = self.data.corr(method=cor_method)
         if annotate_samples_by is not None:
             annotate_samples_by = self._colour_by_df(
@@ -274,6 +350,22 @@ class pydata(ldata):
         cmap="coolwarm",
         **kwargs,
     ):
+        """Generate per sample correlation heatmap
+
+        Parameters
+        ----------
+        annotate_samples_by:
+            List of strings indicating which columns of self.description to
+            create heatmap sample annotation for.
+        annotate_features_by:
+            List of strings indicating which columns of self.annotation to
+            create heatmap feature annotation for.
+        cmap: str
+            matplotlib colormap name or object. See seaborn.heatmap for details.
+            Default is "coolwarm"
+        **kwargs:
+            Passed to seaborn.clustermap
+        """
         if annotate_samples_by is not None:
             annotate_samples_by = self._colour_by_df(
                 self.description, annotate_samples_by
@@ -359,6 +451,13 @@ class pydata(ldata):
         plt.show()
 
     def _distribution_plot(self, **kwargs):
+        """Generate per sample distribution plot of pydata object
+
+        Parameters
+        ----------
+        **kwargs:
+            Passed to seaborn.distplot
+        """
         sns.displot(data=self.data, **kwargs)
         plt.xlabel("Feature value")
         plt.show()
@@ -366,6 +465,22 @@ class pydata(ldata):
     def _scatter_plot(
         self, interactive: bool = False, xaxis=None, yaxis=None, **kwargs
     ):
+        """Generate scatter plot between selected pydata samples.
+
+        Parameters
+        ----------
+        interactive: bool
+            Logical indicating whether to create static or plotly interactive
+            figure.
+        xaxis:
+            String indicating which column of pydata to plot on xaxis.
+            Default is the first sample.
+        yaxis:
+            String indicating which column of pydata to plot on yaxis.
+            Default is second sample.
+        **kwargs:
+            Passed to seaborn.regplot or plotly.express.scatter
+        """
         if xaxis is None:
             xaxis = self.colnames[0]
         if yaxis is None:

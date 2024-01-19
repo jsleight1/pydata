@@ -8,8 +8,8 @@ from copy import deepcopy
 
 class tsne(drdata):
     """
-    Class to perform store results from t-distributed stochastic neighbor
-    embedding (t-SNE)
+    Perform store results from t-distributed stochastic neighbor embedding
+    (t-SNE)
     """
 
     def __init__(self, data, description, annotation, scaling=None):
@@ -29,9 +29,10 @@ class tsne(drdata):
 
     @staticmethod
     def analyse(data, n_comp: int = 2, scaling: str = "zscore", **kwargs):
-        """
-        Perform t-SNE dimension reduction
-        ---------------------------------
+        """Perform t-SNE dimension reduction
+
+        Parameters
+        ----------
         data:
             pydata object.
         n_comp: int
@@ -40,6 +41,15 @@ class tsne(drdata):
             Scaling method before TSNE calculation. Default is "zscore".
         **kwargs:
             Passed to sklearn.manifold.TSNE
+
+        Returns
+        ----------
+        tsne object
+
+        Examples
+        ----------
+        >>> x = pydata.example_pydata()
+        >>> tnse.analyse(x)
         """
         dat = drdata.scale(data=data, method=scaling)
         t = TSNE(n_components=n_comp, **kwargs)
