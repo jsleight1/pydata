@@ -6,13 +6,14 @@ with warnings.catch_warnings():
 from rnanorm.datasets import load_toy_data
 import numpy as np
 import pandas as pd
+import os
 
 dat = load_toy_data()
 
 data = dat.exp.transpose()
 desc = pd.DataFrame({"ID": dat.exp.index})
 annot = pd.DataFrame({"ID": dat.exp.columns})
-gtf = dat.gtf_path
+gtf = os.path.basename(str(dat.gtf_path))
 
 def test_rnadata_generation(snapshot):
     with pytest.raises(AssertionError) as err:
