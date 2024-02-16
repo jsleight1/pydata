@@ -1,3 +1,4 @@
 rnadata object:
  - Dimensions: 4 (samples) x 5 (features)
- - gtf file: toy.gtf
+ - gtf: toy.gtf
+ - normalisation: None

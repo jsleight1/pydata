@@ -3,7 +3,6 @@ from pydata.drdata import drdata
 import re
 import pandas as pd
 from sklearn.manifold import TSNE
-from copy import deepcopy
 
 
 class tsne(drdata):

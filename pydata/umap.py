@@ -3,7 +3,6 @@ from pydata.drdata import drdata
 import pandas as pd
 from umap import UMAP
 import re
-from copy import deepcopy
 
 
 class umap(drdata):

@@ -4,6 +4,7 @@ import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     from pydata.rnadata import rnadata
+
 from rnanorm.datasets import load_toy_data
 import numpy as np
 import pandas as pd
@@ -45,3 +46,14 @@ def test_example_rnadata(snapshot):
     x.gtf = gtf
     assert isinstance(x, rnadata)
     snapshot.assert_match(str(x), "example_rnadata.txt")
+
+
+def test_rnadata_normalisation(snapshot):
+    x = rnadata.example_rnadata()
+    with pytest.raises(Exception) as err:
+        x.normalise(method="custom")
+    assert "custom normalisation not implemented" in str(err.value)
+    for norm in ["CPM", "TPM", "FPKM", "UQ", "CUF", "TMM", "CTF"]:
+        norm_x = x.normalise(method=norm)
+        assert isinstance(norm_x, rnadata)
+        assert norm_x.normalisation_method == norm

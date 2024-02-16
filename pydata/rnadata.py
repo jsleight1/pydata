@@ -1,7 +1,9 @@
 from pydata.pydata import pydata
 import pandas as pd
-from rnanorm.datasets import load_toy_data
+from rnanorm.datasets import load_toy_data, load_gtex
+from rnanorm import CPM, TPM, FPKM, UQ, CUF, TMM, CTF
 import os
+from copy import deepcopy
 
 
 class rnadata(pydata):
@@ -35,7 +37,9 @@ class rnadata(pydata):
     >>> x.plot("distribution")
     """
 
-    def __init__(self, data, description, annotation, gtf=None):
+    def __init__(
+        self, data, description, annotation, gtf=None, normalisation_method=None
+    ):
         """
         Parameters
         ----------
@@ -55,15 +59,20 @@ class rnadata(pydata):
 
         super().__init__(data, description, annotation)
         self._gtf = gtf
+        self._normalisation_method = normalisation_method
         self._validate()
 
     def __str__(self):
         out = super().__str__()
-        return out + f"\n - gtf file: {self.gtf}"
+        return (
+            out + f"\n - gtf: {self.gtf}\n - normalisation: {self.normalisation_method}"
+        )
 
     def __repr__(self):
         out = super().__repr__()
-        return out + f"\n - gtf file: {self.gtf}"
+        return (
+            out + f"\n - gtf: {self.gtf}\n - normalisation: {self.normalisation_method}"
+        )
 
     def _get_gtf(self):
         return getattr(self, "_gtf")
@@ -73,8 +82,18 @@ class rnadata(pydata):
 
     gtf = property(_get_gtf, _set_gtf)
 
+    def _get_normalisation_method(self):
+        return getattr(self, "_normalisation_method")
+
+    def _set_normalisation_method(self, value: str):
+        self._normalisation_method = value
+
+    normalisation_method = property(
+        _get_normalisation_method, _set_normalisation_method
+    )
+
     @staticmethod
-    def example_rnadata(**kwargs):
+    def example_rnadata(type: str = "toy", **kwargs):
         """Generate example rnadata.
 
         See rnanorm.datasets.load_toy_data() for details.
@@ -86,14 +105,20 @@ class rnadata(pydata):
 
         Returns
         ----------
-        pydata object
+        rnadata object
 
         Examples
         ----------
         >>> x = rnadata.example_rnadata()
         >>> print(x)
         """
-        dat = load_toy_data()
+        match type:
+            case "toy":
+                dat = load_toy_data()
+            case "gtex":
+                dat = load_gtex()
+            case _:
+                raise Exception(type + "example rnadata not implemented")
 
         return rnadata(
             dat.exp.transpose(),
@@ -101,3 +126,74 @@ class rnadata(pydata):
             pd.DataFrame({"ID": dat.exp.columns}),
             str(dat.gtf_path),
         )
+
+    def normalise(self, method: str = "TMM", **kwargs):
+        """Normalise rnadata object
+
+        Implement RNAseq count based normalisation using associated
+        functions from rnanorm package (https://pypi.org/project/rnanorm/).
+
+        Parameters
+        ----------
+        method: str
+            Type of normalisation to perform. Current implementations include
+            counts per million normalisation (CPM), fragments per kilo-base
+            million (FKPM) normalisation, transcripts per kilo-base million
+            (TPM) normalisation, upper quartile (UQ) normalisation, counts
+            adjusted with upper quartile factors normalisation, trimmed mean of
+            M-values (TMM) normalisation and counts adjusted with TMM factors
+            normalisation (CTF). Default is TMM.
+        **kwargs:
+            Passed to relevant method in rnanorm.
+
+        Returns
+        ----------
+        rnadata object
+
+        Examples
+        ----------
+        >>> x = rnadata.example_rnadata()
+        >>> norm_x = x.normalise(method="CPM")
+        """
+        self._validate()
+        out = deepcopy(self)
+        in_data = out.data.transpose()
+        match method:
+            case "TMM":
+                out.data = (
+                    TMM(**kwargs).set_output(transform="pandas").fit_transform(in_data)
+                ).transpose()
+            case "CPM":
+                out.data = (
+                    CPM(**kwargs).set_output(transform="pandas").fit_transform(in_data)
+                ).transpose()
+            case "TPM":
+                assert os.path.isfile(out.gtf), "Does GFT file exist?"
+                out.data = (
+                    TPM(out.gtf, **kwargs)
+                    .set_output(transform="pandas")
+                    .fit_transform(in_data)
+                ).transpose()
+            case "FPKM":
+                assert os.path.isfile(out.gtf), "Does GFT file exist?"
+                out.data = (
+                    FPKM(out.gtf, **kwargs)
+                    .set_output(transform="pandas")
+                    .fit_transform(in_data)
+                ).transpose()
+            case "UQ":
+                out.data = (
+                    UQ(**kwargs).set_output(transform="pandas").fit_transform(in_data)
+                ).transpose()
+            case "CUF":
+                out.data = (
+                    CUF(**kwargs).set_output(transform="pandas").fit_transform(in_data)
+                ).transpose()
+            case "CTF":
+                out.data = (
+                    CTF(**kwargs).set_output(transform="pandas").fit_transform(in_data)
+                ).transpose()
+            case _:
+                raise Exception(method + " normalisation not implemented")
+        out.normalisation_method = method
+        return out
