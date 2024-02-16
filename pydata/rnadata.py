@@ -3,6 +3,7 @@ import pandas as pd
 from rnanorm.datasets import load_toy_data
 import os
 
+
 class rnadata(pydata):
     """Bulk RNAseq count data computation and visualisation
 
@@ -48,7 +49,7 @@ class rnadata(pydata):
             A DataFrame of feature annotation with ID column matching
             row names of data attribute.
         gtf: str
-            Optional argument describing path to gtf file used to 
+            Optional argument describing path to gtf file used to
             generate bulk RNAseq count data.
         """
 
@@ -93,11 +94,10 @@ class rnadata(pydata):
         >>> print(x)
         """
         dat = load_toy_data()
-        
-        return rnadata(
-            dat.exp.transpose(), 
-            pd.DataFrame({"ID": dat.exp.index}), 
-            pd.DataFrame({"ID": dat.exp.columns}), 
-            str(dat.gtf_path)
-        )
 
+        return rnadata(
+            dat.exp.transpose(),
+            pd.DataFrame({"ID": dat.exp.index}),
+            pd.DataFrame({"ID": dat.exp.columns}),
+            str(dat.gtf_path),
+        )
