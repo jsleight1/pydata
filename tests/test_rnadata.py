@@ -42,5 +42,6 @@ def test_rnadata_generation(snapshot):
 
 def test_example_rnadata(snapshot):
     x = rnadata.example_rnadata()
+    x.gtf = gtf
     assert isinstance(x, rnadata)
     snapshot.assert_match(str(x), "example_rnadata.txt")
