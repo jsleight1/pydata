@@ -10,7 +10,7 @@ RUN pip install --upgrade pip
 
 # Install pydata dependencies
 RUN pip install pandas matplotlib numpy scikit-learn pytest pytest-snapshot seaborn nbformat jupyter plotly black pytest-black \
-    coverage pytest-cov umap-learn statsmodels tabulate
+    coverage pytest-cov umap-learn statsmodels tabulate rnanorm
 
 # Install poetry 
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/ python3 -
