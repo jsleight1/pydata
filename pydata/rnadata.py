@@ -38,7 +38,13 @@ class rnadata(pydata):
     """
 
     def __init__(
-        self, data, description, annotation, gtf=None, normalisation_method=None
+        self,
+        data,
+        description,
+        annotation,
+        gtf=None,
+        filtering_method=None,
+        normalisation_method=None,
     ):
         """
         Parameters
@@ -59,19 +65,22 @@ class rnadata(pydata):
 
         super().__init__(data, description, annotation)
         self._gtf = gtf
+        self._filtering_method = filtering_method
         self._normalisation_method = normalisation_method
         self._validate()
 
     def __str__(self):
         out = super().__str__()
         return (
-            out + f"\n - gtf: {self.gtf}\n - normalisation: {self.normalisation_method}"
+            out
+            + f"\n - gtf: {self.gtf}\n - Filter: {self.filtering_method}\n - normalisation: {self.normalisation_method}"
         )
 
     def __repr__(self):
         out = super().__repr__()
         return (
-            out + f"\n - gtf: {self.gtf}\n - normalisation: {self.normalisation_method}"
+            out
+            + f"\n - gtf: {self.gtf}\n - Filter: {self.filtering_method}\n - normalisation: {self.normalisation_method}"
         )
 
     def _get_gtf(self):
@@ -91,6 +100,14 @@ class rnadata(pydata):
     normalisation_method = property(
         _get_normalisation_method, _set_normalisation_method
     )
+
+    def _get_filtering_method(self):
+        return getattr(self, "_filtering_method")
+
+    def _set_filtering_method(self, value: str):
+        self._filtering_method = value
+
+    filtering_method = property(_get_filtering_method, _set_filtering_method)
 
     @staticmethod
     def example_rnadata(type: str = "toy", **kwargs):
@@ -126,6 +143,25 @@ class rnadata(pydata):
             pd.DataFrame({"ID": dat.exp.columns}),
             str(dat.gtf_path),
         )
+
+    def filter_counts(self, method: str="sum", thresh: int=10, **kwargs):
+        self._validate()
+        out = deepcopy(self)
+        match method:
+            case "sum":
+                keep = out.data.sum(axis=1) >= thresh
+                out = out.subset(features=keep[keep].index)
+            case "mean":
+                keep = out.data.mean(axis=1) >= thresh
+                out = out.subset(features=keep[keep].index)
+            case "min":
+                keep = out.data.min(axis=1) >= thresh
+                out = out.subset(features=keep[keep].index)
+            case _:
+                raise Exception(method + " filtering not implemented")
+        print(f"Dropping {self.data.shape[0] - out.data.shape[0]} features")
+        out.filtering_method = method
+        return out
 
     def normalise(self, method: str = "TMM", **kwargs):
         """Normalise rnadata object

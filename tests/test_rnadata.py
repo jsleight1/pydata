@@ -48,6 +48,25 @@ def test_example_rnadata(snapshot):
     snapshot.assert_match(str(x), "example_rnadata.txt")
 
 
+def test_rnadata_count_filtering():
+    x = rnadata.example_rnadata("gtex")
+    with pytest.raises(Exception) as err:
+        x.filter_counts(method="custom")
+    assert "custom filtering not implemented" in str(err.value)
+
+    out = x.filter_counts()
+    keep = x.data.sum(axis=1) >= 10
+    assert keep[keep].index.tolist() == out.rownames
+
+    out = x.filter_counts(method="mean")
+    keep = x.data.mean(axis=1) >= 10
+    assert keep[keep].index.tolist() == out.rownames
+
+    out = x.filter_counts(method="min")
+    keep = x.data.min(axis=1) >= 10
+    assert keep[keep].index.tolist() == out.rownames
+
+
 def test_rnadata_normalisation(snapshot):
     x = rnadata.example_rnadata()
     with pytest.raises(Exception) as err:

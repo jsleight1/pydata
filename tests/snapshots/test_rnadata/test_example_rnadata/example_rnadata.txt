@@ -1,4 +1,5 @@
 rnadata object:
  - Dimensions: 4 (samples) x 5 (features)
  - gtf: toy.gtf
+ - Filter: None
  - normalisation: None
