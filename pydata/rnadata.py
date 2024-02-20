@@ -151,16 +151,14 @@ class rnadata(pydata):
         match method:
             case "sum":
                 keep = out.data.sum(axis=1) >= thresh
-                out = out.subset(features=keep[keep].index)
             case "mean":
                 keep = out.data.mean(axis=1) >= thresh
-                out = out.subset(features=keep[keep].index)
             case "min":
                 keep = out.data.min(axis=1) >= thresh
-                out = out.subset(features=keep[keep].index)
             case _:
                 raise Exception(method + " filtering not implemented")
-        print(f"Dropping {self.data.shape[0] - out.data.shape[0]} features")
+        out = out.subset(features=keep[keep].index)
+        print(f"Dropping {self.data.shape[0] - len(keep)} features")
         out.filtering_method = method
         return out
 
