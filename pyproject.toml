@@ -15,6 +15,7 @@ seaborn = "^0.13.0"
 umap-learn = "^0.5.5"
 plotly-express = "^0.4.1"
 rnanorm = "^2.1.0"
+pydeseq2 = "^0.4.4"
 
 
 [tool.poetry.group.test.dependencies]

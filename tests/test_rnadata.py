@@ -72,7 +72,7 @@ def test_rnadata_normalisation(snapshot):
     with pytest.raises(Exception) as err:
         x.normalise(method="custom")
     assert "custom normalisation not implemented" in str(err.value)
-    for norm in ["CPM", "TPM", "FPKM", "UQ", "CUF", "TMM", "CTF"]:
+    for norm in ["CPM", "TPM", "FPKM", "UQ", "CUF", "TMM", "CTF", "DESeq2"]:
         norm_x = x.normalise(method=norm)
         assert isinstance(norm_x, rnadata)
         assert norm_x.normalisation_method == norm

@@ -2,6 +2,7 @@ from pydata.pydata import pydata
 import pandas as pd
 from rnanorm.datasets import load_toy_data, load_gtex
 from rnanorm import CPM, TPM, FPKM, UQ, CUF, TMM, CTF
+from pydeseq2.preprocessing import deseq2_norm
 import os
 from copy import deepcopy
 
@@ -166,8 +167,9 @@ class rnadata(pydata):
     def normalise(self, method: str = "TMM", **kwargs):
         """Normalise rnadata object
 
-        Implement RNAseq count based normalisation using associated
-        functions from rnanorm package (https://pypi.org/project/rnanorm/).
+        Implement RNAseq count based normalisation using associated functions
+        from rnanorm package (https://pypi.org/project/rnanorm/) and pydeseq2
+        (https://pypi.org/project/pydeseq2/).
 
         Parameters
         ----------
@@ -177,8 +179,9 @@ class rnadata(pydata):
             million (FKPM) normalisation, transcripts per kilo-base million
             (TPM) normalisation, upper quartile (UQ) normalisation, counts
             adjusted with upper quartile factors normalisation, trimmed mean of
-            M-values (TMM) normalisation and counts adjusted with TMM factors
-            normalisation (CTF). Default is TMM.
+            M-values (TMM) normalisation, counts adjusted with TMM factors
+            normalisation (CTF) and pyDESeq2's median of ratios normalisation.
+            Default is TMM.
         **kwargs:
             Passed to relevant method in rnanorm.
 
@@ -229,6 +232,8 @@ class rnadata(pydata):
                 out.data = (
                     CTF(**kwargs).set_output(transform="pandas").fit_transform(in_data)
                 ).transpose()
+            case "DESeq2":
+                out.data = deseq2_norm(in_data)[0].transpose()
             case _:
                 raise Exception(method + " normalisation not implemented")
         out.normalisation_method = method
