@@ -144,7 +144,7 @@ class rnadata(pydata):
             str(dat.gtf_path),
         )
 
-    def filter_counts(self, method: str="sum", thresh: int=10, **kwargs):
+    def filter_counts(self, method: str = "sum", thresh: int = 10, **kwargs):
         self._validate()
         out = deepcopy(self)
         match method:
