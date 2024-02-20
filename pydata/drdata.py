@@ -29,7 +29,7 @@ class drdata(ldata):
             String describing the scaling procedure used before PCA e.g. "None", "zscore".
         """
 
-        out = super().__init__(data, description, annotation)
+        super().__init__(data, description, annotation)
         self._scaling = scaling
         self._validate()
 
