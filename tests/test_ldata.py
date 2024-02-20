@@ -175,22 +175,22 @@ def test_concat(snapshot):
     c = ldata.example_ldata(type="simulate", min=15, max=20)
 
     with pytest.raises(AssertionError) as err:
-        a.concat([b, "c"])
+        a.concat(b, "c")
     assert "objects must all be of same class" in str(err.value)
 
     b.rownames = ["Feature" + str(i) for i in range(51, 71)]
     with pytest.raises(AssertionError) as err:
-        a.concat([b, c])
+        a.concat(b, c)
     assert "objects must have same feature IDs" in str(err.value)
     b.rownames = c.rownames
 
     with pytest.raises(AssertionError) as err:
-        a.concat([b, c])
+        a.concat(b, c)
     assert "colnames must contain unique IDs" in str(err.value)
     b.colnames = ["Sample" + str(i) for i in range(6, 11)]
     c.colnames = ["Sample" + str(i) for i in range(11, 16)]
 
-    x = a.concat([b, c])
+    x = a.concat(b, c)
 
     assert x.data.equals(pd.concat([a.data, b.data, c.data], axis=1))
     assert x.annotation.equals(a.annotation)

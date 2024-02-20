@@ -360,7 +360,7 @@ class ldata:
         self._validate()
         return self
 
-    def concat(self, objs=[]):
+    def concat(self, *objs):
         """Concatenate samples from multiple ldata objects
 
         Similar to pandas.DataFrame.concat where ldata objects
@@ -369,8 +369,8 @@ class ldata:
 
         Parameters
         ----------
-        objs: list
-            List of ldata objects.
+        *objs:
+            ldata objects.
 
         Returns
         ----------
@@ -383,7 +383,7 @@ class ldata:
         >>> c = ldata.example_ldata(type="simulate", min=15, max=20)
         >>> b.colnames = ["Sample" + str(i) for i in range(6, 11)]
         >>> c.colnames = ["Sample" + str(i) for i in range(11, 16)]
-        >>> a.concat([b, c])
+        >>> a.concat(b, c)
         """
         assert all(
             [isinstance(i, type(self)) for i in objs]
