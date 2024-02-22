@@ -8,3 +8,5 @@ README_files/libs/
 README.html
 CHANGELOG.html
 CHANGELOG_files
+/.quarto/
+/._site/
