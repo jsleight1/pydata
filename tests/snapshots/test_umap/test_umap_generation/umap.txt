@@ -1,0 +1,3 @@
+umap object:
+ - Dimensions: 5 (samples) x 5 (umap components)
+ - Scaling: None

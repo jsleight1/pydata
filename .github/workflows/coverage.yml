@@ -1,0 +1,46 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Report coverage
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: ["master", "development"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate coverage report
+        id: coverage
+        run: |
+          poetry --version
+          poetry check
+          poetry run coverage run -m pytest
+          poetry run coverage json
+
+      - name: Get Coverage Percentage
+        id: coverage_percent
+        uses: notiz-dev/github-action-json-property@release
+        with: 
+            path: 'coverage.json'
+            prop_path: 'totals.percent_covered_display'
+      - run: echo ${{ steps.coverage_percent.outputs.prop }}
+    
+      - name: Create Coverage Badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 751d1a5c71730402c81f54e9f70444ad
+          filename: pydata_cov_badge.json
+          label: Coverage
+          message: ${{ steps.coverage_percent.outputs.prop }}%
+          valColorRange: ${{ steps.coverage_percent.outputs.prop }}
+          maxColorRange: 100
+          minColorRange: 0

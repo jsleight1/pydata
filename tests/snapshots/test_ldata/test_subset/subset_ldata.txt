@@ -1,0 +1,2 @@
+ldata object:
+ - Dimensions: 2 (samples) x 3 (features)

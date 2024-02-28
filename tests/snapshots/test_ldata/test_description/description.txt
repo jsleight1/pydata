@@ -1,0 +1,6 @@
+,ID,Group
+0,Sample1,Group1
+1,Sample2,Group1
+2,Sample3,Group1
+3,Sample4,Group2
+4,Sample5,Group2
