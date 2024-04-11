@@ -1,0 +1,3 @@
+tsne object:
+ - Dimensions: 2 (samples) x 2 (tsne components)
+ - Scaling: zscore

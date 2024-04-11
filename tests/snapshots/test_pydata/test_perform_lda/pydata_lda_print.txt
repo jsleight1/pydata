@@ -1,0 +1,3 @@
+lda object:
+ - Dimensions: 6 (samples) x 1 (LDA components)
+ - Target: Treatment

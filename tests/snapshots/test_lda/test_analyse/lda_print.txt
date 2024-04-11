@@ -1,0 +1,4 @@
+lda object:
+ - Dimensions: 150 (samples) x 2 (lda components)
+ - Scaling: zscore
+ - Target: Species

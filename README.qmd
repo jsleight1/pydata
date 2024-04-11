@@ -1,0 +1,182 @@
+---
+title: "Exploratory data analysis using pydata"
+format: 
+    gfm:
+        preview-mode: raw
+---
+
+[![Test](https://github.com/jsleight1/pydata/actions/workflows/test.yml/badge.svg?branch=development)](https://github.com/jsleight1/pydata/actions/workflows/test.yml)
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jsleight1/751d1a5c71730402c81f54e9f70444ad/raw/pydata_cov_badge.json)
+[![License](https://img.shields.io/badge/License-GNU%20GPL-blue)](https://github.com/jsleight1/pydata/blob/master/LICENSE)
+
+## `pydata`
+
+`pydata` is a python package developed for the analysis and visualisation of 
+L-shaped datasets. It can either be installed locally using `poetry` or an 
+docker container environment has also be created which can be used for 
+development and running the following examples.
+
+`docker run -v $PWD:$PWD -it docker.io/jsleight1/pydata:3.10-latest`
+
+## Pydata generation and handling
+
+```{python}
+from pydata.pydata import pydata
+
+x=pydata.example_pydata(type="iris")
+print(x)
+```
+
+```{python}
+print(x.data)
+```
+
+```{python}
+print(x.description.head(2))
+```
+
+```{python}
+print(x.annotation)
+```
+
+```{python}
+s=x.subset(
+    samples=["Sample1", "Sample30", "Sample52"], 
+    features=["sepal_length", "petal_length"]
+)
+print(s)
+```
+
+```{python}
+t=x.transpose()
+print(t)
+```
+
+## Dimension reduction
+
+### PCA
+```{python}
+x.perform_dimension_reduction("pca", n_comp = 3)
+
+print(x.pcs)
+```
+
+```{python}
+print(x.pcs.data)
+```
+
+```{python}
+print(x.pcs.description)
+```
+
+```{python}
+print(x.pcs.annotation)
+```
+
+### LDA
+```{python}
+x.perform_dimension_reduction("lda", target="Species")
+```
+
+```{python}
+print(x.lda)
+```
+
+```{python}
+print(x.lda.data)
+```
+
+### t-SNE
+```{python}
+x.perform_dimension_reduction("tsne")
+```
+
+```{python}
+print(x.tsne)
+```
+
+```{python}
+print(x.tsne.data)
+```
+
+### UMAP 
+```{python}
+x.perform_dimension_reduction("umap")
+```
+
+```{python}
+print(x.umap)
+```
+
+```{python}
+print(x.umap.data)
+```
+
+## Plotting
+
+```{python}
+x.plot(type="pca", colour_by="Species")
+```
+
+```{python}
+x.plot(type="pca_elbow")
+```
+
+```{python}
+x.plot(type="lda")
+```
+
+```{python}
+x.plot(type="tsne", colour_by="Species")
+```
+
+```{python}
+x.plot(type="umap", colour_by="Species")
+```
+
+```{python}
+x.transpose().plot(type="violin", fill=False)
+```
+
+```{python}
+x.transpose().plot(type="box")
+```
+
+```{python}
+x.transpose().plot(type="swarm", size=3)
+```
+
+```{python}
+x.plot(
+    type="feature_heatmap", 
+    annotate_samples_by=["Species"], 
+    annotate_features_by=["type"], 
+    xticklabels=False
+)
+```
+
+```{python}
+x.plot(
+    type="correlation_heatmap", 
+    cor_method="pearson",
+    annotate_samples_by=["Species"], 
+    xticklabels=False,
+    yticklabels=False
+)
+```
+
+```{python}
+x.plot(type="distribution", kind="kde", legend=False)
+```
+
+```{python}
+x.transpose().subset(["sepal_length"]).plot(type="distribution", kde=True)
+```
+
+```{python}
+x.transpose().plot(type="distribution", kind="ecdf")
+```
+
+```{python}
+x.transpose().plot(type="scatter", xaxis="petal_length", yaxis="sepal_length")
+```

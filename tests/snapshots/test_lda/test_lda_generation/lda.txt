@@ -1,0 +1,4 @@
+lda object:
+ - Dimensions: 5 (samples) x 5 (lda components)
+ - Scaling: None
+ - Target: None

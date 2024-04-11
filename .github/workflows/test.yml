@@ -1,0 +1,50 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test package
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:    
+      - '**'        # matches every branch
+  pull_request:
+    branches:    
+      - '**'        # matches every branch
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - name: Format code
+        run: |
+          pip install black
+          poetry run black . --check --verbose --diff --color
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: |
+          poetry --version
+          poetry check
+          poetry run pytest
+  readme:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jsleight1/pydata:3.10-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check readme builds
+        run: |
+          quarto --version
+          quarto render README.qmd
