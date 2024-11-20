@@ -1,5 +1,9 @@
 # Change log
 
+## 0.0.0.9001
+
+* Use master branch for building docker image.
+
 ## 0.0.0.9000
 
 * Initial implementation of pydata package for exploratory data analysis of high-dimensional data.
