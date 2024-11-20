@@ -34,7 +34,6 @@ RUN target=$(echo "$TARGETPLATFORM" | sed "s/\//-/") \
 # Install pydata
 RUN git clone https://github.com/jsleight1/pydata.git \
 	&& cd pydata \
-	&& git checkout -b development origin/development \
 	&& poetry update \
 	&& poetry install \
 	&& poetry build \
